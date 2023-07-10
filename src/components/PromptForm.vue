@@ -20,12 +20,13 @@
       class="q-mb-md"
     ></q-select>
 
-      <div v-if="!showAdvanced" class="row justify-center q-mb-lg">
+
+
+    <transition name="slidedown" mode="in-out">
+      <div v-if="!showAdvanced" class="row justify-center q-mb-lg" key="adv-btn">
         <div><q-btn outline @click="showAdvanced = !showAdvanced" color="grey" label="Advanced Settings" size="10px" /></div>
       </div>
-
-    <transition name="slidedown">
-      <lili-cont v-if="showAdvanced" :title="true" class="q-mb-lg">
+      <lili-cont v-else :title="true" class="q-mb-lg" key="adv-cont">
         <template v-slot:title>
           <div class="row items-center">
             <div class="col">Advanced</div>
@@ -156,3 +157,21 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.slidedown-enter-active,
+.slidedown-leave-active {
+  transition: max-height 0.5s ease-in-out;
+}
+
+.slidedown-enter-to,
+.slidedown-leave-from {
+  overflow: hidden;
+  max-height: 1000px;
+}
+
+.slidedown-enter-from,
+.slidedown-leave-to {
+  overflow: hidden;
+  max-height: 0;
+}
+</style>

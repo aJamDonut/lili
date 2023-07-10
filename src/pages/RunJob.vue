@@ -31,22 +31,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.slidedown-enter-active,
-.slidedown-leave-active {
-  transition: max-height 0.5s ease-in-out;
-}
-
-.slidedown-enter-to,
-.slidedown-leave-from {
-  overflow: hidden;
-  max-height: 1000px;
-}
-
-.slidedown-enter-from,
-.slidedown-leave-to {
-  overflow: hidden;
-  max-height: 0;
-}
-</style>
