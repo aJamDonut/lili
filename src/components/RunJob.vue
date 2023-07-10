@@ -86,7 +86,7 @@
     ></q-input>
   </div>
 
-  <div v-html="markdownToHtml"></div>
+
 </template>
 
 
@@ -119,12 +119,7 @@ export default {
   },
   computed: {
     markdownToHtml() {
-      this.$nextTick(() => {
-        console.log('Next tick');
-      });
-      return marked(
-        '* Example # New ```javascript $(document).ready(function(){}```'
-      );
+      return 'test'
     },
   },
   updated() {

@@ -5,26 +5,40 @@
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
-          Title
+          LiLi
         </q-toolbar-title>
       </q-toolbar>
-
-      <q-tabs align="left">
-        <q-route-tab to="/page1" label="Page One" />
-        <q-route-tab to="/page2" label="Page Two" />
-        <q-route-tab to="/page3" label="Page Three" />
-      </q-tabs>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
-      <h1>Content</h1>
+      <q-scroll-area class="fit">
+          <q-list>
+            <template v-for="(menuItem, index) in menuList" :key="index">
+              <q-item clickable :active="menuItem.label === 'Outbox'" :to="{path: '/' + menuItem.url}" v-ripple>
+                <q-item-section avatar>
+                  <q-icon :name="menuItem.icon" />
+                </q-item-section>
+                <q-item-section>
+                  {{ menuItem.label }}
+                </q-item-section>
+              </q-item>
+              <q-separator :key="'sep' + index"  v-if="menuItem.separator" />
+            </template>
+
+          </q-list>
+        </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <transition
+        mode="out-in"
+        enter-active-class="animated fadeIn fast"
+        leave-active-class="animated fadeOut"
+        appear
+        :duration="100"
+      >
+        <router-view />
+      </transition>
     </q-page-container>
   </q-layout>
 </template>
@@ -32,11 +46,33 @@
 <script>
 import { ref } from 'vue';
 
+const menuList = [
+  {
+    icon: 'dashboard',
+    label: 'Dashboard',
+    url: '',
+    separator: false
+  },
+  {
+    icon: 'add',
+    label: 'Run A Job',
+    url: 'run',
+    separator: false
+  },
+  {
+    icon: 'history',
+    label: 'Job History',
+    url: 'history',
+    separator: false
+  }
+]
+
 export default {
   setup() {
     const leftDrawerOpen = ref(false);
 
     return {
+      menuList,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;

@@ -1,9 +1,9 @@
 import { boot } from 'quasar/wrappers';
 
-import ShowsAdam from '../components/ShowsAdam.vue';
-import ExampleComponent from '../components/ExampleComponent.vue';
+import DisplayOutput from '../components/DisplayOutput.vue';
+import LiliCont from '../components/LiliCont.vue';
 
 export default boot(async ({ app }) => {
-  app.component('shows-adam', ShowsAdam);
-  app.component('example-component', ExampleComponent);
+  app.component('display-output', DisplayOutput);
+  app.component('lili-cont', LiliCont);
 });
