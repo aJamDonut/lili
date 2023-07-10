@@ -10,7 +10,9 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay
+      :width="200"
+      elevated>
       <q-scroll-area class="fit">
           <q-list>
             <template v-for="(menuItem, index) in menuList" :key="index">
