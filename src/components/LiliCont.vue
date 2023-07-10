@@ -100,7 +100,7 @@ export default {
     box-sizing: border-box;
     border-radius: 4px;
     // box-shadow: inset 0 0 1px 1px $border-1, $box-shadow-1;
-    border: 1px solid $grey-4;
+    border: 1px solid $grey-3;
     width: 100%;
     height: 100%;
   }
