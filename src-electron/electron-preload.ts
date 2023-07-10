@@ -27,3 +27,13 @@
  *   }
  * }
  */
+
+import { contextBridge, ipcMain, ipcRenderer } from 'electron';
+
+// Expose ipcRenderer to the client
+//const STRORAGE_API = ['ElectronStorage:getFolders'];
+contextBridge.exposeInMainWorld('_electron', {
+  run: async (channel: string, data: object) => {
+    return await ipcRenderer.invoke(channel, data);
+  },
+});
