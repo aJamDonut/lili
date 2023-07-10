@@ -5,7 +5,9 @@
         <h1 class="text-h5">Run Job</h1>
       </div>
       <div class="col-shrink">
-        <q-btn @click="showAdvanced = !showAdvanced" outline color="primary">Toggle Advanced</q-btn>
+        <q-btn @click="showAdvanced = !showAdvanced" outline color="primary"
+          >Toggle Advanced</q-btn
+        >
       </div>
     </div>
 
@@ -114,17 +116,27 @@
         </lili-cont>
       </transition>
       <div class="row justify-end">
-        <div><q-btn @click="runJob" color="green" icon="play_arrow" label="Run Job" /></div>
+        <div>
+          <q-btn
+            @click="runJob"
+            color="green"
+            icon="play_arrow"
+            label="Run Job"
+          />
+        </div>
       </div>
     </div>
+    <div v-html="outputText"></div>
   </q-page>
 </template>
 
 
 <script>
+import { startWorkload } from '../services/lili';
 export default {
   data() {
     return {
+      outputText: '',
       showAdvanced: false,
       prompt: '',
       context: '',
@@ -143,8 +155,18 @@ export default {
   methods: {
     toggleDisplayOutput() {
       this.displayOutput = !this.displayOutput;
-    }
-  }
+    },
+    processToken(token) {
+      this.outputText = this.outputText + token;
+      console.log(token);
+    },
+    runJob() {
+      console.log('Runo');
+      startWorkload({
+        forEachToken: this.processToken,
+      });
+    },
+  },
 };
 </script>
 
