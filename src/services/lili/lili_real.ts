@@ -1,21 +1,5 @@
 /**
- * @typedef {Object} LiliaiConfig
- * @property {string} engine - The engine used by LILIAI.
- * @property {string} api_key - The API key for LILIAI.
- * @property {boolean} storageDriver - Indicates whether a storage driver is enabled or not.
- * @property {boolean} engineDriver - Indicates whether an engine driver is enabled or not.
- */
-
-/** @type {LiliaiConfig} */
-let LILIAI = {
-  engine: 'chatgpt',
-  api_key: 'non',
-  storageDriver: false,
-  engineDriver: false,
-};
-
-/**
- * @typedef {Object} FakeHistoryEntry
+ * @typedef {Object} HistoryEntry
  * @property {number} id - The ID of the history entry.
  * @property {string} prompt - The prompt used for the history entry.
  * @property {string} context - The context of the history entry.
@@ -23,8 +7,16 @@ let LILIAI = {
  * @property {string} last_workload - The last workload associated with the history entry.
  * @property {string} response - The response generated for the history entry.
  */
+interface HistoryEntry {
+  id: number;
+  prompt: string;
+  context: string;
+  first_workload: string;
+  last_workload: string;
+  response: string;
+}
 
-/** @type {FakeHistoryEntry[]} */
+/** @type {HistoryEntry[]} */
 const FAKE_HISTORY = [
   {
     id: 1,
@@ -85,8 +77,21 @@ function(runCode){
  * @property {number} responseLimit - The response limit for the workload.
  * @property {number} solutionCount - The number of solutions to generate for the workload.
  * @property {function(string): void} forEachToken - A callback function to process each token.
- * @property {function(string[]): void} onComplete - A callback function to process the complete response.
+ * @property {function(string): void} onComplete - A callback function to process the complete response.
  */
+interface WorkloadOptions {
+  prompt: string;
+  context: string;
+  workload: string;
+  outputFormat: string;
+  outputTo: string;
+  creativity: number;
+  repetitiveness: number;
+  responseLimit: number;
+  solutionCount: number;
+  forEachToken: (line: string) => void;
+  onComplete: (lines: string) => void;
+}
 
 /**
  * @type {WorkloadOptions}
@@ -109,11 +114,51 @@ const LILIAI_DEFAULTWORKLOADOPTIONS = {
   },
 };
 
+interface StorageFolder {
+  id: string;
+  name: string;
+}
+
+interface StorageDriverInterface {
+  getFolders(): Array<StorageFolder>;
+  getFile(file: string): any;
+  getFolder(folderName: string): Array<string>;
+  writeFile(folderName: string, fileName: string, contents: string): boolean;
+  readFile(folderName: string, fileName: string): string;
+}
+
+interface EngineDriverInterface {
+  name: string;
+  run(options: WorkloadOptions): void;
+}
+
+/**
+ * @typedef {Object} LiliConfig
+ * @property {string} engine - The engine used by LILIAI.
+ * @property {string} api_key - The API key for LILIAI.
+ * @property {boolean} storageDriver - Indicates whether a storage driver is enabled or not.
+ * @property {boolean} engineDriver - Indicates whether an engine driver is enabled or not.
+ */
+interface LiliConfig {
+  engine: string;
+  api_key: string;
+  storageDriver: StorageDriverInterface;
+  engineDriver: EngineDriverInterface;
+}
+
+/** @type {LiliConfig} */
+let LILIAI = {
+  engine: 'chatgpt',
+  api_key: 'non',
+  storageDriver: false,
+  engineDriver: false,
+};
+
 /**
  * Sets up LILIAI configuration.
  * @param {LiliaiConfig} config - The configuration options for LILIAI.
  */
-export function setup(config) {
+export function setup(config: LiliConfig) {
   LILIAI = { ...LILIAI, ...config };
 }
 
@@ -157,9 +202,9 @@ export function startWorkload(workloadCustomOptions) {
  * Retrieves the history entries within the specified range.
  * @param {number} start - The start index of the history entries.
  * @param {number} end - The end index of the history entries.
- * @returns {FakeHistoryEntry[]} The history entries within the specified range.
+ * @returns {FakeHistoryEntry[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
-export function getHistory(start, end) {
+export async function getHistory(start, end) {
   if (typeof start !== 'number' && typeof end !== 'number') {
     return FAKE_HISTORY;
   }
@@ -173,14 +218,14 @@ export function getHistory(start, end) {
 
 /**
  * Recalls a specific job from the history.
- * @param {number} history_id - The ID of the history entry to recall.
+ * @param {number} id - The ID of the history entry to recall.
  * @param {WorkloadOptions} workloadCustomOptions - The custom options for the workload.
  */
-export function recallJob(history_id, workloadCustomOptions) {
+export function recallJob(id, workloadCustomOptions) {
   const workloadOptions = {
     ...LILIAI_DEFAULTWORKLOADOPTIONS,
     ...workloadCustomOptions,
   };
-  const history = FAKE_HISTORY.find((history) => (history.id = history_id));
+  const history = FAKE_HISTORY.find((history) => (history.id = id));
   workloadOptions.onComplete(history.response);
 }
