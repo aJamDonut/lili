@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div class="q-pa-md">
+    <div class="q-py-md">
       <label>Prompt</label>
       <q-input
         v-model="prompt"
@@ -122,11 +122,12 @@
             color="green"
             icon="play_arrow"
             label="Run Job"
+            :loading="jobRunning"
           />
         </div>
       </div>
     </div>
-    <div v-html="outputText"></div>
+    <display-output v-if="showOutput" v-model="outputText" />
   </q-page>
 </template>
 
@@ -152,6 +153,11 @@ export default {
       outputToOptions: ['Inline', 'Cursor', 'Folder'],
     };
   },
+  computed: {
+    showOutput() {
+      return this.outputText.length > 0;
+    }
+  },
   methods: {
     toggleDisplayOutput() {
       this.displayOutput = !this.displayOutput;
@@ -161,9 +167,15 @@ export default {
       console.log(token);
     },
     runJob() {
+      if (this.jobRunning) return;
+      this.jobRunning = true;
+      this.outputText = '';
       console.log('Runo');
       startWorkload({
         forEachToken: this.processToken,
+        onComplete: () => {
+          this.jobRunning = false;
+        },
       });
     },
   },
