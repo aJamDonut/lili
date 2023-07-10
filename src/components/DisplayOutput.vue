@@ -1,7 +1,9 @@
 <template>
   <div>
-    <textarea v-model="markdown"></textarea>
-    <div v-html="markdownToHtml"></div>
+    <!-- <textarea v-model="markdown"></textarea> -->
+    <lili-cont title="Output">
+      <div v-html="markdownToHtml"></div>
+    </lili-cont>
   </div>
 </template>
 
