@@ -142,6 +142,11 @@ export default {
   props: {
     modelValue: null,
   },
+  methods: {
+    runJob() {
+      this.$emit('run');
+    }
+  },
   computed: {
     promptConfig: {
       get () { return this.modelValue },

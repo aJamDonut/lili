@@ -1,29 +1,11 @@
 <template>
-  <q-page>
-    <q-splitter v-model="splitterModel" style="min-height: inherit;">
-      <template v-slot:before>
-        <div class="q-pa-md">
-          <prompt-form v-model="promptConfig" @run="runJob" />
-        </div>
-      </template>
-
-      <template v-slot:separator>
-        <q-icon color="grey-5" text-color="white" size="18px" name="drag_indicator" />
-      </template>
-
-      <template v-slot:after>
-        <div class="q-pa-md">
-          <display-output v-if="showOutput" v-model="outputText" />
-        </div>
-      </template>
-
-    </q-splitter>
+  <q-page padding>
+    <prompt-form v-model="promptConfig" @run="runJob" />
   </q-page>
 </template>
 
 
 <script>
-import { startWorkload } from '../services/lili';
 export default {
   data() {
     return {
@@ -38,34 +20,13 @@ export default {
         responseLimit: 16000,
         solutionCount: 1,
       },
-      splitterModel: 100,
-      outputText: ''
+      splitterModel: 100
     };
   },
-  computed: {
-    showOutput() {
-      return this.outputText.length > 0;
-    }
-  },
   methods: {
-    toggleDisplayOutput() {
-      this.displayOutput = !this.displayOutput;
-    },
-    processToken(token) {
-      this.outputText = this.outputText + token;
-      console.log(token);
-    },
     runJob() {
-      if (this.jobRunning) return;
-      this.jobRunning = true;
-      this.outputText = '';
-
-      startWorkload({
-        forEachToken: this.processToken,
-        onComplete: () => {
-          this.jobRunning = false;
-        },
-      });
+      // Need to get job ID here from Class?
+      this.$router.push({ path: '/jobs/1' });
     }
   },
 };
