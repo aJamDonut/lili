@@ -4,9 +4,18 @@ import path from 'path';
 import { promises as fs } from 'fs';
 
 const functionList: Array<string> = [];
+
+const SERVICE_KEY = 'ElectronStorage';
+
 function func(name: string) {
-  functionList.push('ElectronStorage:' + name);
-  return 'ElectronStorage:' + name;
+  name = SERVICE_KEY + ':' + name;
+  if (functionList.includes(name)) {
+    return name;
+  }
+  functionList.push(name);
+  functionList.push(name + '-reply');
+  functionList.push(name + '-complete');
+  return name;
 }
 
 function ipcWrap(justRegister: boolean, name: string, callback: any) {

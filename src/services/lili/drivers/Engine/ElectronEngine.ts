@@ -37,10 +37,10 @@ export class ElectronEngine implements EngineDriverInterface {
   }
 
   async getHistory(start: number, end: number): Promise<Array<HistoryEntry>> {
-    return run('ElectronEngine:getHistory', { start, end });
+    return await run('ElectronEngine:getHistory', { start, end });
   }
 
   async getHistoricWorkload(id: number): Promise<WorkloadHistory> {
-    return run('ElectronEngine:getHistoricWorkload', { id });
+    return await run('ElectronEngine:getHistoricWorkload', { id });
   }
 }

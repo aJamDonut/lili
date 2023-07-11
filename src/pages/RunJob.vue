@@ -6,13 +6,12 @@
 
 
 <script>
-/*
-import { ElectronStorage } from '../services/lili/drivers/Storage/ElectronStorage';
+import { getHistory, getHistoricWorkload } from '../services/lili/lili_real';
 
-let storage = new ElectronStorage();
+console.log('History', await getHistory());
 
-storage.writeFile('test', 'test.txt', 'im a test');
-*/
+console.log('History ID 10 ', await getHistoricWorkload(10));
+
 export default {
   data() {
     return {

@@ -1,5 +1,9 @@
 import type { LiliConfig } from './interfaces/Lili';
-import type { HistoryEntry, WorkloadOptions } from './interfaces/Workload';
+import type {
+  HistoryEntry,
+  WorkloadHistory,
+  WorkloadOptions,
+} from './interfaces/Workload';
 
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
 
@@ -47,20 +51,21 @@ export function startWorkload(workloadCustomOptions: WorkloadOptions) {
  * Retrieves the history entries within the specified range.
  * @param {number} start - The start index of the history entries.
  * @param {number} end - The end index of the history entries.
- * @returns {HistoryEntry[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
+ * @returns {WorkloadHistory[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
 export async function getHistory(
   start: number,
   end: number
 ): Promise<Array<HistoryEntry>> {
-  LILIAI.engineDriver.getHistory(start, end);
+  return await LILIAI.engineDriver.getHistory(start, end);
 }
 
 /**
  * Recalls a specific job from the history.
  * @param {number} id - The ID of the history entry to recall.
- * @param {WorkloadOptions} workloadCustomOptions - The custom options for the workload.
  */
-/*
-export function recallJob(id: number, workloadCustomOptions: WorkloadOptions) {}
-*/
+export async function getHistoricWorkload(
+  id: number
+): Promise<WorkloadHistory> {
+  return await LILIAI.engineDriver.getHistoricWorkload(id);
+}

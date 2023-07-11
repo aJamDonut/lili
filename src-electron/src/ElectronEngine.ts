@@ -1,13 +1,24 @@
 import { type IpcMainEvent, ipcMain } from 'electron';
 
-import { startWorkload } from '../../src/services/lili';
+import {
+  startWorkload,
+  getHistory,
+  getHistoricWorkload,
+} from '../../src/services/lili';
 
 const functionList: Array<string> = [];
+
+const SERVICE_KEY = 'ElectronEngine';
+
 function func(name: string) {
-  functionList.push('ElectronEngine:' + name);
-  functionList.push('ElectronEngine:' + name + '-reply');
-  functionList.push('ElectronEngine:' + name + '-complete');
-  return 'ElectronEngine:' + name;
+  name = SERVICE_KEY + ':' + name;
+  if (functionList.includes(name)) {
+    return name;
+  }
+  functionList.push(name);
+  functionList.push(name + '-reply');
+  functionList.push(name + '-complete');
+  return name;
 }
 
 function ipcWrap(justRegister: boolean, name: string, callback: any) {
@@ -15,9 +26,14 @@ function ipcWrap(justRegister: boolean, name: string, callback: any) {
     func(name);
     return;
   }
-  ipcMain.handle(func(name), (_event, args) => {
-    callback(_event, args);
+  ipcMain.handle(func(name), async (_event, args) => {
+    return callback(_event, args);
   });
+}
+
+interface HistoryOptionsInterface {
+  start: number;
+  end: number;
 }
 
 /* Setup is done... meat here. */
@@ -39,6 +55,21 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       };
 
       startWorkload({ ...options, forEachToken, onComplete });
+    }
+  );
+  ipcWrap(
+    justRegister,
+    'getHistory',
+    async (_event: IpcMainEvent, { start, end }: HistoryOptionsInterface) => {
+      return getHistory(start, end);
+    }
+  );
+
+  ipcWrap(
+    justRegister,
+    'getHistoricWorkload',
+    async (_event: IpcMainEvent, { id }: any) => {
+      return getHistoricWorkload(id);
     }
   );
 }

@@ -160,7 +160,7 @@ export function startWorkload(workloadCustomOptions) {
  * @param {number} end - The end index of the history entries.
  * @returns {FakeHistoryEntry[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
-export async function getHistory(start, end) {
+export async function getHistory(start: number, end: number) {
   if (typeof start !== 'number' && typeof end !== 'number') {
     return FAKE_HISTORY;
   }
@@ -177,11 +177,7 @@ export async function getHistory(start, end) {
  * @param {number} id - The ID of the history entry to recall.
  * @param {WorkloadOptions} workloadCustomOptions - The custom options for the workload.
  */
-export function getHistoricWorkload(id, workloadCustomOptions) {
-  const workloadOptions = {
-    ...LILIAI_DEFAULTWORKLOADOPTIONS,
-    ...workloadCustomOptions,
-  };
-  const history = FAKE_HISTORY.find((history) => (history.id = id));
-  workloadOptions.onComplete(history.response);
+export function getHistoricWorkload(id: number) {
+  const history = FAKE_HISTORY.find((history) => history.id === id);
+  return history;
 }
