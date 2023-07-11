@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated class="bg-primary text-white" height-hint="98">
+    <q-header class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
@@ -10,13 +10,11 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay
-      :width="200"
-      elevated>
+    <q-drawer v-model="leftDrawerOpen" side="left" :width="200">
       <q-scroll-area class="fit">
           <q-list>
             <template v-for="(menuItem, index) in menuList" :key="index">
-              <q-item clickable :active="menuItem.label === 'Outbox'" :to="{path: '/' + menuItem.url}" v-ripple>
+              <q-item clickable :active="menuItem.label === 'Outbox'" :to="{path: '/' + menuItem.url}" @click="toggleLeftDrawer" v-ripple>
                 <q-item-section avatar>
                   <q-icon :name="menuItem.icon" />
                 </q-item-section>

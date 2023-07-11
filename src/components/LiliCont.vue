@@ -30,7 +30,7 @@ export default {
       return (!!this.$slots.default || !!this.$slots['actions'])
     },
     gridClasses () {
-      let classes = ['zed-grid']
+      let classes = ['lili-grid']
       if (this.title) classes.push('has-title')
       if (this.hasContent) classes.push('has-content')
       if (this.hasClickListener === true) classes.push('click-event')
@@ -61,7 +61,7 @@ export default {
 </script>
 
 <style lang="scss">
-.zed-grid {
+.lili-grid {
   box-sizing: border-box;
   .title {
     width: 100%;
@@ -70,11 +70,13 @@ export default {
     text-align: left;
     white-space: nowrap;
     padding: 6px 12px;
-    color: rgba($primary, .8);
     text-transform: uppercase;
     // font-weight: bold;
     letter-spacing: .05em;
     font-size: 11px;
+    .body--dark & {
+      background: $grey-10;
+    }
   }
 
   &.has-content .title {
@@ -94,7 +96,6 @@ export default {
     display: block;
     background-color: transparent;
     padding: 12px 10px;
-    color: $text;
     // font-size: 12px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     box-sizing: border-box;
@@ -103,12 +104,18 @@ export default {
     border: 1px solid $grey-3;
     width: 100%;
     height: 100%;
+    .body--dark & {
+      border-color: $grey-10;
+    }
   }
 
   &.has-title .grid-cont {
     border-radius: 0 0 4px 4px;
     border-top: 1px solid lighten($grey-3, 15%);
     height: calc(100% - 30px);
+    .body--dark & {
+      border-color: $grey-10;
+    }
   }
 
   .grid-cont.has-actions {
