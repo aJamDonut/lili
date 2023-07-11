@@ -1,7 +1,12 @@
 import { EngineDriverInterface } from '../../interfaces/Engine';
 import { StorageDriverInterface } from '../../interfaces/Storage';
-import { HistoryEntry, WorkloadOptions } from '../../interfaces/Workload';
+import {
+  HistoryEntry,
+  WorkloadHistory,
+  WorkloadOptions,
+} from '../../interfaces/Workload';
 import { ElectronStorage } from '../Storage/ElectronStorage';
+import { run, on } from 'src/services/electron';
 
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
@@ -12,16 +17,30 @@ export class ElectronEngine implements EngineDriverInterface {
     this._storageEngine = storageEngine;
   }
 
-  run(options: WorkloadOptions) {}
+  startWorkload(options: WorkloadOptions): void {
+    const forEachToken = (_event: any, token: string) => {
+      options.forEachToken(token);
+    };
+
+    on('ElectronEngine:startWorkload-reply', forEachToken);
+
+    const onComplete = (_event: any, tokens: string) => {
+      options.onComplete(tokens);
+    };
+
+    on('ElectronEngine:startWorkload-complete', onComplete);
+    const clearer = {
+      forEachToken: null,
+      onComplete: null,
+    };
+    run('ElectronEngine:startWorkload', { ...options, ...clearer });
+  }
 
   async getHistory(start: number, end: number): Promise<Array<HistoryEntry>> {
-    let historyFiles = this._storageEngine.getFolder('history');
-    let historyList: Array<HistoryEntry> = [];
-    historyFiles.forEach(async (file) => {
-      historyList.push(
-        (await this._storageEngine.readJson('history', file)) as HistoryEntry
-      );
-    });
-    return historyList;
+    return run('ElectronEngine:getHistory', { start, end });
+  }
+
+  async getHistoricWorkload(id: number): Promise<WorkloadHistory> {
+    return run('ElectronEngine:getHistoricWorkload', { id });
   }
 }

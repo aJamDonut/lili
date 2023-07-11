@@ -1,6 +1,10 @@
 <template>
   <q-page>
-    <q-splitter v-model="splitterModel" :limits="[25, 60]" style="min-height: inherit;">
+    <q-splitter
+      v-model="splitterModel"
+      :limits="[25, 60]"
+      style="min-height: inherit"
+    >
       <template v-slot:before>
         <div class="q-pa-md">
           <prompt-form v-model="promptConfig" @run="runJob" />
@@ -8,7 +12,12 @@
       </template>
 
       <template v-slot:separator>
-        <q-icon color="grey-5" text-color="white" size="18px" name="drag_indicator" />
+        <q-icon
+          color="grey-5"
+          text-color="white"
+          size="18px"
+          name="drag_indicator"
+        />
       </template>
 
       <template v-slot:after>
@@ -17,14 +26,13 @@
           <display-output v-model="outputText" />
         </div>
       </template>
-
     </q-splitter>
   </q-page>
 </template>
 
 
 <script>
-import { startWorkload } from '../services/lili';
+import { startWorkload } from '../services/lili/lili_real';
 export default {
   data() {
     return {
@@ -40,13 +48,13 @@ export default {
         solutionCount: 1,
       },
       splitterModel: 25,
-      outputText: ''
+      outputText: '',
     };
   },
-  mounted () {
+  mounted() {
     // For testing
     this.promptConfig.prompt = 'This is a test prompt.';
-    this.runJob()
+    this.runJob();
   },
   methods: {
     processToken(token) {
@@ -64,7 +72,7 @@ export default {
           this.jobRunning = false;
         },
       });
-    }
+    },
   },
 };
 </script>

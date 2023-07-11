@@ -9,7 +9,11 @@ function func(name: string) {
   return 'ElectronStorage:' + name;
 }
 
-function ipcWrap(name: string, callback: any) {
+function ipcWrap(justRegister: boolean, name: string, callback: any) {
+  if (justRegister) {
+    func(name);
+    return;
+  }
   ipcMain.handle(func(name), (_event, args) => {
     callback(args);
   });
@@ -35,23 +39,30 @@ interface ElectronStorageHandlerRequestWrite {
   contents: string;
 }
 
-export async function setupElectronStorageHandlers(ROOT: string) {
+export async function setupElectronStorageHandlers(rootDir: string | boolean) {
+  const ROOT = !rootDir ? '' : (rootDir as string);
+
+  const justRegister = !ROOT ? true : false;
+
   console.log('Setup with root', ROOT);
 
-  try {
-    await fs.access(ROOT);
-  } catch (_error) {
-    console.log('Making dir: ' + ROOT);
-    fs.mkdir(ROOT);
+  if (!justRegister) {
+    try {
+      await fs.access(ROOT);
+    } catch (_error) {
+      console.log('Making dir: ' + ROOT);
+      fs.mkdir(ROOT);
+    }
   }
 
   //Add new functions here
-  ipcWrap('getFolders', async () => {
+  ipcWrap(justRegister, 'getFolders', async () => {
     const folders = ['folder1', 'folder2'];
     return folders;
   });
 
   ipcWrap(
+    justRegister,
     'getFolder',
     async ({ folderName }: ElectronStorageHandlerRequestFolder) => {
       return await fs.readdir(folderName);
@@ -59,6 +70,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'writeFile',
     async ({
       folderName,
@@ -79,6 +91,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'fileExists',
     async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
       try {
@@ -91,6 +104,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'folderExists',
     async ({ folderName }: ElectronStorageHandlerRequestFolder) => {
       try {
@@ -103,6 +117,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'readFile',
     async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
       return await fs.readFile(path.join(ROOT, folderName, fileName));
@@ -110,6 +125,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'readJson',
     async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
       try {
@@ -123,6 +139,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'deleteFile',
     async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
       return await fs.unlink(path.join(ROOT, folderName, fileName));
@@ -130,6 +147,7 @@ export async function setupElectronStorageHandlers(ROOT: string) {
   );
 
   ipcWrap(
+    justRegister,
     'deleteFolder',
     async ({ folderName }: ElectronStorageHandlerRequestFolder) => {
       return await fs.unlink(path.join(ROOT, folderName));
@@ -138,6 +156,6 @@ export async function setupElectronStorageHandlers(ROOT: string) {
 }
 
 export function getElectronStorageHandlers() {
-  setupElectronStorageHandlers('');
+  setupElectronStorageHandlers(false);
   return functionList;
 }

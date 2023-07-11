@@ -40,7 +40,7 @@ export function startWorkload(workloadCustomOptions: WorkloadOptions) {
     ...LILIAI_DEFAULTWORKLOADOPTIONS,
     ...workloadCustomOptions,
   };
-  LILIAI.engineDriver.run(workloadOptions);
+  LILIAI.engineDriver.startWorkload(workloadOptions);
 }
 
 /**
@@ -61,4 +61,6 @@ export async function getHistory(
  * @param {number} id - The ID of the history entry to recall.
  * @param {WorkloadOptions} workloadCustomOptions - The custom options for the workload.
  */
+/*
 export function recallJob(id: number, workloadCustomOptions: WorkloadOptions) {}
+*/

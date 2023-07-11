@@ -4,6 +4,7 @@ import os from 'os';
 
 //Any handlers for frontend to backend
 import { setupElectronStorageHandlers } from './src/ElectronStorage';
+import { setupElectronEngineHandlers } from './src/ElectronEngine';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -66,4 +67,9 @@ app.on('activate', () => {
   }
 });
 
-setupElectronStorageHandlers(path.join(app.getPath('userData')));
+//Production:
+//setupElectronStorageHandlers(path.join(app.getPath('userData')));
+
+//Dev:
+setupElectronStorageHandlers('UserData');
+setupElectronEngineHandlers(false);

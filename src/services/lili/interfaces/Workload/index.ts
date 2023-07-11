@@ -42,3 +42,14 @@ export interface HistoryEntry {
   last_workload: string;
   response: string;
 }
+
+export interface WorkloadHistoryLine {
+  role: string;
+  content: string;
+}
+
+export interface WorkloadHistory {
+  id: number;
+  prompt: string;
+  history: Array<WorkloadHistoryLine>;
+}

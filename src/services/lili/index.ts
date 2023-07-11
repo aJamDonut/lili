@@ -177,7 +177,7 @@ export async function getHistory(start, end) {
  * @param {number} id - The ID of the history entry to recall.
  * @param {WorkloadOptions} workloadCustomOptions - The custom options for the workload.
  */
-export function recallJob(id, workloadCustomOptions) {
+export function getHistoricWorkload(id, workloadCustomOptions) {
   const workloadOptions = {
     ...LILIAI_DEFAULTWORKLOADOPTIONS,
     ...workloadCustomOptions,
