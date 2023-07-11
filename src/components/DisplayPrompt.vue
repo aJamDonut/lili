@@ -1,8 +1,5 @@
 <template>
   <div>
-    <lili-cont title="Debug" class="q-mb-sm" v-if="showDebug">
-      <textarea v-model="markdown"></textarea>
-    </lili-cont>
     <lili-cont :title="true">
       <template v-slot:title>
         <div class="row items-center">

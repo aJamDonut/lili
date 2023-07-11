@@ -95,7 +95,6 @@
           color="green"
           icon="play_arrow"
           label="Run Job"
-          :loading="jobRunning"
         />
       </div>
     </div>

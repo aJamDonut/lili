@@ -62,14 +62,14 @@ export default {
       console.log(token);
     },
     runJob() {
-      if (this.jobRunning) return;
-      this.jobRunning = true;
+      // if (this.jobRunning) return;
+      // this.jobRunning = true;
       this.outputText = '';
 
       startWorkload({
         forEachToken: this.processToken,
         onComplete: () => {
-          this.jobRunning = false;
+          // this.jobRunning = false;
         },
       });
     },

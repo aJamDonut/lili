@@ -21,6 +21,7 @@
 <script>
 // Markdown Parser
 import { marked } from 'marked';
+import { markedHighlight } from "marked-highlight";
 
 // Syntax Highlighting (highlight.js)
 import hljs from 'highlight.js';
@@ -47,12 +48,16 @@ export default {
   },
   beforeMount() {
     marked.setOptions({
-      highlight: (code, lang) => {
-        const langObj = hljs.getLanguage(lang) ? [lang] : undefined;
-        return hljs.highlightAuto(code, langObj).value;
-      },
-      langPrefix: 'hljs lang-'
-    })
+      headerIds: false,
+      mangle: false
+    });
+    marked.use(markedHighlight({
+      langPrefix: 'hljs language-',
+      highlight(code, lang) {
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, { language }).value;
+      }
+    }));
   }
 };
 </script>
