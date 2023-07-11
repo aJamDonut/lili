@@ -6,12 +6,13 @@
 
 
 <script>
+/*
 import { ElectronStorage } from '../services/lili/drivers/Storage/ElectronStorage';
 
 let storage = new ElectronStorage();
 
 storage.writeFile('test', 'test.txt', 'im a test');
-
+*/
 export default {
   data() {
     return {
