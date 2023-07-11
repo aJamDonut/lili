@@ -1,39 +1,28 @@
-/**
- * This file is used specifically for security reasons.
- * Here you can access Nodejs stuff and inject functionality into
- * the renderer thread (accessible there through the "window" object)
- *
- * WARNING!
- * If you import anything from node_modules, then make sure that the package is specified
- * in package.json > dependencies and NOT in devDependencies
- *
- * Example (injects window.myAPI.doAThing() into renderer thread):
- *
- *   import { contextBridge } from 'electron'
- *
- *   contextBridge.exposeInMainWorld('myAPI', {
- *     doAThing: () => {}
- *   })
- *
- * WARNING!
- * If accessing Node functionality (like importing @electron/remote) then in your
- * electron-main.ts you will need to set the following when you instantiate BrowserWindow:
- *
- * mainWindow = new BrowserWindow({
- *   // ...
- *   webPreferences: {
- *     // ...
- *     sandbox: false // <-- to be able to import @electron/remote in preload script
- *   }
- * }
- */
+/*
+This is a custom implementation.
+It's always custom, because it's quite important we get it right.
+We will register some backend events
+Those events have names which are added to the "allowedEventsList"
+If the event that was passed doesn't exist in the list. It does not invoke it.
+*/
+import { contextBridge, ipcRenderer } from 'electron';
 
-import { contextBridge, ipcMain, ipcRenderer } from 'electron';
+//Import a list of handlers for security purposes
+//import { getElectronStorageHandlers } from './src/ElectronStorage';
+//const allowedEventsList = [...getElectronStorageHandlers()];
 
-// Expose ipcRenderer to the client
-//const STRORAGE_API = ['ElectronStorage:getFolders'];
+const allowedEventsList = ['ElectronStorage:writeFile'];
+
 contextBridge.exposeInMainWorld('_electron', {
-  run: async (channel: string, data: object) => {
-    return await ipcRenderer.invoke(channel, data);
+  run: async (event: string, data: object) => {
+    console.log('Run event', event);
+    //Check it is in the list of allowed events
+    if (!allowedEventsList.includes(event)) {
+      console.error('Cannot execute non-allowed event: ' + event);
+      return 'Cannot execute non-allowed event: ' + event;
+    }
+    console.log('Run with data', data);
+    //It's okay to run it, let's run it.
+    return await ipcRenderer.invoke(event, data);
   },
 });
