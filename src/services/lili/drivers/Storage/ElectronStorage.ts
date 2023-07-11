@@ -3,33 +3,41 @@ import type {
   StorageFolder,
 } from '../../interfaces/Storage';
 
-import { ipcWrapper } from '../MessageBus/ElectronMessageBus';
+import { run } from 'src/services/electron';
 
 export class ElectronStorage implements StorageDriverInterface {
   async getFolders(): Promise<StorageFolder[]> {
-    return (await ipcWrapper('ElectronStorage:getFolders', false)) as Promise<
-      StorageFolder[]
-    >;
+    return run('ElectronStorage:getFolders');
   }
-  /*
+
   async getFolder(folderName: string): Promise<string[]> {
-    throw new Error('Method not implemented.');
+    return run('ElectronStorage:getFolder', { folderName });
   }
   async writeFile(
     folderName: string,
     fileName: string,
     contents: string
   ): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    console.log('Try write', fileName);
+    return run('ElectronStorage:writeFile', { folderName, fileName, contents });
   }
   async readFile(folderName: string, fileName: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    return run('ElectronStorage:readFile', { folderName, fileName });
   }
-  async readJson(folderName: string, fileName: string): Promise<Object> {
-    throw new Error('Method not implemented.');
+  async readJson(folderName: string, fileName: string): Promise<object> {
+    return run('ElectronStorage:readJson', { folderName, fileName });
   }
-  async deleteFile(folderName: string, fileName: string): Promise<Object> {
-    throw new Error('Method not implemented.');
+  async deleteFile(folderName: string, fileName: string): Promise<object> {
+    return run('ElectronStorage:deleteFile', { folderName, fileName });
   }
-  */
+
+  async fileExists(folderName: string, fileName: string): Promise<object> {
+    return run('ElectronStorage:fileExists', { folderName, fileName });
+  }
+  async folderExists(folderName: string): Promise<object> {
+    return run('ElectronStorage:folderExists', { folderName });
+  }
+  async deleteFolder(folderName: string): Promise<object> {
+    return run('ElectronStorage:deleteFolder', { folderName });
+  }
 }

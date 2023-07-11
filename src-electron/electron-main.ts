@@ -1,6 +1,9 @@
-import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron';
+import { app, BrowserWindow, nativeTheme } from 'electron';
 import path from 'path';
 import os from 'os';
+
+//Any handlers for frontend to backend
+import { setupElectronStorageHandlers } from './src/ElectronStorage';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -63,8 +66,4 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.handle('ElectronStorage:getFolders', async (event) => {
-  //... Get folders
-  const folders = ['folder1', 'folder2'];
-  return folders;
-});
+setupElectronStorageHandlers(path.join(app.getPath('userData')));
