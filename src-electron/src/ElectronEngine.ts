@@ -24,22 +24,23 @@ function ipcWrap(justRegister: boolean, name: string, callback: any) {
 
 export async function setupElectronEngineHandlers(justRegister: boolean) {
   //Add new functions here
-  ipcWrap(justRegister, 'startWorkload', async (_event: IpcMainEvent) => {
-    //Init AI, send the callback function
-    //For every token
-    const forEachToken = (token: string) => {
-      _event.sender.send(func('startWorkload-reply'), token);
-    };
-    //... when its finaly doone
-    const onComplete = (allTokens: string) => {
-      _event.sender.send(func('startWorkload-complete'), allTokens);
-    };
+  ipcWrap(
+    justRegister,
+    'startWorkload',
+    async (_event: IpcMainEvent, options: object) => {
+      //Init AI, send the callback function
+      //For every token
+      const forEachToken = (token: string) => {
+        _event.sender.send(func('startWorkload-reply'), token);
+      };
+      //... when its finaly doone
+      const onComplete = (allTokens: string) => {
+        _event.sender.send(func('startWorkload-complete'), allTokens);
+      };
 
-    startWorkload({
-      forEachToken,
-      onComplete,
-    });
-  });
+      startWorkload({ ...options, forEachToken, onComplete });
+    }
+  );
 }
 
 export function getElectronEngineHandlers() {
