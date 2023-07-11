@@ -6,6 +6,12 @@
 
 
 <script>
+import { ElectronStorage } from '../services/lili/drivers/Storage/ElectronStorage';
+
+let storage = new ElectronStorage();
+
+storage.writeFile('test', 'test.txt', 'im a test');
+
 export default {
   data() {
     return {
@@ -20,14 +26,14 @@ export default {
         responseLimit: 16000,
         solutionCount: 1,
       },
-      splitterModel: 100
+      splitterModel: 100,
     };
   },
   methods: {
     runJob() {
       // Need to get job ID here from Class?
       this.$router.push({ path: '/jobs/1' });
-    }
+    },
   },
 };
 </script>

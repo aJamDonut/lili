@@ -30,4 +30,14 @@ export class ElectronStorage implements StorageDriverInterface {
   async deleteFile(folderName: string, fileName: string): Promise<object> {
     return run('ElectronStorage:deleteFile', { folderName, fileName });
   }
+
+  async fileExists(folderName: string, fileName: string): Promise<object> {
+    return run('ElectronStorage:fileExists', { folderName, fileName });
+  }
+  async folderExists(folderName: string): Promise<object> {
+    return run('ElectronStorage:folderExists', { folderName });
+  }
+  async deleteFolder(folderName: string): Promise<object> {
+    return run('ElectronStorage:deleteFolder', { folderName });
+  }
 }

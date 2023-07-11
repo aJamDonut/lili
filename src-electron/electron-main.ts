@@ -67,6 +67,3 @@ app.on('activate', () => {
 });
 
 setupElectronStorageHandlers(path.join(app.getPath('userData')));
-
-//const ROOT = path.join(app.getPath('userData'));
-//setupElectronStorageHandlers(ROOT);

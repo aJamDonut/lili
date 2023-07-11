@@ -35,8 +35,16 @@ interface ElectronStorageHandlerRequestWrite {
   contents: string;
 }
 
-export function setupElectronStorageHandlers(ROOT: string) {
+export async function setupElectronStorageHandlers(ROOT: string) {
   console.log('Setup with root', ROOT);
+
+  try {
+    await fs.access(ROOT);
+  } catch (_error) {
+    console.log('Making dir: ' + ROOT);
+    fs.mkdir(ROOT);
+  }
+
   //Add new functions here
   ipcWrap('getFolders', async () => {
     const folders = ['folder1', 'folder2'];
@@ -57,11 +65,40 @@ export function setupElectronStorageHandlers(ROOT: string) {
       fileName,
       contents,
     }: ElectronStorageHandlerRequestWrite) => {
-      console.log('Write to', folderName, fileName, contents);
+      try {
+        await fs.access(path.join(ROOT, folderName));
+      } catch (_error) {
+        console.log('Making dir: ' + path.join(ROOT, folderName));
+        fs.mkdir(path.join(ROOT, folderName));
+      }
       return await fs.writeFile(
         path.join(ROOT, folderName, fileName),
         contents
       );
+    }
+  );
+
+  ipcWrap(
+    'fileExists',
+    async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
+      try {
+        await fs.access(path.join(ROOT, folderName, fileName));
+        return true;
+      } catch (_error) {
+        return false;
+      }
+    }
+  );
+
+  ipcWrap(
+    'folderExists',
+    async ({ folderName }: ElectronStorageHandlerRequestFolder) => {
+      try {
+        await fs.access(path.join(ROOT, folderName));
+        return true;
+      } catch (_error) {
+        return false;
+      }
     }
   );
 
@@ -89,6 +126,13 @@ export function setupElectronStorageHandlers(ROOT: string) {
     'deleteFile',
     async ({ folderName, fileName }: ElectronStorageHandlerRequestFile) => {
       return await fs.unlink(path.join(ROOT, folderName, fileName));
+    }
+  );
+
+  ipcWrap(
+    'deleteFolder',
+    async ({ folderName }: ElectronStorageHandlerRequestFolder) => {
+      return await fs.unlink(path.join(ROOT, folderName));
     }
   );
 }

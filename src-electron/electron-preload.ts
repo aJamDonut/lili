@@ -8,10 +8,11 @@ If the event that was passed doesn't exist in the list. It does not invoke it.
 import { contextBridge, ipcRenderer } from 'electron';
 
 //Import a list of handlers for security purposes
-//import { getElectronStorageHandlers } from './src/ElectronStorage';
-//const allowedEventsList = [...getElectronStorageHandlers()];
 
-const allowedEventsList = ['ElectronStorage:writeFile'];
+import { getElectronStorageHandlers } from './src/ElectronStorage';
+const allowedEventsList = [...getElectronStorageHandlers()];
+
+//const allowedEventsList = ['ElectronStorage:writeFile'];
 
 contextBridge.exposeInMainWorld('_electron', {
   run: async (event: string, data: object) => {
