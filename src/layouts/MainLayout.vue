@@ -65,6 +65,12 @@ const menuList = [
     icon: 'history',
     label: 'Job History',
     url: 'history',
+    separator: true
+  },
+  {
+    icon: 'settings',
+    label: 'Settings',
+    url: 'settings',
     separator: false
   }
 ]

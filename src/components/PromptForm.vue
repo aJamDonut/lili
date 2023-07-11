@@ -20,9 +20,7 @@
       class="q-mb-md"
     ></q-select>
 
-
-
-    <transition name="slidedown" mode="in-out">
+    <transition name="slidedown" mode="out-in">
       <div v-if="!showAdvanced" class="row justify-center q-mb-lg" key="adv-btn">
         <div><q-btn outline @click="showAdvanced = !showAdvanced" color="grey" label="Advanced Settings" size="10px" /></div>
       </div>
@@ -35,7 +33,7 @@
             </div>
           </div>
         </template>
-          <div class="row q-col-gutter-md">
+          <div class="row q-col-gutter-md q-mb-md">
             <div class="col-xs-12">
               <label>Context</label>
               <q-input
@@ -47,8 +45,10 @@
                 dense
               ></q-input>
             </div>
+          </div>
+          <div class="row q-col-gutter-md q-mb-md">
             <!-- Output -->
-            <div class="col-sm-6 col-xs-12">
+            <div class="col" style="min-width: 120px;">
               <label>Output Format</label>
               <q-select
                 v-model="promptConfig.outputFormat"
@@ -57,7 +57,7 @@
                 dense
               ></q-select>
             </div>
-            <div class="col-sm-6 col-xs-12">
+            <div class="col" style="min-width: 120px;">
               <label>Output To</label>
               <q-select
                 v-model="promptConfig.outputTo"
@@ -66,52 +66,24 @@
                 dense
               ></q-select>
             </div>
+          </div>
+          <div class="row q-col-gutter-md">
             <!-- Extra Stuff -->
-            <div class="col-sm-3 col-xs-6">
+            <div class="col" style="min-width: 120px;">
               <label>Creativity</label>
-              <q-input
-                v-model="promptConfig.creativity"
-                filled
-                type="number"
-                step="0.01"
-                min="0.5"
-                max="1"
-                dense
-              ></q-input>
+              <lili-slider v-model="promptConfig.creativity" :step="0.01" :min="0.5" :max="1" />
             </div>
-            <div class="col-sm-3 col-xs-6">
+            <div class="col" style="min-width: 120px;">
               <label>Repetitiveness</label>
-              <q-input
-                v-model="promptConfig.repetitiveness"
-                filled
-                type="number"
-                step="0.01"
-                min="0.5"
-                max="1"
-                dense
-              ></q-input>
+              <lili-slider v-model="promptConfig.repetitiveness" :step="0.01" :min="0.5" :max="1" />
             </div>
-            <div class="col-sm-3 col-xs-6">
+            <div class="col" style="min-width: 120px;">
               <label>Response Limit</label>
-              <q-input
-                v-model="promptConfig.responseLimit"
-                filled
-                type="number"
-                min="0"
-                :max="32000"
-                dense
-              ></q-input>
+              <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
             </div>
-            <div class="col-sm-3 col-xs-6">
+            <div class="col" style="min-width: 120px;">
               <label>Solution Count</label>
-              <q-input
-                v-model="promptConfig.solutionCount"
-                filled
-                type="number"
-                min="1"
-                max="5"
-                dense
-              ></q-input>
+              <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
             </div>
           </div>
       </lili-cont>
