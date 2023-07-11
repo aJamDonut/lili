@@ -10,7 +10,7 @@ import { getHistory, getHistoricWorkload } from '../services/lili/lili_real';
 
 console.log('History', await getHistory());
 
-console.log('History ID 10 ', await getHistoricWorkload(10));
+console.log('History ID 10 ', await getHistoricWorkload(10)); //Its the history.id, not index in array.
 
 export default {
   data() {
