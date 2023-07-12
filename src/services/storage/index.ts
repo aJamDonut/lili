@@ -1,7 +1,7 @@
 import type {
   StorageDriverInterface,
   StorageFolder,
-} from '../../interfaces/Storage';
+} from 'app/interfaces/Storage';
 
 import { run } from 'src/services/electron';
 
