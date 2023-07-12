@@ -10,6 +10,12 @@
         filled
         :options="themeOptions"
         dense />
+        
+      <label>ChatGPT Key</label>
+      <q-input
+        v-model="settingsStore.chatGPTKey"
+        filled
+        dense />
     </lili-cont>
   </q-page>
 </template>
