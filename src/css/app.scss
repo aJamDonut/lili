@@ -1,1 +1,21 @@
 // app global css in SCSS form
+
+.body--dark {
+    & .q-table__container, & .q-table__container * {
+        border-color: $border-dark !important;
+    }
+    .q-separator {
+        background: $border-dark !important;
+    }
+    .lili-grid {
+        .title {
+            background: $dark !important;
+        }
+        .grid-cont {
+            border-color: $dark !important;
+        }
+        &.has-title .grid-cont {
+            border-color: $dark !important;
+        }
+    }
+}

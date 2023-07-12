@@ -74,9 +74,6 @@ export default {
     // font-weight: bold;
     letter-spacing: .05em;
     font-size: 11px;
-    .body--dark & {
-      background: $grey-10;
-    }
   }
 
   &.has-content .title {
@@ -104,18 +101,12 @@ export default {
     border: 1px solid $grey-3;
     width: 100%;
     height: 100%;
-    .body--dark & {
-      border-color: $grey-10;
-    }
   }
 
   &.has-title .grid-cont {
     border-radius: 0 0 4px 4px;
     border-top: 1px solid lighten($grey-3, 15%);
     height: calc(100% - 30px);
-    .body--dark & {
-      border-color: $grey-10;
-    }
   }
 
   .grid-cont.has-actions {
