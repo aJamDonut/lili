@@ -8,7 +8,9 @@ import {
 
 const functionList: Array<string> = [];
 
-const SERVICE_KEY = 'ElectronEngine';
+const SERVICE_KEY = 'Storage';
+
+export class ElectronEngine {}
 
 function func(name: string) {
   name = SERVICE_KEY + ':' + name;

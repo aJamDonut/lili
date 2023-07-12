@@ -1,8 +1,10 @@
-import { WorkloadOptions } from '../../src/services/lili/interfaces/Workload/index';
+import { WorkloadOptions } from '../../src/services/lili/interfaces/Workload';
 
 import { ChatGPTAPI } from 'chatgpt';
 
-import { getUserSetting } from '../../src/services/settings';
+import { getUserSetting } from '../settings/index';
+
+import { ElectronStorage } from './drivers/Storage/ElectronStorage';
 
 const api = null;
 
@@ -15,7 +17,4 @@ async function setupGPT(api: ChatGPTAPI | null) {
   console.log(res.text);
 }
 
-console.log('run');
 setupGPT(api);
-
-export function startWorkload(customWorkloadOptions: WorkloadOptions) {}
