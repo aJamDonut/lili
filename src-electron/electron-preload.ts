@@ -11,10 +11,7 @@ import { getElectronEngineHandlers } from './src/services/lili/drivers/Engine/El
 
 //Import a list of handlers for security purposes
 
-const allowedEventsList = [
-  ...getElectronStorageHandlers(),
-  ...getElectronEngineHandlers(),
-];
+const allowedEventsList = [...getElectronStorageHandlers(), ...getElectronEngineHandlers()];
 
 contextBridge.exposeInMainWorld('_electron', {
   run: async (event: string, data: object) => {
@@ -29,6 +26,7 @@ contextBridge.exposeInMainWorld('_electron', {
     return await ipcRenderer.invoke(event, data);
   },
   on: async (event: string, callback: any) => {
+    ipcRenderer.removeAllListeners(event); //Remove any active listeners
     console.log('On event', event);
 
     //Check it is in the list of allowed events

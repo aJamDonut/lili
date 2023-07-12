@@ -1,11 +1,7 @@
 import { EngineDriverInterface } from 'app/interfaces/Engine';
-import {
-  HistoryEntry,
-  WorkloadHistory,
-  WorkloadOptions,
-} from 'app/interfaces/Workload';
+import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
-import { run, on } from 'src/services/electron';
+import { run, on, off } from 'src/services/electron';
 
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
@@ -26,6 +22,7 @@ export class ElectronEngine implements EngineDriverInterface {
       forEachToken: null,
       onComplete: null,
     };
+
     run('Engine:startWorkload', { ...options, ...clearer });
   }
 
