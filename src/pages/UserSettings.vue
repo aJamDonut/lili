@@ -22,7 +22,6 @@ import { useSettingsStore } from '../stores/settings';
 export default {
   data () {
     return {
-      theme2: null,
       themeOptions: [
         {
           label: 'Light',

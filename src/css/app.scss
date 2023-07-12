@@ -7,9 +7,13 @@
     .q-separator {
         background: $border-dark !important;
     }
+    .q-splitter__separator {
+        background: $border-dark !important;
+    }
     .lili-grid {
         .title {
             background: $dark !important;
+            color: #ccc;
         }
         .grid-cont {
             border-color: $dark !important;
@@ -17,5 +21,15 @@
         &.has-title .grid-cont {
             border-color: $dark !important;
         }
+    }
+    .bg-dark-1 {
+        background: $dark !important;
+    }
+    label:not(.q-field) {
+        color: #ccc;
+        margin-bottom: 4px;
+        display: block;
+        text-transform: uppercase;
+        font-size: 12px;
     }
 }

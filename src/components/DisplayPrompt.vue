@@ -4,7 +4,7 @@
       <template v-slot:title>
         <div class="row items-center">
           <div class="col">Prompt</div>
-          <div class="col-shrink">
+          <div class="col-shrink hidden">
             <q-chip outline size="10px" color="primary" text-color="white">Workload: {{ promptConfig.workload }}</q-chip>
             <q-chip outline size="10px" color="green" text-color="white">Creativity: {{ promptConfig.creativity }}</q-chip>
             <q-chip outline size="10px" color="orange" text-color="white">Repetitiveness: {{ promptConfig.repetitiveness }}</q-chip>
