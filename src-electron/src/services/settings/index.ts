@@ -3,3 +3,11 @@ export function getUserSetting(key: string) {
     return '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';
   }
 }
+
+export const getApiKey = () => {
+  return getUserSetting('open_api_key');
+};
+
+export const hasApiKey = () => {
+  return getApiKey() ? true : false;
+};

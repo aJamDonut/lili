@@ -1,11 +1,11 @@
 /* Mostly just setup ignore this. */
-import { ipcMain } from 'electron';
 import path from 'path';
 import { promises as fs } from 'fs';
+import { EventCallback, MixedEvent, registerEvent } from '../../event';
 
 const functionList: Array<string> = [];
 
-const SERVICE_KEY = 'Engine';
+const SERVICE_KEY = 'Storage';
 
 function func(name: string) {
   name = SERVICE_KEY + ':' + name;
@@ -18,14 +18,12 @@ function func(name: string) {
   return name;
 }
 
-function ipcWrap(justRegister: boolean, name: string, callback: any) {
+function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   if (justRegister) {
     func(name);
     return;
   }
-  ipcMain.handle(func(name), (_event, args) => {
-    callback(args);
-  });
+  registerEvent(func(name), callback);
 }
 
 /* Setup is done... meat here. */
@@ -55,30 +53,32 @@ export const getFolders = async () => {
   return folders;
 };
 
-export const getFolder = async ({
-  folderName,
-}: ElectronStorageHandlerRequestFolder) => {
+export const getFolder = async (
+  _event: MixedEvent,
+  { folderName }: ElectronStorageHandlerRequestFolder
+) => {
   return await fs.readdir(folderName);
 };
 
-export const writeFile = async ({
-  folderName,
-  fileName,
-  contents,
-}: ElectronStorageHandlerRequestWrite) => {
+export const writeFile = async (
+  _event: MixedEvent,
+  { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
+) => {
+  console.log('Wants to write file', ROOT, folderName);
   try {
     await fs.access(path.join(ROOT, folderName));
   } catch (_error) {
     console.log('Making dir: ' + path.join(ROOT, folderName));
     fs.mkdir(path.join(ROOT, folderName));
   }
+  console.log('Will write file: ' + path.join(ROOT, folderName, fileName));
   return await fs.writeFile(path.join(ROOT, folderName, fileName), contents);
 };
 
-export const fileExists = async ({
-  folderName,
-  fileName,
-}: ElectronStorageHandlerRequestFile) => {
+export const fileExists = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
   try {
     await fs.access(path.join(ROOT, folderName, fileName));
     return true;
@@ -87,9 +87,10 @@ export const fileExists = async ({
   }
 };
 
-export const folderExists = async ({
-  folderName,
-}: ElectronStorageHandlerRequestFolder) => {
+export const folderExists = async (
+  _event: MixedEvent,
+  { folderName }: ElectronStorageHandlerRequestFolder
+) => {
   try {
     await fs.access(path.join(ROOT, folderName));
     return true;
@@ -98,17 +99,17 @@ export const folderExists = async ({
   }
 };
 
-export const readFile = async ({
-  folderName,
-  fileName,
-}: ElectronStorageHandlerRequestFile) => {
+export const readFile = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
   return await fs.readFile(path.join(ROOT, folderName, fileName));
 };
 
-export const readJson = async ({
-  folderName,
-  fileName,
-}: ElectronStorageHandlerRequestFile) => {
+export const readJson = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
   try {
     return JSON.stringify(
       await fs.readFile(path.join(ROOT, folderName, fileName))
@@ -118,16 +119,17 @@ export const readJson = async ({
   }
 };
 
-export const deleteFile = async ({
-  folderName,
-  fileName,
-}: ElectronStorageHandlerRequestFile) => {
+export const deleteFile = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
   return await fs.unlink(path.join(ROOT, folderName, fileName));
 };
 
-export const deleteFolder = async ({
-  folderName,
-}: ElectronStorageHandlerRequestFolder) => {
+export const deleteFolder = async (
+  _event: MixedEvent,
+  { folderName }: ElectronStorageHandlerRequestFolder
+) => {
   return await fs.unlink(path.join(ROOT, folderName));
 };
 

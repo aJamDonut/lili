@@ -1,10 +1,6 @@
-import { WorkloadOptions } from '../../src/services/lili/interfaces/Workload';
-
 import { ChatGPTAPI } from 'chatgpt';
 
 import { getUserSetting } from '../settings/index';
-
-import { ElectronStorage } from './drivers/Storage/ElectronStorage';
 
 const api = null;
 
@@ -17,4 +13,14 @@ async function setupGPT(api: ChatGPTAPI | null) {
   console.log(res.text);
 }
 
+
+
 setupGPT(api);
+
+import { ipcRenderer } from 'electron';
+
+export const 
+ipcRenderer.invoke('Storage:writeFile', {
+  fileName: 'testo.txt',
+  contents: 'testuruuu',
+});

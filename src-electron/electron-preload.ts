@@ -6,11 +6,11 @@ Those events have names which are added to the "allowedEventsList"
 If the event that was passed doesn't exist in the list. It does not invoke it.
 */
 import { contextBridge, ipcRenderer } from 'electron';
+import { getElectronStorageHandlers } from './src/services/storage/ElectronStorage';
+import { getElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 
 //Import a list of handlers for security purposes
 
-import { getElectronStorageHandlers } from './src/ElectronStorage';
-import { getElectronEngineHandlers } from './src/ElectronEngine';
 const allowedEventsList = [
   ...getElectronStorageHandlers(),
   ...getElectronEngineHandlers(),

@@ -15,25 +15,25 @@ export class ElectronEngine implements EngineDriverInterface {
       options.forEachToken(token);
     };
 
-    on('ElectronEngine:startWorkload-reply', forEachToken);
+    on('Engine:startWorkload-reply', forEachToken);
 
     const onComplete = (_event: any, tokens: string) => {
       options.onComplete(tokens);
     };
 
-    on('ElectronEngine:startWorkload-complete', onComplete);
+    on('Engine:startWorkload-complete', onComplete);
     const clearer = {
       forEachToken: null,
       onComplete: null,
     };
-    run('ElectronEngine:startWorkload', { ...options, ...clearer });
+    run('Engine:startWorkload', { ...options, ...clearer });
   }
 
   async getHistory(start: number, end: number): Promise<Array<HistoryEntry>> {
-    return await run('ElectronEngine:getHistory', { start, end });
+    return await run('Engine:getHistory', { start, end });
   }
 
   async getHistoricWorkload(id: number): Promise<WorkloadHistory> {
-    return await run('ElectronEngine:getHistoricWorkload', { id });
+    return await run('Engine:getHistoricWorkload', { id });
   }
 }

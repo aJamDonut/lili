@@ -1,11 +1,11 @@
 import { app, BrowserWindow, nativeTheme } from 'electron';
 import path from 'path';
 import os from 'os';
+import { setupElectronStorageHandlers } from './src/services/storage/ElectronStorage';
+import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 
 //Any handlers for frontend to backend
 //In future, we could factory these into remote, databases, etc.
-import { setupElectronStorageHandlers } from './src/services/lili/drivers/Storage/ElectronStorage';
-import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();

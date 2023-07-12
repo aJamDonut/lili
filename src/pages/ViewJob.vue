@@ -8,10 +8,10 @@
       class="absolute-full"
     >
       <template v-slot:before>
-        <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%;">
-        <div class="q-pa-md" style="min-height: 100%">
-          <prompt-form v-model="promptConfig" @run="runJob" />
-        </div>
+        <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
+          <div class="q-pa-md" style="min-height: 100%">
+            <prompt-form v-model="promptConfig" @run="runJob" />
+          </div>
         </q-scroll-area>
       </template>
 
@@ -25,7 +25,13 @@
       </template> -->
 
       <template v-slot:after>
-        <q-scroll-area :visible="true" :thumb-style="thumbStyle" :bar-style="barStyle" class="fit" style="min-height: 100%;">
+        <q-scroll-area
+          :visible="true"
+          :thumb-style="thumbStyle"
+          :bar-style="barStyle"
+          class="fit"
+          style="min-height: 100%"
+        >
           <div class="q-pa-md" style="min-height: 100%">
             <display-prompt class="q-mb-md" v-model="promptConfig" />
             <display-output v-model="outputText" />
@@ -87,6 +93,7 @@ export default {
       this.outputText = '';
 
       startWorkload({
+        prompt: this.promptConfig.prompt,
         forEachToken: this.processToken,
         onComplete: () => {
           // this.jobRunning = false;

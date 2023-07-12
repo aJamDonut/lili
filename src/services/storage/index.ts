@@ -7,11 +7,11 @@ import { run } from 'src/services/electron';
 
 export class ElectronStorage implements StorageDriverInterface {
   async getFolders(): Promise<StorageFolder[]> {
-    return run('ElectronStorage:getFolders');
+    return run('Storage:getFolders');
   }
 
   async getFolder(folderName: string): Promise<string[]> {
-    return run('ElectronStorage:getFolder', { folderName });
+    return run('Storage:getFolder', { folderName });
   }
   async writeFile(
     folderName: string,
@@ -19,25 +19,25 @@ export class ElectronStorage implements StorageDriverInterface {
     contents: string
   ): Promise<boolean> {
     console.log('Try write', fileName);
-    return run('ElectronStorage:writeFile', { folderName, fileName, contents });
+    return run('Storage:writeFile', { folderName, fileName, contents });
   }
   async readFile(folderName: string, fileName: string): Promise<string> {
-    return run('ElectronStorage:readFile', { folderName, fileName });
+    return run('Storage:readFile', { folderName, fileName });
   }
   async readJson(folderName: string, fileName: string): Promise<object> {
-    return run('ElectronStorage:readJson', { folderName, fileName });
+    return run('Storage:readJson', { folderName, fileName });
   }
   async deleteFile(folderName: string, fileName: string): Promise<object> {
-    return run('ElectronStorage:deleteFile', { folderName, fileName });
+    return run('Storage:deleteFile', { folderName, fileName });
   }
 
   async fileExists(folderName: string, fileName: string): Promise<object> {
-    return run('ElectronStorage:fileExists', { folderName, fileName });
+    return run('Storage:fileExists', { folderName, fileName });
   }
   async folderExists(folderName: string): Promise<object> {
-    return run('ElectronStorage:folderExists', { folderName });
+    return run('Storage:folderExists', { folderName });
   }
   async deleteFolder(folderName: string): Promise<object> {
-    return run('ElectronStorage:deleteFolder', { folderName });
+    return run('Storage:deleteFolder', { folderName });
   }
 }

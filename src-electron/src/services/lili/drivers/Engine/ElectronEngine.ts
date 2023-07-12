@@ -1,16 +1,12 @@
-import { type IpcMainEvent, ipcMain } from 'electron';
+import { getHistory, getHistoricWorkload } from 'app/src/services/lili';
 
-import {
-  startWorkload,
-  getHistory,
-  getHistoricWorkload,
-} from '../../src/services/lili';
+import { type EventCallback, registerEvent, ElectronEventData, MixedEvent } from '../../../event';
+
+import { CompletionMessage, streamCompletion } from '../../../openai/ChatGPT';
 
 const functionList: Array<string> = [];
 
-const SERVICE_KEY = 'Storage';
-
-export class ElectronEngine {}
+const SERVICE_KEY = 'Engine';
 
 function func(name: string) {
   name = SERVICE_KEY + ':' + name;
@@ -23,57 +19,60 @@ function func(name: string) {
   return name;
 }
 
-function ipcWrap(justRegister: boolean, name: string, callback: any) {
+function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   if (justRegister) {
     func(name);
     return;
   }
-  ipcMain.handle(func(name), async (_event, args) => {
-    return callback(_event, args);
-  });
-}
-
-interface HistoryOptionsInterface {
-  start: number;
-  end: number;
+  registerEvent(func(name), callback);
 }
 
 /* Setup is done... meat here. */
 
 export async function setupElectronEngineHandlers(justRegister: boolean) {
   //Add new functions here
-  ipcWrap(
-    justRegister,
-    'startWorkload',
-    async (_event: IpcMainEvent, options: object) => {
-      //Init AI, send the callback function
-      //For every token
-      const forEachToken = (token: string) => {
-        _event.sender.send(func('startWorkload-reply'), token);
-      };
-      //... when its finaly doone
-      const onComplete = (allTokens: string) => {
-        _event.sender.send(func('startWorkload-complete'), allTokens);
-      };
+  ipcWrap(justRegister, 'startWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
+    //Init AI, send the callback function
+    //For every token
+    const forEachToken = (token: string) => {
+      _event.sender.send(func('startWorkload-reply'), token);
+    };
+    //... when its finaly doone
+    const onComplete = (allTokens: string) => {
+      _event.sender.send(func('startWorkload-complete'), allTokens);
+    };
 
-      startWorkload({ ...options, forEachToken, onComplete });
-    }
-  );
-  ipcWrap(
-    justRegister,
-    'getHistory',
-    async (_event: IpcMainEvent, { start, end }: HistoryOptionsInterface) => {
-      return getHistory(start, end);
-    }
-  );
+    const messages: Array<CompletionMessage> = [
+      {
+        role: 'user',
+        content: options.prompt as string,
+      },
+    ];
 
-  ipcWrap(
-    justRegister,
-    'getHistoricWorkload',
-    async (_event: IpcMainEvent, { id }: any) => {
-      return getHistoricWorkload(id);
-    }
-  );
+    streamCompletion(messages, forEachToken, onComplete);
+  });
+
+  ipcWrap(justRegister, 'testIPC', async () => {
+    //console.log()
+    /*
+    console.log('Ill atleast try and write the file');
+    const ret = callService('Storage:writeFile', {
+      folderName: 'trst',
+      fileName: 'testo.txt',
+      contents: 'testuruuu',
+    });
+    console.log('Ret', ret);
+    return 'Ran';
+    */
+  });
+
+  ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {
+    return getHistory(options.start as number, options.end as number);
+  });
+
+  ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
+    return getHistoricWorkload(options.id as number);
+  });
 }
 
 export function getElectronEngineHandlers() {
