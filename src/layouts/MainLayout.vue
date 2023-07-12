@@ -14,7 +14,7 @@
       <q-scroll-area class="fit">
           <q-list>
             <template v-for="(menuItem, index) in menuList" :key="index">
-              <q-item clickable :active="menuItem.label === 'Outbox'" :to="{path: '/' + menuItem.url}" @click="toggleLeftDrawer" v-ripple>
+              <q-item clickable :active="false" :to="{path: '/' + menuItem.url}" @click="toggleLeftDrawer" v-ripple>
                 <q-item-section avatar>
                   <q-icon :name="menuItem.icon" />
                 </q-item-section>
@@ -48,7 +48,7 @@ const menuList = [
   {
     icon: 'add',
     label: 'Run A Job',
-    url: 'run',
+    url: 'job',
     separator: false
   },
   {

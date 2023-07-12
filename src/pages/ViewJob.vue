@@ -77,11 +77,6 @@ export default {
       outputText: '',
     };
   },
-  mounted() {
-    // For testing
-    this.promptConfig.prompt = 'This is a test prompt.';
-    this.runJob();
-  },
   methods: {
     processToken(token) {
       this.outputText = this.outputText + token;
