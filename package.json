@@ -5,6 +5,7 @@
   "productName": "Quasar App",
   "author": "Adam Dougherty <adamiandougherty@gmail.com>",
   "private": true,
+  "type": "module",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",

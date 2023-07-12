@@ -1,11 +1,10 @@
-import type { LiliConfig } from './interfaces/Lili';
-import type {
+import { LiliClientConfig } from 'app/interfaces/Lili';
+import { ElectronEngine } from './drivers/Engine/ElectronEngine';
+import {
   HistoryEntry,
   WorkloadHistory,
   WorkloadOptions,
-} from './interfaces/Workload';
-
-import { ElectronEngine } from './drivers/Engine/ElectronEngine';
+} from 'app/interfaces/Workload';
 
 const LILIAI_DEFAULTWORKLOADOPTIONS = {
   prompt: 'Hi there',
@@ -25,13 +24,11 @@ const LILIAI_DEFAULTWORKLOADOPTIONS = {
   },
 };
 
-let LILIAI: LiliConfig = {
-  engine: 'chatgpt',
-  api_key: 'non',
+let LILIAI: LiliClientConfig = {
   engineDriver: new ElectronEngine(),
 };
 
-export function setup(config: LiliConfig) {
+export function setup(config: LiliClientConfig) {
   LILIAI = { ...LILIAI, ...config };
 }
 

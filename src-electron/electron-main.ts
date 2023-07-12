@@ -3,8 +3,9 @@ import path from 'path';
 import os from 'os';
 
 //Any handlers for frontend to backend
-import { setupElectronStorageHandlers } from './src/ElectronStorage';
-import { setupElectronEngineHandlers } from './src/ElectronEngine';
+//In future, we could factory these into remote, databases, etc.
+import { setupElectronStorageHandlers } from './src/services/lili/drivers/Storage/ElectronStorage';
+import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();

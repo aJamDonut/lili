@@ -1,5 +1,18 @@
 {
+  "ts-node": {
+    "extends": "@quasar/app-vite/tsconfig-preset",
+    "module": "es2020",
+    "include": ["**/*"],
+    "experimentalResolver": true,
+    "experimentalSpecifierResolution": "node",
+    "compilerOptions": {
+      "module": "ES2020",
+      "moduleResolution": "node"
+    }
+  },
+  "include": ["**/*"],
   "extends": "@quasar/app-vite/tsconfig-preset",
+  "module": "es2020",
   "compilerOptions": {
     "baseUrl": "."
   }

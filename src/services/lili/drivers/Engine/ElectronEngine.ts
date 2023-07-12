@@ -1,21 +1,14 @@
-import { EngineDriverInterface } from '../../interfaces/Engine';
-import { StorageDriverInterface } from '../../interfaces/Storage';
+import { EngineDriverInterface } from 'app/interfaces/Engine';
 import {
   HistoryEntry,
   WorkloadHistory,
   WorkloadOptions,
-} from '../../interfaces/Workload';
-import { ElectronStorage } from '../Storage/ElectronStorage';
+} from 'app/interfaces/Workload';
+
 import { run, on } from 'src/services/electron';
 
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
-
-  private _storageEngine: StorageDriverInterface;
-
-  constructor(storageEngine: StorageDriverInterface = new ElectronStorage()) {
-    this._storageEngine = storageEngine;
-  }
 
   startWorkload(options: WorkloadOptions): void {
     const forEachToken = (_event: any, token: string) => {
