@@ -33,3 +33,13 @@
         font-size: 12px;
     }
 }
+
+.body--light {
+    label:not(.q-field) {
+        color: #696969;
+        margin-bottom: 4px;
+        display: block;
+        text-transform: uppercase;
+        font-size: 12px;
+    }
+}
