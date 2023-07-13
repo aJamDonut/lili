@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-splitter
-      v-model="splitterModel"
+      v-model="splitterWidth"
       :limits="[25, 60]"
       style="min-height: inherit"
       before-class="bg-dark-1"
@@ -76,12 +76,19 @@ export default {
         // width: '9px',
         // opacity: 0.2
       },
-      splitterModel: 25,
       outputText: '',
     };
   },
   computed: {
-    ...mapStores(useSettingsStore)
+    ...mapStores(useSettingsStore),
+    splitterWidth: {
+      get() {
+        return this.settingsStore.splitterWidth;
+      },
+      set(value) {
+        this.settingsStore.splitterWidth = value;
+      }
+    }
   },
   methods: {
     processToken(token) {

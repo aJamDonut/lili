@@ -9,7 +9,8 @@ export const useSettingsStore = defineStore('settings', {
     let data = {
       sliderInputs: true,
       darkMode: 'auto',
-      chatGPTKey: ''
+      chatGPTKey: '',
+      splitterWidth: 25
     }
 
     if (settings) {
