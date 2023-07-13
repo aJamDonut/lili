@@ -39,6 +39,7 @@
     "@vue/devtools": "^6.5.0",
     "autoprefixer": "^10.4.2",
     "electron": "^25.2.0",
+    "electron-packager": "^17.1.1",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^9.0.0",
