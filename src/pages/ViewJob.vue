@@ -45,6 +45,11 @@
 
 <script>
 import { startWorkload } from '../services/lili/lili_real';
+
+import { getSetting } from '../services/settings';
+
+console.log(getSetting('darkmode'));
+
 export default {
   data() {
     return {
