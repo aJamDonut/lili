@@ -2,6 +2,7 @@
   <div>
     <lili-cont title="Debug" class="q-mb-sm" v-if="showDebug">
       <textarea v-model="markdown"></textarea>
+      
     </lili-cont>
     <lili-cont :title="true">
       <template v-slot:title>
@@ -20,18 +21,12 @@
 
 <script>
 // Markdown Parser
-import { marked } from 'marked';
-import { markedHighlight } from "marked-highlight";
-
-// Syntax Highlighting (highlight.js)
-import hljs from 'highlight.js';
-import "highlight.js/styles/github-dark-dimmed.css"
+import { marked } from '../boot/marked';
 
 export default {
   data() {
     return {
-      showDebug: false,
-    //   markdown: " # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```",
+      showDebug: false
     };
   },
   props: {
@@ -40,24 +35,10 @@ export default {
   computed: {
     markdown: {
       get () { return this.modelValue },
-      set (value) { this.$emit('update:modelValue', value) }
     },
-    markdownToHtml(){
-      return marked.parse(this.markdown);
+    markdownToHtml() {
+      return marked(this.markdown);
     }
-  },
-  beforeMount() {
-    marked.setOptions({
-      headerIds: false,
-      mangle: false
-    });
-    marked.use(markedHighlight({
-      langPrefix: 'hljs language-',
-      highlight(code, lang) {
-        const language = hljs.getLanguage(lang) ? lang : null;
-        return hljs.highlightAuto(code, [ language ]).value;
-      }
-    }));
   }
 };
 </script>
