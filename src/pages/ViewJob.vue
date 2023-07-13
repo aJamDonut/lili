@@ -45,10 +45,8 @@
 
 <script>
 import { startWorkload } from '../services/lili/lili_real';
-
-import { getSetting } from '../services/settings';
-
-console.log(getSetting('darkmode'));
+import { mapStores } from 'pinia'
+import { useSettingsStore } from '../stores/settings';
 
 export default {
   data() {
@@ -81,6 +79,9 @@ export default {
       splitterModel: 25,
       outputText: '',
     };
+  },
+  computed: {
+    ...mapStores(useSettingsStore)
   },
   methods: {
     processToken(token) {
