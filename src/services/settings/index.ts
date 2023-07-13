@@ -9,7 +9,7 @@ export let SETTINGS: UserSettings = {};
 export async function loadDefaultSettings() {
   const store = new Storage();
   if (!(await store.fileExists('settings', 'user.json'))) {
-    await store.writeFile('settings', 'user.json', JSON.stringify(SETTINGS));
+    saveSettings();
   }
   SETTINGS = (await store.readJson('settings', 'user.json')) as UserSettings;
 }
@@ -20,6 +20,11 @@ export function getSetting(name: string) {
 
 export function setSetting(name: string, value: unknown) {
   return (SETTINGS[name] = value);
+}
+
+export async function saveSettings() {
+  const store = new Storage();
+  return await store.writeFile('settings', 'user.json', JSON.stringify(SETTINGS));
 }
 
 console.log('API Key', getSetting('API_KEY'));
