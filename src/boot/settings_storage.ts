@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import { watch } from "vue";
-import { useSettingsStore } from "../stores/settings";
-import { ElectronStorage as Storage } from '../services/storage';
+import { useSettingsStore } from "stores/settings";
+import { ElectronStorage as Storage } from 'services/storage';
 
 const settings = useSettingsStore();
 

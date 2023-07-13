@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getHistory, getHistoricWorkload } from '../services/lili/lili_real';
+import { getHistory, getHistoricWorkload } from 'services/lili/lili_real';
 
 export const useJobStore = defineStore('job', {
   state: () => ({

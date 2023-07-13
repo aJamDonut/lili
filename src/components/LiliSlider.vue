@@ -24,7 +24,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { useSettingsStore } from '../stores/settings';
+import { useSettingsStore } from 'stores/settings';
 
 export default {
   props: {
