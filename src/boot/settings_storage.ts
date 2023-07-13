@@ -1,13 +1,15 @@
+import { boot } from 'quasar/wrappers';
 import { watch } from "vue";
 import { useSettingsStore } from "../stores/settings";
 import { ElectronStorage as Storage } from '../services/storage';
 
 const settings = useSettingsStore();
 
-console.log('settings Storage', settings.$state)
+export default boot(({ app }) => {
+  settings.load()
+});
 
 type TimerId = NodeJS.Timeout | null
-
 let timerId: TimerId = null;
 
 watch(

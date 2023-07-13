@@ -1,26 +1,14 @@
 import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from '../services/storage';
 
-const storage = new Storage();
-const settings = await storage.readJson('config', 'settings.json');
 
 export const useSettingsStore = defineStore('settings', {
-  state: () => {
-    let data = {
-      sliderInputs: true,
-      darkMode: 'auto',
-      chatGPTKey: '',
-      splitterWidth: 25
-    }
-
-    if (settings) {
-      Object.keys(settings).forEach(key => {
-        data[key] = settings[key];
-      })
-    }
-
-    return data;
-  },
+  state: () => ({
+    sliderInputs: true,
+    darkMode: 'auto',
+    chatGPTKey: '',
+    splitterWidth: 25
+  }),
   actions: {
     async load() {
       const storage = new Storage();
@@ -28,7 +16,7 @@ export const useSettingsStore = defineStore('settings', {
 
       if (settings) {
         Object.keys(settings).forEach(key => {
-          data[key] = settings[key];
+          this[key] = settings[key];
         })
       }
 
