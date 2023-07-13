@@ -53,10 +53,7 @@ export const getFolders = async () => {
   return folders;
 };
 
-export const getFolder = async (
-  _event: MixedEvent,
-  { folderName }: ElectronStorageHandlerRequestFolder
-) => {
+export const getFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   return await fs.readdir(folderName);
 };
 
@@ -111,9 +108,7 @@ export const readJson = async (
   { folderName, fileName }: ElectronStorageHandlerRequestFile
 ) => {
   try {
-    return JSON.stringify(
-      await fs.readFile(path.join(ROOT, folderName, fileName))
-    );
+    return JSON.parse(await fs.readFile(path.join(ROOT, folderName, fileName), { encoding: 'utf8' }));
   } catch (error) {
     console.error(error);
   }

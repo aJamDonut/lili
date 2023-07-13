@@ -1,5 +1,8 @@
 import { ElectronStorage as Storage } from '../storage';
 
+const store = new Storage();
+console.log('settings', await store.readJson('settings', 'user.json'));
+
 export type UserSettings = {
   [key: string]: unknown;
 };
