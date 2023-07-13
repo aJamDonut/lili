@@ -4,7 +4,7 @@ export type UserSettings = {
   [key: string]: unknown;
 };
 
-let SETTINGS: UserSettings = {};
+export let SETTINGS: UserSettings = {};
 
 export async function loadDefaultSettings() {
   const store = new Storage();
