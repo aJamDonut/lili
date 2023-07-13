@@ -20,7 +20,7 @@ export async function streamCompletion(
   onComplete: OnCompleteCallback
 ) {
   const gpt = new OpenAI({
-    apiKey: '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',
+    apiKey: await getApiKey(),
   });
 
   console.log('Create completion', messages);
