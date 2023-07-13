@@ -2,19 +2,21 @@
   <q-page padding>
     <lili-cont title="Settings">
       <label>Slider Inputs</label>
-      <q-toggle v-model="settingsStore.sliderInputs" />
+      <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
       <label>Theme</label>
       <q-select
         v-model="theme"
         filled
         :options="themeOptions"
+        class="q-mb-md"
         dense />
         
       <label>ChatGPT Key</label>
       <q-input
         v-model="settingsStore.chatGPTKey"
         filled
+        class="q-mb-md"
         dense />
     </lili-cont>
   </q-page>
