@@ -1,0 +1,6 @@
+{
+    "files": [
+        {"description":"Join these files", "files": ["fred.json", "steve.json"]},
+        {"description":"To this file", "files": ["allusers.json"]}
+    ]
+}

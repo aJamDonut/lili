@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import { setupElectronStorageHandlers } from './src/services/storage/ElectronStorage';
 import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
+import { test } from './src/services/aiworkload';
 
 //Any handlers for frontend to backend
 //In future, we could factory these into remote, databases, etc.
@@ -12,9 +13,7 @@ const platform = process.platform || os.platform();
 
 try {
   if (platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
-    require('fs').unlinkSync(
-      path.join(app.getPath('userData'), 'DevTools Extensions')
-    );
+    require('fs').unlinkSync(path.join(app.getPath('userData'), 'DevTools Extensions'));
   }
 } catch (_) {}
 
@@ -69,8 +68,11 @@ app.on('activate', () => {
 });
 
 //Production:
-//setupElectronStorageHandlers(path.join(app.getPath('userData')));
+//setupElectronStorageHandlers(path.join(app.getPath('UserData')), 'Data');
 
 //Dev:
-setupElectronStorageHandlers('UserData');
-setupElectronEngineHandlers(false);
+setupElectronStorageHandlers('UserData', 'Data').then(() => {
+  setupElectronEngineHandlers(false).then(() => {
+    test();
+  });
+});

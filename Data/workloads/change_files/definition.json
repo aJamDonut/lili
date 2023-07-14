@@ -1,0 +1,19 @@
+{
+  "name": "Changes files",
+  "codename": "change_files",
+  "description": "Makes changes to files contents",
+  "messageHistory": [
+    {
+      "role": "system",
+      "content": "Please respond to the message with just the file(s) and their changed contents"
+    }
+  ],
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}

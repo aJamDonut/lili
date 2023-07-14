@@ -1,14 +1,18 @@
 /* Mostly just setup ignore this. */
 import path from 'path';
 import { promises as fs } from 'fs';
-import { EventCallback, MixedEvent, registerEvent } from '../../event';
+import { EventCallback, MixedEvent, registerEvent, registerInternalEvent } from '../../event';
 
 const functionList: Array<string> = [];
 
 const SERVICE_KEY = 'Storage';
 
+function serviceName(name: string) {
+  return SERVICE_KEY + ':' + name;
+}
+
 function func(name: string) {
-  name = SERVICE_KEY + ':' + name;
+  name = serviceName(name);
   if (functionList.includes(name)) {
     return name;
   }
@@ -46,6 +50,7 @@ interface ElectronStorageHandlerRequestWrite {
   contents: string;
 }
 
+let LILI_ROOT = '';
 let ROOT = '';
 
 export const getFolders = async () => {
@@ -100,7 +105,7 @@ export const readFile = async (
   _event: MixedEvent,
   { folderName, fileName }: ElectronStorageHandlerRequestFile
 ) => {
-  return await fs.readFile(path.join(ROOT, folderName, fileName));
+  return await fs.readFile(path.join(ROOT, folderName, fileName), { encoding: 'utf8' });
 };
 
 export const readJson = async (
@@ -112,6 +117,44 @@ export const readJson = async (
   } catch (error) {
     console.error(error);
   }
+};
+
+//lili functions can access any folder
+export const liliReadJson = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
+  try {
+    console.log('Read', path.join(LILI_ROOT, folderName, fileName));
+    const contents: string = await fs.readFile(path.join(LILI_ROOT, folderName, fileName), {
+      encoding: 'utf8',
+    });
+    return JSON.parse(contents);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const liliReadFile = async (
+  _event: MixedEvent,
+  { folderName, fileName }: ElectronStorageHandlerRequestFile
+) => {
+  return await fs.readFile(path.join(LILI_ROOT, folderName, fileName), { encoding: 'utf8' });
+};
+
+export const liliWriteFile = async (
+  _event: MixedEvent,
+  { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
+) => {
+  console.log('Wants to write file', LILI_ROOT, folderName);
+  try {
+    await fs.access(path.join(LILI_ROOT, folderName));
+  } catch (_error) {
+    console.log('Making dir: ' + path.join(LILI_ROOT, folderName));
+    fs.mkdir(path.join(LILI_ROOT, folderName));
+  }
+  console.log('Will write file: ' + path.join(LILI_ROOT, folderName, fileName));
+  return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
 export const deleteFile = async (
@@ -128,12 +171,14 @@ export const deleteFolder = async (
   return await fs.unlink(path.join(ROOT, folderName));
 };
 
-export async function setupElectronStorageHandlers(rootDir: string | boolean) {
-  ROOT = !rootDir ? '' : (rootDir as string);
+export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {
+  ROOT = !rootDir ? 'UserData' : (rootDir as string);
+  LILI_ROOT = !liliDataDir ? 'Data' : (liliDataDir as string);
 
   const justRegister = !ROOT ? true : false;
 
   console.log('Setup with root', ROOT);
+  console.log('Setup with lili data', LILI_ROOT);
 
   if (!justRegister) {
     try {
@@ -144,7 +189,7 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean) {
     }
   }
 
-  //Add new functions here
+  //Add functions to register internally and for client here (public functions)
   ipcWrap(justRegister, 'getFolders', getFolders);
 
   ipcWrap(justRegister, 'getFolder', getFolder);
@@ -162,9 +207,14 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean) {
   ipcWrap(justRegister, 'deleteFile', deleteFile);
 
   ipcWrap(justRegister, 'deleteFolder', deleteFolder);
+
+  //Add function to register just internally (private functions)
+  registerInternalEvent(serviceName('liliReadJson'), liliReadJson);
+  registerInternalEvent(serviceName('liliWriteFile'), liliWriteFile);
+  registerInternalEvent(serviceName('liliReadFile'), liliReadFile);
 }
 
 export function getElectronStorageHandlers() {
-  setupElectronStorageHandlers(false);
+  setupElectronStorageHandlers(false, false);
   return functionList;
 }

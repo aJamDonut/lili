@@ -35,11 +35,13 @@ export async function streamCompletion(
   for await (const token of chatCompletionStream) {
     console.log(JSON.stringify(token));
     const text = token.choices[0]?.delta?.content || '';
-    tokens = token + text;
+    tokens = tokens + text;
     forEachToken.call(gpt, text);
   }
 
   if (typeof onComplete === 'function') {
     onComplete.call(gpt, tokens);
   }
+
+  return tokens;
 }

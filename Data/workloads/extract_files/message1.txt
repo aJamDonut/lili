@@ -1,0 +1,6 @@
+Here is an example of the format being used:
+{
+    "files": [
+        {"description":"Description of the files", "files": ["filename.ext", "anotherfilename.ext"]},
+    ]
+}
