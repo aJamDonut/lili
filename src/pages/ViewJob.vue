@@ -44,9 +44,9 @@
 
 
 <script>
-import { startWorkload } from '../services/lili/lili_real';
+import { startWorkload } from 'services/lili/lili_real';
 import { mapStores } from 'pinia'
-import { useSettingsStore } from '../stores/settings';
+import { useSettingsStore } from 'stores/settings';
 
 export default {
   data() {

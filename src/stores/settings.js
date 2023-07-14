@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ElectronStorage as Storage } from '../services/storage';
+import { ElectronStorage as Storage } from 'services/storage';
 
 
 export const useSettingsStore = defineStore('settings', {

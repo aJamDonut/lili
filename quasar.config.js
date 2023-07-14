@@ -53,6 +53,10 @@ module.exports = configure(function (/* ctx */) {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16',
       },
+      alias: {
+        services: path.join(__dirname, './src/services'),
+        interfaces: path.join(__dirname, './interfaces'),
+      },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,

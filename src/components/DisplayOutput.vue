@@ -21,7 +21,7 @@
 
 <script>
 // Markdown Parser
-import { marked } from '../boot/marked';
+import { marked } from 'boot/marked';
 
 export default {
   data() {

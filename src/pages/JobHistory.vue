@@ -57,7 +57,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { useJobStore } from '../stores/job';
+import { useJobStore } from 'stores/job';
 
 const columns = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
