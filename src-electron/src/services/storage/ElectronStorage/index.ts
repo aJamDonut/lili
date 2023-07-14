@@ -3,6 +3,26 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import { EventCallback, MixedEvent, registerEvent, registerInternalEvent } from '../../event';
 
+/* Setup is done... meat here. */
+
+//Share across folder operations, e.g. create, delete
+interface ElectronStorageHandlerRequestFolder {
+  folderName: string;
+}
+
+//Shared across file operations, e.g. create, delete
+interface ElectronStorageHandlerRequestFile {
+  folderName: string;
+  fileName: string;
+}
+
+//Used in write functions, e.g. write, update (overwrite)
+interface ElectronStorageHandlerRequestWrite {
+  folderName: string;
+  fileName: string;
+  contents: string;
+}
+
 const functionList: Array<string> = [];
 
 const SERVICE_KEY = 'Storage';
@@ -28,26 +48,6 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
     return;
   }
   registerEvent(func(name), callback);
-}
-
-/* Setup is done... meat here. */
-
-//Share across folder operations, e.g. create, delete
-interface ElectronStorageHandlerRequestFolder {
-  folderName: string;
-}
-
-//Shared across file operations, e.g. create, delete
-interface ElectronStorageHandlerRequestFile {
-  folderName: string;
-  fileName: string;
-}
-
-//Used in write functions, e.g. write, update (overwrite)
-interface ElectronStorageHandlerRequestWrite {
-  folderName: string;
-  fileName: string;
-  contents: string;
 }
 
 let LILI_ROOT = '';
@@ -210,6 +210,7 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   registerInternalEvent(serviceName('liliReadFile'), liliReadFile);
 }
 
+//Sync function calls async but for our purpose events are registered just in time
 export function getElectronStorageHandlers() {
   setupElectronStorageHandlers(false, false);
   return functionList;

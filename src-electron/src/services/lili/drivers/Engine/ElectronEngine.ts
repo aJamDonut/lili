@@ -3,6 +3,8 @@ import { getHistory, getHistoricWorkload } from 'app/src/services/lili';
 import { type EventCallback, registerEvent, ElectronEventData, MixedEvent } from '../../../event';
 
 import { CompletionMessage, streamCompletion } from '../../../openai/ChatGPT';
+import { runWorkload } from '../../../aiworkload';
+import { WorkloadOptions } from 'app/interfaces/Workload';
 
 const functionList: Array<string> = [];
 
@@ -49,7 +51,16 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       },
     ];
 
-    streamCompletion(messages, forEachToken, onComplete);
+    //streamCompletion(messages, forEachToken, onComplete);
+
+    runWorkload(
+      options.prompt as string,
+      {
+        workload: options.workload,
+        forEachToken: forEachToken,
+        onComplete: onComplete,
+      } as WorkloadOptions
+    );
   });
 
   ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {
@@ -61,6 +72,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 }
 
+//Sync function calls async but for our purpose events are registered just in
 export function getElectronEngineHandlers() {
   setupElectronEngineHandlers(true);
   return functionList;

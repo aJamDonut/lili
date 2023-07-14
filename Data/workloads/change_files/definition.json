@@ -5,7 +5,19 @@
   "messageHistory": [
     {
       "role": "system",
-      "content": "Please respond to the message with just the file(s) and their changed contents"
+      "content": "You must follow the json format [{\"name\":\"filename.ext\", \"content\":\"The file contents\"}] in your responses only."
+    },
+    {
+      "role": "system",
+      "content": "You must NOT output anything other than JSON"
+    },
+    {
+      "role": "user",
+      "content": "Please put 'Hello world' into myfiletestfile.txt"
+    },
+    {
+      "role": "assistant",
+      "content": "[{\"name\":\"myfiletestfile.txt\", \"content\":\"Hello world\"}]"
     }
   ],
   "defaults": {

@@ -72,7 +72,5 @@ app.on('activate', () => {
 
 //Dev:
 setupElectronStorageHandlers('UserData', 'Data').then(() => {
-  setupElectronEngineHandlers(false).then(() => {
-    test();
-  });
+  setupElectronEngineHandlers(false);
 });

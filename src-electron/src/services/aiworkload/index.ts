@@ -78,12 +78,18 @@ export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOp
   //For every token
   const forEachToken = (token: string) => {
     console.log(token);
+    if (typeof workloadOptions.forEachToken === 'function') {
+      workloadOptions.forEachToken(token);
+    }
   };
   //... when its finaly doone
   const onComplete = async (allTokens: string) => {
+    if (typeof workloadOptions.onComplete === 'function') {
+      workloadOptions.onComplete(allTokens);
+    }
     (await callService('Storage:writeFile', {
       folderName: 'logs',
-      fileName: 'lastrawcompletion.txt',
+      fileName: 'lastrawcompletion.json',
       contents: allTokens,
     })) as WorkloadDefinition;
   };
@@ -120,11 +126,17 @@ export async function getFilesContextMessages(prompt: string) {
     const files = [];
 
     for (const file of contextFile.files) {
-      const content = await readContextFile(file);
-      message = message + file + FILE_SEPERATOR;
-      message = message + content;
+      try {
+        const content = await readContextFile(file);
+        message = message + file + FILE_SEPERATOR;
+        message = message + content;
 
-      files.push({ name: file, content: content });
+        files.push({ name: file, content: content });
+      } catch (e) {
+        //Cannot find file, it must just not exist yet or not be found.
+        //Atleast push it back as a blank reference to retain normality.
+        files.push({ name: file, content: '' });
+      }
     }
 
     //CLASSIC, uses text
@@ -163,7 +175,38 @@ export function logMessages(messages: Array<MessageHistory>) {
   });
 }
 
+//TODO: implement AI to extract malformed json later
+export function getContextJSON(prompt: string) {
+  return [];
+}
+
+interface JSONFileContext {
+  name: string;
+  content: string;
+}
+
+export async function parseJSONResult(files: Array<JSONFileContext>) {
+  for (const file of files) {
+    console.log('Write ' + file.name, file.content.length);
+    (await callService('Storage:writeFile', {
+      folderName: `workspaces/default`,
+      fileName: file.name,
+      contents: file.content,
+    })) as WorkloadDefinition;
+  }
+}
+
 export async function runWorkload(prompt: string, workloadOptions: WorkloadOptions) {
+  (await callService('Storage:writeFile', {
+    folderName: `logs`,
+    fileName: `lastworkload.json`,
+    contents: JSON.stringify({ prompt, workloadOptions }),
+  })) as WorkloadDefinition;
+
+  if (workloadOptions.workload === 'extract_files') {
+    return runWorkloadRaw(prompt, workloadOptions);
+  }
+
   const workload = await getWorkloadDefinition(workloadOptions.workload);
 
   const fileContextMessages = await getFilesContextMessages(prompt);
@@ -174,12 +217,30 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   const forEachToken = (token: string) => {
     console.log(token);
+    if (typeof workloadOptions.forEachToken === 'function') {
+      workloadOptions.forEachToken(token);
+    }
   };
   //... when its finaly doone
   const onComplete = async (allTokens: string) => {
+    let jsonResult: Array<JSONFileContext> = [];
+    try {
+      jsonResult = JSON.parse(allTokens);
+    } catch (e) {
+      //No json result
+      console.log('No json result');
+      jsonResult = (await getContextJSON(allTokens)) as Array<JSONFileContext>;
+    }
+
+    parseJSONResult(jsonResult);
+
+    if (typeof workloadOptions.onComplete === 'function') {
+      workloadOptions.onComplete(allTokens);
+    }
+
     (await callService('Storage:writeFile', {
       folderName: `logs`,
-      fileName: `lastcompletion.txt`,
+      fileName: `lastcompletion.json`,
       contents: allTokens,
     })) as WorkloadDefinition;
   };
@@ -192,9 +253,10 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 //export function createWorkload(workloadOptions) {}
 
 //export function getWorkloads() {}
-
+/*
 export function test() {
   runWorkload('Please update package.json so that the type is module', {
     workload: 'change_files',
   } as WorkloadOptions);
 }
+*/

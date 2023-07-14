@@ -21,26 +21,30 @@
     ></q-select>
 
     <div class="row justify-center" key="adv-btn">
-      <div><q-btn flat dense @click="showAdvanced = !showAdvanced"  :icon="showAdvancedIcon" :icon-right="showAdvancedIcon" color="grey" label="Advanced" size="10px" /></div>
+      <div>
+        <q-btn
+          flat
+          dense
+          @click="showAdvanced = !showAdvanced"
+          :icon="showAdvancedIcon"
+          :icon-right="showAdvancedIcon"
+          color="grey"
+          label="Advanced"
+          size="10px"
+        />
+      </div>
     </div>
     <transition name="slidedown">
       <div v-if="showAdvanced">
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
             <label>Context</label>
-            <q-input
-              v-model="promptConfig.context"
-              filled
-              type="textarea"
-              rows="3"
-              autogrow
-              dense
-            ></q-input>
+            <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
           </div>
         </div>
         <div class="row q-col-gutter-md q-mb-md">
           <!-- Output -->
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Output Format</label>
             <q-select
               v-model="promptConfig.outputFormat"
@@ -49,31 +53,26 @@
               dense
             ></q-select>
           </div>
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Output To</label>
-            <q-select
-              v-model="promptConfig.outputTo"
-              filled
-              :options="outputToOptions"
-              dense
-            ></q-select>
+            <q-select v-model="promptConfig.outputTo" filled :options="outputToOptions" dense></q-select>
           </div>
         </div>
         <div class="row q-col-gutter-md">
           <!-- Extra Stuff -->
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Creativity</label>
             <lili-slider v-model="promptConfig.creativity" :step="0.01" :min="0.5" :max="1" />
           </div>
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Repetitiveness</label>
             <lili-slider v-model="promptConfig.repetitiveness" :step="0.01" :min="0.5" :max="1" />
           </div>
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Response Limit</label>
             <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
           </div>
-          <div class="col" style="min-width: 120px;">
+          <div class="col" style="min-width: 120px">
             <label>Solution Count</label>
             <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
           </div>
@@ -82,13 +81,7 @@
     </transition>
     <div class="row justify-end q-mt-lg">
       <div>
-        <q-btn
-          @click="runJob"
-          size="14px"
-          color="green"
-          icon="arrow_forward_ios"
-          label="Run"
-        />
+        <q-btn @click="runJob" size="14px" color="green" icon="arrow_forward_ios" label="Run" />
       </div>
     </div>
   </div>
@@ -97,9 +90,14 @@
 <script>
 export default {
   data() {
+    const options = [
+      { label: 'Select workload', value: 'default' },
+      { label: 'Extract Files', value: 'extract_files' },
+      { label: 'Change files', value: 'change_files' },
+    ];
     return {
       showAdvanced: false,
-      workloadOptions: ['New', 'Edit'],
+      workloadOptions: options,
       outputFormatOptions: ['Plaintext', 'Chat', 'HTML'],
       outputToOptions: ['Inline', 'Cursor', 'Folder'],
     };
@@ -110,17 +108,21 @@ export default {
   methods: {
     runJob() {
       this.$emit('run');
-    }
+    },
   },
   computed: {
-    showAdvancedIcon () {
-      return this.showAdvanced ? 'expand_less' : 'expand_more'
+    showAdvancedIcon() {
+      return this.showAdvanced ? 'expand_less' : 'expand_more';
     },
     promptConfig: {
-      get () { return this.modelValue },
-      set (value) { this.$emit('update:modelValue', value) }
-    }
-  }
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit('update:modelValue', value);
+      },
+    },
+  },
 };
 </script>
 

@@ -45,16 +45,18 @@
 
 <script>
 import { startWorkload } from 'services/lili/lili_real';
-import { mapStores } from 'pinia'
+import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
-
+/**
+ Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
+ */
 export default {
   data() {
     return {
       promptConfig: {
-        prompt: '',
+        prompt: 'Please take file1.csv and merge it with file2.csv into file3.csv',
         context: '',
-        workload: 'New',
+        workload: { label: 'Change files', value: 'change_files' },
         outputFormat: 'Plaintext',
         outputTo: 'Inline',
         creativity: 0.5,
@@ -87,8 +89,8 @@ export default {
       },
       set(value) {
         this.settingsStore.splitterWidth = value;
-      }
-    }
+      },
+    },
   },
   methods: {
     processToken(token) {
@@ -102,6 +104,7 @@ export default {
 
       startWorkload({
         prompt: this.promptConfig.prompt,
+        workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: () => {
           // this.jobRunning = false;

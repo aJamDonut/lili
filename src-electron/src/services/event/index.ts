@@ -1,7 +1,7 @@
 import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 export type ElectronEventData = {
-  [key: string]: unknown;
+  [key: string]: string | number | boolean | Array<string | number | boolean>;
 };
 
 export interface InternalMainInvokeEventSender {
