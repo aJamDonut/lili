@@ -66,14 +66,11 @@ export const writeFile = async (
   _event: MixedEvent,
   { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
 ) => {
-  console.log('Wants to write file', ROOT, folderName);
   try {
     await fs.access(path.join(ROOT, folderName));
   } catch (_error) {
-    console.log('Making dir: ' + path.join(ROOT, folderName));
     fs.mkdir(path.join(ROOT, folderName));
   }
-  console.log('Will write file: ' + path.join(ROOT, folderName, fileName));
   return await fs.writeFile(path.join(ROOT, folderName, fileName), contents);
 };
 
@@ -125,7 +122,6 @@ export const liliReadJson = async (
   { folderName, fileName }: ElectronStorageHandlerRequestFile
 ) => {
   try {
-    console.log('Read', path.join(LILI_ROOT, folderName, fileName));
     const contents: string = await fs.readFile(path.join(LILI_ROOT, folderName, fileName), {
       encoding: 'utf8',
     });
@@ -146,14 +142,11 @@ export const liliWriteFile = async (
   _event: MixedEvent,
   { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
 ) => {
-  console.log('Wants to write file', LILI_ROOT, folderName);
   try {
     await fs.access(path.join(LILI_ROOT, folderName));
   } catch (_error) {
-    console.log('Making dir: ' + path.join(LILI_ROOT, folderName));
     fs.mkdir(path.join(LILI_ROOT, folderName));
   }
-  console.log('Will write file: ' + path.join(LILI_ROOT, folderName, fileName));
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
@@ -177,28 +170,20 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   ROOT = !rootDir ? 'UserData' : (rootDir as string);
   LILI_ROOT = !liliDataDir ? 'Data' : (liliDataDir as string);
 
-  console.log('Setup with root', ROOT);
-  console.log('Setup with lili data', LILI_ROOT);
-
   if (!justRegister) {
     try {
       await fs.access(ROOT);
     } catch (_error) {
-      console.log('Making dir: ' + ROOT);
       fs.mkdir(ROOT);
-      console.log('Making dir: ' + ROOT + '/config');
       fs.mkdir(ROOT + '/config');
     }
 
     try {
       await fs.access(ROOT + '/config');
     } catch (_error) {
-      console.log('Making dir: ' + ROOT + '/config');
       fs.mkdir(ROOT + '/config');
     }
   }
-
-  console.log('Setup wraps', justRegister);
 
   //Add functions to register internally and for client here (public functions)
   ipcWrap(justRegister, 'getFolders', getFolders);
@@ -225,7 +210,7 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   registerInternalEvent(serviceName('liliReadFile'), liliReadFile);
 }
 
-export async function getElectronStorageHandlers() {
-  await setupElectronStorageHandlers(false, false);
+export function getElectronStorageHandlers() {
+  setupElectronStorageHandlers(false, false);
   return functionList;
 }
