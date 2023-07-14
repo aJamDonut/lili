@@ -172,10 +172,10 @@ export const deleteFolder = async (
 };
 
 export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {
+  const justRegister = !rootDir ? true : false;
+
   ROOT = !rootDir ? 'UserData' : (rootDir as string);
   LILI_ROOT = !liliDataDir ? 'Data' : (liliDataDir as string);
-
-  const justRegister = !ROOT ? true : false;
 
   console.log('Setup with root', ROOT);
   console.log('Setup with lili data', LILI_ROOT);
@@ -186,8 +186,19 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
     } catch (_error) {
       console.log('Making dir: ' + ROOT);
       fs.mkdir(ROOT);
+      console.log('Making dir: ' + ROOT + '/config');
+      fs.mkdir(ROOT + '/config');
+    }
+
+    try {
+      await fs.access(ROOT + '/config');
+    } catch (_error) {
+      console.log('Making dir: ' + ROOT + '/config');
+      fs.mkdir(ROOT + '/config');
     }
   }
+
+  console.log('Setup wraps', justRegister);
 
   //Add functions to register internally and for client here (public functions)
   ipcWrap(justRegister, 'getFolders', getFolders);
@@ -214,7 +225,7 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   registerInternalEvent(serviceName('liliReadFile'), liliReadFile);
 }
 
-export function getElectronStorageHandlers() {
-  setupElectronStorageHandlers(false, false);
+export async function getElectronStorageHandlers() {
+  await setupElectronStorageHandlers(false, false);
   return functionList;
 }

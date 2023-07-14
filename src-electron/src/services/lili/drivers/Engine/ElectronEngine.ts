@@ -61,7 +61,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 }
 
-export function getElectronEngineHandlers() {
-  setupElectronEngineHandlers(true);
+export async function getElectronEngineHandlers() {
+  await setupElectronEngineHandlers(true);
   return functionList;
 }

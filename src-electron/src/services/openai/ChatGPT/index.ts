@@ -19,28 +19,32 @@ export async function streamCompletion(
   forEachToken: ForEachTokenCallback,
   onComplete: OnCompleteCallback
 ) {
-  const gpt = new OpenAI({
-    apiKey: await getApiKey(),
-  });
-
-  console.log('Create completion', messages);
-  const chatCompletionStream = await gpt.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: messages,
-    stream: true,
-  });
-
   let tokens = '';
+  try {
+    const gpt = new OpenAI({
+      apiKey: await getApiKey(),
+    });
 
-  for await (const token of chatCompletionStream) {
-    console.log(JSON.stringify(token));
-    const text = token.choices[0]?.delta?.content || '';
-    tokens = tokens + text;
-    forEachToken.call(gpt, text);
-  }
+    console.log('Create completion', messages);
+    const chatCompletionStream = await gpt.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: messages,
+      stream: true,
+    });
 
-  if (typeof onComplete === 'function') {
-    onComplete.call(gpt, tokens);
+    for await (const token of chatCompletionStream) {
+      console.log(JSON.stringify(token));
+      const text = token.choices[0]?.delta?.content || '';
+      tokens = tokens + text;
+      forEachToken.call(gpt, text);
+    }
+    if (typeof onComplete === 'function') {
+      onComplete.call(gpt, tokens);
+    }
+  } catch (e) {
+    if (typeof onComplete === 'function') {
+      onComplete.call({}, 'Errpr: ' + e);
+    }
   }
 
   return tokens;

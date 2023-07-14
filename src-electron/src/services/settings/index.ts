@@ -5,10 +5,13 @@ export type UserSettings = {
 };
 
 export async function getUserSetting(key: string) {
-  const storedSettings = (await callService('Storage:readJson', {
+  let storedSettings = (await callService('Storage:readJson', {
     folderName: 'config',
     fileName: 'settings.json',
   })) as UserSettings;
+  if (!storedSettings) {
+    storedSettings = {};
+  }
   console.log('Settings', storedSettings);
   return storedSettings[key];
 }
