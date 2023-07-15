@@ -150,6 +150,13 @@ export const liliWriteFile = async (
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
+export const liliGetFolder = async (
+  _event: MixedEvent,
+  { folderName }: ElectronStorageHandlerRequestFolder
+) => {
+  return await fs.readdir(path.join(LILI_ROOT, folderName));
+};
+
 export const deleteFile = async (
   _event: MixedEvent,
   { folderName, fileName }: ElectronStorageHandlerRequestFile
@@ -208,6 +215,7 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   registerInternalEvent(serviceName('liliReadJson'), liliReadJson);
   registerInternalEvent(serviceName('liliWriteFile'), liliWriteFile);
   registerInternalEvent(serviceName('liliReadFile'), liliReadFile);
+  registerInternalEvent(serviceName('liliGetFolder'), liliGetFolder);
 }
 
 //Sync function calls async but for our purpose events are registered just in time

@@ -2,13 +2,13 @@ import { WorkloadOptions } from 'app/interfaces/Workload';
 import { callService } from '../event';
 import { CompletionMessage, streamCompletion } from '../openai/ChatGPT';
 
-interface MessageHistory {
+export interface MessageHistory {
   role: string;
   content?: string | null;
   contentFile?: string;
 }
 
-interface Defaults {
+export interface Defaults {
   advanced: {
     repetitiveness: number;
     creativity: number;
@@ -17,7 +17,7 @@ interface Defaults {
   };
 }
 
-interface WorkloadDefinition {
+export interface WorkloadDefinition {
   name: string;
   codename: string;
   type?: 'raw' | 'normal';
@@ -25,14 +25,14 @@ interface WorkloadDefinition {
   messageHistory: MessageHistory[];
   defaults: Defaults;
 }
-interface ContexFolder {
+export interface ContexFolder {
   description: string;
   folders: Array<string>;
 }
-interface ContextFolders {
+export interface ContextFolders {
   folders: Array<ContexFolder>;
 }
-interface ContextFile {
+export interface ContextFile {
   description: string;
   files: Array<string>;
 }
@@ -67,6 +67,11 @@ export async function getWorkloadDefinition(name: string) {
     folderName: `workloads/${name}`,
     fileName: 'definition.json',
   })) as WorkloadDefinition;
+  return definition;
+}
+
+export async function getFullWorkloadDefinition(name: string) {
+  const definition = await getWorkloadDefinition(name);
 
   definition.messageHistory = (await callService('Storage:liliReadJson', {
     folderName: `workloads/${name}`,

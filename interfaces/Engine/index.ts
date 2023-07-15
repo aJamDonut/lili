@@ -1,8 +1,4 @@
-import type {
-  HistoryEntry,
-  WorkloadHistory,
-  WorkloadOptions,
-} from '../Workload';
+import type { HistoryEntry, WorkloadHistory, WorkloadOptions } from '../Workload';
 
 /**
  * Represents the interface for an engine driver.
@@ -23,4 +19,6 @@ export interface EngineDriverInterface {
   getHistory(start: number, end: number): Promise<Array<HistoryEntry>>;
 
   getHistoricWorkload(id: number): Promise<WorkloadHistory>;
+
+  getWorkloads(): Promise<Array<string>>;
 }

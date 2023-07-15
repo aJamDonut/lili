@@ -88,16 +88,24 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { useWorkloadsStore } from 'src/stores/workloads';
+
+function mountWorkloads() {
+  this.workloadOptions = [];
+  for (const item of this.workloadsStore.workloads) {
+    this.workloadOptions.push({
+      label: item.name,
+      value: item.codename,
+    });
+  }
+}
+
 export default {
   data() {
-    const options = [
-      { label: 'Select workload', value: 'default' },
-      { label: 'Extract Files', value: 'extract_files' },
-      { label: 'Change files', value: 'change_files' },
-    ];
     return {
       showAdvanced: false,
-      workloadOptions: options,
+      workloadOptions: [],
       outputFormatOptions: ['Plaintext', 'Chat', 'HTML'],
       outputToOptions: ['Inline', 'Cursor', 'Folder'],
     };
@@ -110,7 +118,11 @@ export default {
       this.$emit('run');
     },
   },
+  mounted() {
+    mountWorkloads.call(this);
+  },
   computed: {
+    ...mapStores(useWorkloadsStore),
     showAdvancedIcon() {
       return this.showAdvanced ? 'expand_less' : 'expand_more';
     },
