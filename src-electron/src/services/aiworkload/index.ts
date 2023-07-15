@@ -241,17 +241,16 @@ export async function parseJSONResult(
       state = 'failed';
     }
 
-    if (fileDescriptions[file.name]) {
-      if (typeof workloadOptions.forEachToken === 'function') {
-        workloadOptions.forEachToken(
-          jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state)
-        );
-      }
-    } else {
-      if (typeof workloadOptions.forEachToken === 'function') {
-        workloadOptions.forEachToken(jsonResponse('inline', `Made changes to ${file.name}`, state));
-      }
+    if (fileDescriptions[file.name] && typeof workloadOptions.forEachToken === 'function') {
+      workloadOptions.forEachToken(
+        jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state)
+      );
+      continue;
     }
+
+    //No file descriptor, just send general message
+    if (typeof workloadOptions.forEachToken === 'function')
+      workloadOptions.forEachToken(jsonResponse('inline', `Made changes to ${file.name}`, state));
   }
 }
 
@@ -260,7 +259,7 @@ export async function runWorkloadRaw(
   workloadOptions: WorkloadOptions,
   workload?: WorkloadDefinition
 ) {
-  workload = workload || (await getWorkloadDefinition(workloadOptions.workload));
+  workload = workload || (await getFullWorkloadDefinition(workloadOptions.workload));
 
   const messages = [...workload.messageHistory, newMessage('user', prompt)];
 
@@ -294,7 +293,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     contents: JSON.stringify({ prompt, workloadOptions }),
   })) as WorkloadDefinition;
 
-  const workload = await getWorkloadDefinition(workloadOptions.workload);
+  const workload = await getFullWorkloadDefinition(workloadOptions.workload);
 
   if (workload.type === 'raw') {
     return runWorkloadRaw(prompt, workloadOptions, workload);
@@ -318,7 +317,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
       workloadOptions.forEachToken(token);
     }
   };
-  //... when its finaly doone
+  //... when its finally doone
   const onComplete = async (allTokens: string) => {
     let jsonResult: Array<JSONFileContext> = [];
     try {
@@ -346,14 +345,3 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   return streamCompletion(messages as Array<CompletionMessage>, forEachToken, onComplete);
 }
-//TODO: implementado
-//export function createWorkload(workloadOptions) {}
-
-//export function getWorkloads() {}
-/*
-export function test() {
-  runWorkload('Please update package.json so that the type is module', {
-    workload: 'change_files',
-  } as WorkloadOptions);
-}
-*/
