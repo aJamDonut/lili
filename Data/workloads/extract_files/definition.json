@@ -2,6 +2,7 @@
   "name": "Extract files",
   "codename": "extract_files",
   "description": "Extracts files list from text",
+  "type": "raw",
   "messageHistory": [
     {
       "role": "system",

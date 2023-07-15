@@ -34,6 +34,7 @@
         >
           <div class="q-pa-md" style="min-height: 100%">
             <display-prompt class="q-mb-md" v-model="promptConfig" />
+            <display-output v-if="outputJson.length > 1" v-model="outputJson" />
             <display-output v-model="outputText" />
           </div>
         </q-scroll-area>
@@ -42,7 +43,6 @@
   </q-page>
 </template>
 
-
 <script>
 import { startWorkload } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
@@ -50,6 +50,10 @@ import { useSettingsStore } from 'stores/settings';
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
  */
+
+function logMessage(log) {
+  return `<li>${log.content}... (${log.state})</li>`;
+}
 export default {
   data() {
     return {
@@ -79,6 +83,7 @@ export default {
         // opacity: 0.2
       },
       outputText: '',
+      outputJson: '',
     };
   },
   computed: {
@@ -108,6 +113,9 @@ export default {
         forEachToken: this.processToken,
         onComplete: () => {
           // this.jobRunning = false;
+        },
+        onJsonResponse: (json) => {
+          this.outputJson = this.outputJson + logMessage(json);
         },
       });
     },

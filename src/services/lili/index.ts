@@ -102,11 +102,11 @@ const LILIAI_DEFAULTWORKLOADOPTIONS = {
   repetitiveness: 0.1,
   responseLimit: 10,
   solutionCount: 1,
-  forEachToken: (line) => {
-    console.log(line);
+  forEachToken: (token: string) => {
+    console.log(token);
   },
-  onComplete: (lines) => {
-    console.log(lines);
+  onComplete: (token: string) => {
+    console.log(token);
   },
 };
 

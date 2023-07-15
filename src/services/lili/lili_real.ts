@@ -1,10 +1,6 @@
 import { LiliClientConfig } from 'app/interfaces/Lili';
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
-import {
-  HistoryEntry,
-  WorkloadHistory,
-  WorkloadOptions,
-} from 'app/interfaces/Workload';
+import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
 const LILIAI_DEFAULTWORKLOADOPTIONS = {
   prompt: 'Hi there',
@@ -16,11 +12,11 @@ const LILIAI_DEFAULTWORKLOADOPTIONS = {
   repetitiveness: 0.1,
   responseLimit: 10,
   solutionCount: 1,
-  forEachToken: (line: string) => {
-    console.log(line);
+  forEachToken: (token: string) => {
+    console.log(token);
   },
-  onComplete: (lines: string) => {
-    console.log(lines);
+  onComplete: (token: string) => {
+    console.log(token);
   },
 };
 
@@ -50,10 +46,7 @@ export function startWorkload(workloadCustomOptions: WorkloadOptions) {
  * @param {number} end - The end index of the history entries.
  * @returns {WorkloadHistory[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
-export async function getHistory(
-  start: number,
-  end: number
-): Promise<Array<HistoryEntry>> {
+export async function getHistory(start: number, end: number): Promise<Array<HistoryEntry>> {
   return await LILIAI.engineDriver.getHistory(start, end);
 }
 
@@ -61,8 +54,6 @@ export async function getHistory(
  * Recalls a specific job from the history.
  * @param {number} id - The ID of the history entry to recall.
  */
-export async function getHistoricWorkload(
-  id: number
-): Promise<WorkloadHistory> {
+export async function getHistoricWorkload(id: number): Promise<WorkloadHistory> {
   return await LILIAI.engineDriver.getHistoricWorkload(id);
 }

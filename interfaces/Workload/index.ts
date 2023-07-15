@@ -1,3 +1,5 @@
+import { LiliJsonResponse } from 'src/services/lili/drivers/Engine/ElectronEngine';
+
 /**
  * @typedef {Object} WorkloadOptions
  * @property {string} prompt - The prompt for the workload.
@@ -13,17 +15,18 @@
  * @property {function(string): void} onComplete - A callback function to process the complete response.
  */
 export interface WorkloadOptions {
-  prompt: string;
-  context: string;
+  prompt?: string;
+  context?: string;
   workload: string;
-  outputFormat: string;
-  outputTo: string;
-  creativity: number;
-  repetitiveness: number;
-  responseLimit: number;
-  solutionCount: number;
-  forEachToken: (line: string) => void;
-  onComplete: (lines: string) => void;
+  outputFormat?: string;
+  outputTo?: string;
+  creativity?: number;
+  repetitiveness?: number;
+  responseLimit?: number;
+  solutionCount?: number;
+  forEachToken?: (line: string) => void;
+  onComplete?: (lines: string) => void;
+  onJsonResponse?: (json: LiliJsonResponse) => void;
 }
 /**
  * @typedef {Object} HistoryEntry

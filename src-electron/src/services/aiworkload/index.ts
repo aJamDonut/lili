@@ -20,15 +20,23 @@ interface Defaults {
 interface WorkloadDefinition {
   name: string;
   codename: string;
+  type?: 'raw' | 'normal';
   description: string;
   messageHistory: MessageHistory[];
   defaults: Defaults;
 }
-
+interface ContexFolder {
+  description: string;
+  folders: Array<string>;
+}
+interface ContextFolders {
+  folders: Array<ContexFolder>;
+}
 interface ContextFile {
   description: string;
   files: Array<string>;
 }
+
 interface ContextFiles {
   files: Array<ContextFile>;
 }
@@ -69,8 +77,180 @@ export function newMessage(role: string, content: string): MessageHistory {
   return { role, content };
 }
 
-export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions) {
-  const workload = await getWorkloadDefinition(workloadOptions.workload);
+export async function readContextFile(file: string) {
+  return (await callService('Storage:readFile', {
+    folderName: 'workspaces/default',
+    fileName: file,
+  })) as string;
+}
+
+export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions) {
+  const context = await getContextFiles(prompt);
+
+  const messages: Array<MessageHistory> = [];
+
+  const fileDescriptions: FileDescriptions = {};
+
+  for (const contextFile of context.files) {
+    if (!contextFile.files) {
+      continue; //Malformed? Record exists but no files
+    }
+    const files = [];
+
+    for (const file of contextFile.files) {
+      fileDescriptions[file] = contextFile.description;
+      try {
+        files.push({ name: file, content: await readContextFile(file) });
+        if (typeof workloadOptions.forEachToken === 'function') {
+          workloadOptions.forEachToken(
+            jsonResponse('inline', contextFile.description + ': ' + file, 'success')
+          );
+        }
+      } catch (e) {
+        if (typeof workloadOptions.forEachToken === 'function') {
+          workloadOptions.forEachToken(
+            jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning')
+          );
+        }
+        //Cannot find file, it must just not exist yet or not be found.
+        //Atleast push it back as a blank reference to retain normality.
+        files.push({ name: file, content: '' });
+      }
+    }
+
+    messages.push(newMessage('system', JSON.stringify(files)));
+  }
+  return { messages, fileDescriptions };
+}
+
+export async function getContextFolders(prompt: string) {
+  const contextFolders: string = await runWorkloadRaw(prompt, {
+    workload: 'extract_folders',
+  });
+
+  let contextFilesObject: ContextFolders = {
+    folders: [],
+  };
+
+  console.log('Context Folders', contextFolders);
+
+  try {
+    contextFilesObject = JSON.parse(contextFolders);
+  } catch (e) {
+    console.error("Can't parse response");
+  }
+  return contextFilesObject;
+}
+
+export async function getFoldersContextMessages(prompt: string) {
+  const context = await getContextFolders(prompt);
+  const messages: Array<MessageHistory> = [];
+
+  for (const contextFile of context.folders) {
+    if (!contextFile.folders) {
+      continue; //Malformed? Record exists but no files
+    }
+
+    const folders = [];
+
+    for (const file of contextFile.folders) {
+      try {
+        const content = await readContextFile(file);
+
+        folders.push({ name: file, content: content });
+      } catch (e) {
+        //Cannot find file, it must just not exist yet or not be found.
+        //Atleast push it back as a blank reference to retain normality.
+        folders.push({ name: file, content: '' });
+      }
+    }
+
+    messages.push(newMessage('system', JSON.stringify(folders)));
+  }
+  return messages;
+}
+
+export async function getContextFiles(prompt: string) {
+  const contextFiles: string = await runWorkloadRaw(prompt, {
+    workload: 'extract_files',
+  });
+
+  let contextFilesObject: ContextFiles = {
+    files: [],
+  };
+
+  console.log('Context files', contextFiles);
+
+  try {
+    contextFilesObject = JSON.parse(contextFiles);
+  } catch (e) {
+    console.error("Can't parse response");
+  }
+  return contextFilesObject;
+}
+
+export function logMessages(messages: Array<MessageHistory>) {
+  callService('Storage:writeFile', {
+    folderName: 'logs',
+    fileName: 'lastmessages.json',
+    contents: JSON.stringify(messages),
+  });
+}
+
+//TODO: implement AI to extract malformed json later
+export function getContextJSON(prompt: string) {
+  console.log(prompt);
+  return [];
+}
+
+interface JSONFileContext {
+  name: string;
+  content: string;
+}
+export type FileDescriptions = {
+  [key: string]: unknown;
+};
+
+export function jsonResponse(type: string, content: string, state = 'success', component = 'default') {
+  return JSON.stringify({ type, content, state, component });
+}
+export async function parseJSONResult(
+  fileDescriptions: FileDescriptions,
+  files: Array<JSONFileContext>,
+  workloadOptions: WorkloadOptions
+) {
+  for (const file of files) {
+    let state = 'success';
+    try {
+      (await callService('Storage:writeFile', {
+        folderName: 'workspaces/default',
+        fileName: file.name,
+        contents: file.content,
+      })) as WorkloadDefinition;
+    } catch (e) {
+      state = 'failed';
+    }
+
+    if (fileDescriptions[file.name]) {
+      if (typeof workloadOptions.forEachToken === 'function') {
+        workloadOptions.forEachToken(
+          jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state)
+        );
+      }
+    } else {
+      if (typeof workloadOptions.forEachToken === 'function') {
+        workloadOptions.forEachToken(jsonResponse('inline', `Made changes to ${file.name}`, state));
+      }
+    }
+  }
+}
+
+export async function runWorkloadRaw(
+  prompt: string,
+  workloadOptions: WorkloadOptions,
+  workload?: WorkloadDefinition
+) {
+  workload = workload || (await getWorkloadDefinition(workloadOptions.workload));
 
   const messages = [...workload.messageHistory, newMessage('user', prompt)];
 
@@ -97,105 +277,6 @@ export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOp
   return streamCompletion(messages as Array<CompletionMessage>, forEachToken, onComplete);
 }
 
-export async function readContextFile(file: string) {
-  return (await callService('Storage:readFile', {
-    folderName: 'workspaces/default',
-    fileName: file,
-  })) as string;
-}
-
-export async function getFilesContextMessages(prompt: string) {
-  //TODO: could this effect prompts sent by different languages?
-  const DEFAULT_DESCRIPTION = 'The file the user provided';
-  const DESCRIPTION_PREFIX = '';
-  const DESCRIPTION_SEPERATOR = '\r\n';
-  const FILE_SEPERATOR = '\r\n--------------\r\n';
-  const context = await getContextFiles(prompt);
-  let message = '';
-
-  const messages: Array<MessageHistory> = [];
-
-  for (const contextFile of context.files) {
-    if (!contextFile.files) {
-      continue; //Malformed? Record exists but no files
-    }
-    const description = contextFile.description || DEFAULT_DESCRIPTION;
-
-    message = DESCRIPTION_PREFIX + description + DESCRIPTION_SEPERATOR;
-
-    const files = [];
-
-    for (const file of contextFile.files) {
-      try {
-        const content = await readContextFile(file);
-        message = message + file + FILE_SEPERATOR;
-        message = message + content;
-
-        files.push({ name: file, content: content });
-      } catch (e) {
-        //Cannot find file, it must just not exist yet or not be found.
-        //Atleast push it back as a blank reference to retain normality.
-        files.push({ name: file, content: '' });
-      }
-    }
-
-    //CLASSIC, uses text
-    //messages.push(newMessage('system', message));
-
-    //ADVANCED, uses JSON
-    messages.push(newMessage('system', JSON.stringify(files)));
-  }
-  return messages;
-}
-
-export async function getContextFiles(prompt: string) {
-  const contextFiles: string = await runWorkloadRaw(prompt, {
-    workload: 'extract_files',
-  } as WorkloadOptions);
-
-  let contextFilesObject: ContextFiles = {
-    files: [],
-  };
-
-  console.log('Context files', contextFiles);
-
-  try {
-    contextFilesObject = JSON.parse(contextFiles);
-  } catch (e) {
-    console.error("Can't parse response");
-  }
-  return contextFilesObject;
-}
-
-export function logMessages(messages: Array<MessageHistory>) {
-  callService('Storage:writeFile', {
-    folderName: `logs`,
-    fileName: `lastmessages.json`,
-    contents: JSON.stringify(messages),
-  });
-}
-
-//TODO: implement AI to extract malformed json later
-export function getContextJSON(prompt: string) {
-  return [];
-}
-
-interface JSONFileContext {
-  name: string;
-  content: string;
-}
-
-export async function parseJSONResult(files: Array<JSONFileContext>) {
-  for (const file of files) {
-    console.log('Write ' + file.name, file.content.length);
-    (await callService('Storage:writeFile', {
-      folderName: `workspaces/default`,
-      fileName: file.name,
-      contents: file.content,
-    })) as WorkloadDefinition;
-  }
-}
-
 export async function runWorkload(prompt: string, workloadOptions: WorkloadOptions) {
   (await callService('Storage:writeFile', {
     folderName: `logs`,
@@ -203,15 +284,21 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     contents: JSON.stringify({ prompt, workloadOptions }),
   })) as WorkloadDefinition;
 
-  if (workloadOptions.workload === 'extract_files') {
-    return runWorkloadRaw(prompt, workloadOptions);
-  }
-
   const workload = await getWorkloadDefinition(workloadOptions.workload);
 
-  const fileContextMessages = await getFilesContextMessages(prompt);
+  if (workload.type === 'raw') {
+    return runWorkloadRaw(prompt, workloadOptions, workload);
+  }
 
-  const messages = [...workload.messageHistory, newMessage('user', prompt), ...fileContextMessages];
+  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions);
+  //const folderContextMessages = await getFoldersContextMessages(prompt);
+
+  const messages = [
+    ...workload.messageHistory,
+    newMessage('user', prompt),
+    ...fileContextMessages.messages,
+    //...folderContextMessages,
+  ];
 
   console.log('Messages', messages);
 
@@ -232,7 +319,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
       jsonResult = (await getContextJSON(allTokens)) as Array<JSONFileContext>;
     }
 
-    parseJSONResult(jsonResult);
+    parseJSONResult(fileContextMessages.fileDescriptions, jsonResult, workloadOptions);
 
     if (typeof workloadOptions.onComplete === 'function') {
       workloadOptions.onComplete(allTokens);
