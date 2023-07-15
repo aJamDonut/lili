@@ -47,6 +47,6 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
 }
 
 export function getElectronWindowHandlers() {
-  setupElectronWindowHandlers(false);
+  setupElectronWindowHandlers(true);
   return functionList;
 }
