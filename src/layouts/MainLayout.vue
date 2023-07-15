@@ -1,10 +1,11 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header class="bg-primary text-white" height-hint="98">
+    <q-header class="bg-primary text-white" height-hint="50">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> liliFLUX </q-toolbar-title>
+        <q-toolbar-title id="drag-area"> liliFLUX </q-toolbar-title>
+        <q-btn dense flat round icon="close" @click="closeApp" />
       </q-toolbar>
     </q-header>
 
@@ -83,7 +84,21 @@ export default {
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
+      closeApp() {
+        _electron.run('FocusedWindow:close');
+      },
     };
   },
 };
 </script>
+
+<style scoped>
+/* TODO https://www.electronjs.org/docs/latest/tutorial/window-customization
+Tip: disable context menus
+On some platforms, the draggable area will be treated as a non-client frame, so when you right click on it, a system menu will pop up.
+To make the context menu behave correctly on all platforms, you should never use a custom context menu on draggable areas.
+*/
+#drag-area {
+  -webkit-app-region: drag;
+}
+</style>

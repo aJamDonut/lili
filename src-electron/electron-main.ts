@@ -3,7 +3,11 @@ import path from 'path';
 import os from 'os';
 import { setupElectronStorageHandlers } from './src/services/storage/ElectronStorage';
 import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
-import { test } from './src/services/aiworkload';
+import { registerEvent } from './src/services/event';
+import { setupElectronWindowHandlers } from './src/services/window';
+
+//IMPORTANT: DO NOT USE 'electron/remote' that is for people who don't understand Web Security!!!!!
+//I don't even care that it's in the official documentation. It's wrong! Just add to the context bridge correctly.
 
 //Any handlers for frontend to backend
 //In future, we could factory these into remote, databases, etc.
@@ -28,6 +32,7 @@ function createWindow() {
     width: 1000,
     height: 600,
     useContentSize: true,
+    titleBarStyle: 'hidden',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
@@ -71,6 +76,8 @@ app.on('activate', () => {
 //setupElectronStorageHandlers(path.join(app.getPath('UserData')), 'Data');
 
 //Dev:
+setupElectronWindowHandlers(false);
+
 setupElectronStorageHandlers('UserData', 'Data').then(() => {
   setupElectronEngineHandlers(false);
 });

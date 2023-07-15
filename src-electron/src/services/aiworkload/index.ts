@@ -199,6 +199,21 @@ export async function getContextFiles(prompt: string) {
   return contextFilesObject;
 }
 
+const workloadLogs: Array<string> = [];
+
+export function workloadLog(message: string) {
+  const WORKLOAD_LOG_LIMIT = 10;
+
+  if (workloadLogs.length >= WORKLOAD_LOG_LIMIT) workloadLogs.shift();
+
+  workloadLogs.push(message);
+  callService('Storage:writeFile', {
+    folderName: 'logs',
+    fileName: 'workload_logs.json',
+    contents: JSON.stringify(workloadLogs),
+  });
+}
+
 export function logMessages(messages: Array<MessageHistory>) {
   callService('Storage:writeFile', {
     folderName: 'logs',
@@ -213,7 +228,7 @@ export function getContextJSON(prompt: string) {
   return [];
 }
 
-interface JSONFileContext {
+export interface JSONFileContext {
   name: string;
   content: string;
 }

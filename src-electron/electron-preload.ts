@@ -1,9 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { getElectronStorageHandlers } from './src/services/storage/ElectronStorage';
 import { getElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
+import { getElectronWindowHandlers } from './src/services/window';
+
+//IMPORTANT: DO NOT USE 'electron/remote' that is for people who don't understand Web Security!!!!!
 
 function getAllowedList() {
-  return [...getElectronStorageHandlers(), ...getElectronEngineHandlers()];
+  return [...getElectronStorageHandlers(), ...getElectronEngineHandlers(), ...getElectronWindowHandlers()];
 }
 
 const allowedEventsList = getAllowedList();
