@@ -68,6 +68,11 @@ export async function getWorkloadDefinition(name: string) {
     fileName: 'definition.json',
   })) as WorkloadDefinition;
 
+  definition.messageHistory = (await callService('Storage:liliReadJson', {
+    folderName: `workloads/${name}`,
+    fileName: 'message_history.json',
+  })) as Array<MessageHistory>;
+
   await parseDefinitionFiles(definition);
 
   return definition;

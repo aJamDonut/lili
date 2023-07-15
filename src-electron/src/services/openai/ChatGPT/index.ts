@@ -6,7 +6,7 @@ export type ForEachTokenCallback = (token: string) => void;
 export type OnCompleteCallback = (token: string) => void;
 
 export interface ChatMessage {
-  role: 'role' | 'function';
+  role: 'role' | 'function' | 'user' | 'assistant';
   content: string;
 }
 

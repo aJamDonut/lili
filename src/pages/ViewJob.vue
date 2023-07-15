@@ -34,7 +34,7 @@
         >
           <div class="q-pa-md" style="min-height: 100%">
             <display-prompt class="q-mb-md" v-model="promptConfig" />
-            <display-output v-if="outputJson.length > 1" v-model="outputJson" />
+            <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" />
             <display-output v-model="outputText" />
           </div>
         </q-scroll-area>
