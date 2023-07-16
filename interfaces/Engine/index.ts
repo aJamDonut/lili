@@ -23,4 +23,6 @@ export interface EngineDriverInterface {
   getWorkloads(): Promise<Array<string>>;
 
   hasValidLicense(): Promise<boolean>;
+
+  unsetLicense(): Promise<boolean>;
 }
