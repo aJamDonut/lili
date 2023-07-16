@@ -68,7 +68,7 @@ export class ElectronEngine implements EngineDriverInterface {
   async unsetLicense(): Promise<boolean> {
     return await run('Engine:unsetLicense');
   }
-  async getLicense(): Promise<ValidLicenseResponse> {
-    return await run('Engine:getLicense');
+  async getLicense(key: string): Promise<ValidLicenseResponse> {
+    return await run('Engine:getLicense', { key });
   }
 }
