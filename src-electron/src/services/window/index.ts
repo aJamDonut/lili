@@ -34,6 +34,7 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
     _event.sender.send(func(name), {});
   });
 }
+
 export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'close', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -42,6 +43,14 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'maximize', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.maximize();
+  });
+  ipcWrap(justRegister, 'unmaximize', () => {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow)
+      focusedWindow.once('unmaximize', () => {
+        //Send to frontned.
+        focusedWindow.webContents.send('FocusedWindow:unmaximize');
+      });
   });
   ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
