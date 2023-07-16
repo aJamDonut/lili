@@ -2,6 +2,7 @@ import { Notify } from 'quasar';
 import { boot } from 'quasar/wrappers';
 import { useWorkloadsStore } from 'src/stores/workloads';
 import { on } from '../services/electron';
+import { type Router } from 'vue-router';
 
 const workloads = useWorkloadsStore();
 
@@ -12,21 +13,45 @@ interface LiliNotification {
   linkUrl?: string;
 }
 
+function getActions(router: Router, message: LiliNotification) {
+  return [
+    {
+      label: message.linkLabel,
+      handler: () => {
+        if (message.linkUrl) router.push(message.linkUrl);
+      },
+    },
+  ];
+}
+
+export function error(content: string) {
+  createNotification({ content, status: 'error' });
+}
+
+export function warning(content: string) {
+  createNotification({ content, status: 'warning' });
+}
+
+export function information(content: string) {
+  createNotification({ content, status: 'information' });
+}
+
 const colors = {
-  warning: 'yellow',
-  information: 'yellow',
-  error: 'red',
+  valid: 'green-8',
+  warning: 'orange-8',
+  information: 'primary',
+  error: 'red-8',
 };
 
-export default boot(({ app }) => {
+export let createNotification = (message: LiliNotification) => {
+  console.log(message);
+};
+
+export default boot(({ app, router }) => {
   workloads.load();
 
-  const handler = () => {
-    this.$router.push();
-  };
-
-  on('LiliEngine:notify', (message: LiliNotification) => {
-    const actions = !message.linkLabel ? [] : [{ label: message.linkLabel, handler }];
+  createNotification = (message: LiliNotification) => {
+    const actions = !message.linkLabel ? [] : getActions(router, message);
     Notify.create({
       group: false,
       message: message.content,
@@ -34,5 +59,9 @@ export default boot(({ app }) => {
       position: 'bottom-right',
       actions: actions,
     });
+  };
+
+  on('LiliEngine:notify', (message: LiliNotification) => {
+    createNotification(message);
   });
 });
