@@ -2,6 +2,8 @@
   <q-page padding>
     Index Page<br /><br />
 
+    Is key valid: {{ settingsStore.isValidKey }}<br />
+
     <q-btn @click="toggleDisplayOutput" color="green">Toggle Display Output</q-btn>
     <div v-if="displayOutput" class="q-py-lg">
       <display-output v-model="markdown" />
@@ -12,12 +14,18 @@
 
 
 <script>
+import { mapStores } from 'pinia'
+import { useSettingsStore } from 'stores/settings'
+
 export default {
   data() {
     return {
       displayOutput: false,
       markdown: " # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```",
     };
+  },
+  computed: {
+    ...mapStores(useSettingsStore)
   },
   methods: {
     toggleDisplayOutput() {
