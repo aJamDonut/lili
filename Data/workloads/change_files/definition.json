@@ -2,6 +2,7 @@
   "name": "Changes files",
   "codename": "change_files",
   "description": "Makes changes to files contents",
+  "category": "general",
   "defaults": {
     "advanced": {
       "repetitiveness": 1.5,

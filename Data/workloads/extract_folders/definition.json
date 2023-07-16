@@ -3,6 +3,7 @@
   "codename": "extract_folders",
   "description": "Extracts folders list from text",
   "type": "raw",
+  "category": "context",
   "defaults": {
     "advanced": {
       "repetitiveness": 1.5,
