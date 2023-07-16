@@ -44,6 +44,10 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.minimize();
   });
+  ipcWrap(justRegister, 'isMaximized', () => {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow) focusedWindow.isMaximized();
+  });
 }
 
 export function getElectronWindowHandlers() {
