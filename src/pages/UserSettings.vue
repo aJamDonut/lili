@@ -5,57 +5,90 @@
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
       <label>Theme</label>
-      <q-select
-        v-model="theme"
+      <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
+
+      <label>Lili License Key</label>
+      <q-input
+        :type="liliKeyHide ? 'password' : 'text'"
+        v-model="settingsStore.liliKey"
         filled
-        :options="themeOptions"
         class="q-mb-md"
-        dense />
-        
+        dense
+      >
+        <template v-slot:append>
+          <q-icon
+            :name="liliKeyHide ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="liliKeyHide = !liliKeyHide"
+          />
+        </template>
+      </q-input>
+
       <label>ChatGPT Key</label>
       <q-input
+        :type="chatGPTKeyHide ? 'password' : 'text'"
         v-model="settingsStore.chatGPTKey"
         filled
         class="q-mb-md"
-        dense />
+        dense
+      />
+      <q-btn @click="validateLicense">Validate license</q-btn>
     </lili-cont>
+    {{ licenseMessage }}
   </q-page>
 </template>
 
 
 <script>
-import { mapStores } from 'pinia'
+import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
+import { hasValidLicense } from '../services/lili/lili_real';
 
 export default {
-  data () {
+  data() {
     return {
+      liliKeyHide: true,
+      chatGPTKeyHide: true,
+      licenseMessage: 'test',
       themeOptions: [
         {
           label: 'Light',
-          value: false
+          value: false,
         },
         {
           label: 'Dark',
-          value: true
+          value: true,
         },
         {
           label: 'Auto Detect',
-          value: 'auto'
-        }
-      ]
-    }
+          value: 'auto',
+        },
+      ],
+    };
+  },
+  methods: {
+    async validateLicense() {
+      let license = await hasValidLicense();
+      if (!license.valid) {
+        this.licenseMessage = license.reason;
+      } else {
+        this.licenseMessage = 'License is valid';
+      }
+    },
   },
   computed: {
     ...mapStores(useSettingsStore),
     theme: {
-      get () {
-        return { value: this.settingsStore.darkMode, label: this.themeOptions.find(x => x.value === this.settingsStore.darkMode).label }
+      get() {
+        return {
+          value: this.settingsStore.darkMode,
+          label: this.themeOptions.find((x) => x.value === this.settingsStore.darkMode).label,
+        };
       },
-      set (val) {
-        this.settingsStore.darkMode = val.value
-      }
-    }
-  }
+      set(val) {
+        this.settingsStore.darkMode = val.value;
+      },
+    },
+  },
 };
 </script>

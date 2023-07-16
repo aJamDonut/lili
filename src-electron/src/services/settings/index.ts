@@ -20,6 +20,10 @@ export async function getApiKey() {
   return (await getUserSetting('chatGPTKey')) as string;
 }
 
+export async function getLicenseKey() {
+  return (await getUserSetting('liliKey')) as string;
+}
+
 export async function hasApiKey() {
   const apiKey = await getUserSetting('chatGPTKey');
   return apiKey ? true : false;
