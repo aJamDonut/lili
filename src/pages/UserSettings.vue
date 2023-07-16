@@ -7,23 +7,6 @@
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
 
-      <label>{{ $t('lili_license_key') }}</label>
-      <q-input
-        :type="liliKeyHide ? 'password' : 'text'"
-        v-model="settingsStore.liliKey"
-        filled
-        class="q-mb-md"
-        dense
-      >
-        <template v-slot:append>
-          <q-icon
-            :name="liliKeyHide ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="liliKeyHide = !liliKeyHide"
-          />
-        </template>
-      </q-input>
-
       <label>{{ $t('chatgpt_key') }}</label>
       <q-input
         :type="chatGPTKeyHide ? 'password' : 'text'"
@@ -32,9 +15,39 @@
         class="q-mb-md"
         dense
       />
-      <q-btn @click="validateLicense">Validate license</q-btn>
     </lili-cont>
-    {{ licenseMessage }}
+
+    <lili-cont title="License">
+      <label>{{ $t('lili_key') }}</label>
+      <q-input
+        :type="liliKeyHide ? 'password' : 'text'"
+        v-model="settingsStore.liliKey"
+        filled
+        class="q-mb-md"
+        dense>
+        <template v-slot:append>
+          <q-icon
+            :name="liliKeyHide ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="liliKeyHide = !liliKeyHide"
+          />
+        </template>
+      </q-input>
+      <div class="outcome q-mb-xs">
+        <div v-if="settingsStore.isValidKey === true" class="output-positive">
+          <div class="row justify-start">
+            <div><q-icon name="check" /></div>
+            <div>License is valid</div>
+          </div>
+        </div>
+        <div v-else class="output-negative">
+          <div class="row items-center q-col-gutter-xs">
+            <div><q-icon name="close" size="20px" /></div>
+            <div>License is invalid</div>
+          </div>
+        </div>
+      </div>
+    </lili-cont>
   </q-page>
 </template>
 
@@ -69,15 +82,16 @@ export default {
   },
   methods: {
     async validateLicense() {
-      let license = await hasValidLicense();
-      if (!license.valid) {
-        this.licenseMessage = license.reason;
-        error(license.reason);
-      } else {
-        this.licenseMessage = 'License is valid';
-        information('License is valid');
-      }
-    },
+
+      console.log('validatingLicense')
+      const isValid = await this.settingsStore.checkKey();
+
+      console.log('isValid', isValid)
+    
+      // error(license.reason);
+      // information('License is valid');
+
+    }
   },
   computed: {
     ...mapStores(useSettingsStore),
@@ -93,5 +107,11 @@ export default {
       },
     },
   },
+  watch: {
+    'settingsStore.liliKey': function () {
+      console.log('lili key changed')
+      this.validateLicense();
+    },
+  }
 };
 </script>

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from 'services/storage';
-import { hasValidLicense } from 'src/services/lili/lili_real';
+import { getLicense, unsetLicense } from 'src/services/lili/lili_real';
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -14,11 +14,17 @@ export const useSettingsStore = defineStore('settings', {
     isValidKey: false,
   }),
   actions: {
-    checkLiLiKey() {
+    async checkKey() {
+      if (this.isValidKey) {
+        await unsetLicense();
+      }
       this.isValidKey = false;
-      hasValidLicense(this.liliKey).then((data) => {
-        this.isValidKey = data.valid;
-      });
+      const response = await getLicense(this.liliKey)
+
+      console.log('checking Key: ' + this.liliKey, response)
+
+      this.isValidKey = response.valid;
+      return this.isValidKey;
     },
     async load() {
       const storage = new Storage();
@@ -30,7 +36,8 @@ export const useSettingsStore = defineStore('settings', {
         });
       }
 
-      this.checkLiLiKey();
+      // Check license key
+      this.checkKey();
 
       return settings;
     },
