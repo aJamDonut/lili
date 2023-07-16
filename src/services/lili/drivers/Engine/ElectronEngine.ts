@@ -1,5 +1,6 @@
 import { EngineDriverInterface } from 'app/interfaces/Engine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
+import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
 
 import { run, on, off } from 'src/services/electron';
 
@@ -66,5 +67,8 @@ export class ElectronEngine implements EngineDriverInterface {
 
   async unsetLicense(): Promise<boolean> {
     return await run('Engine:unsetLicense');
+  }
+  async getLicense(): Promise<ValidLicenseResponse> {
+    return await run('Engine:getLicense');
   }
 }

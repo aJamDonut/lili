@@ -1,4 +1,5 @@
 import type { HistoryEntry, WorkloadHistory, WorkloadOptions } from '../Workload';
+import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
 
 /**
  * Represents the interface for an engine driver.
@@ -25,4 +26,5 @@ export interface EngineDriverInterface {
   hasValidLicense(): Promise<boolean>;
 
   unsetLicense(): Promise<boolean>;
+  getLicense(): Promise<ValidLicenseResponse>;
 }
