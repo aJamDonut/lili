@@ -1,5 +1,5 @@
-import { BrowserWindow } from 'electron';
-import { registerEvent, type EventCallback } from '../event';
+import { BrowserWindow, ipcRenderer } from 'electron';
+import { registerEvent, type EventCallback, MixedEvent } from '../event';
 
 const functionList: Array<string> = [];
 
@@ -29,7 +29,10 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
     func(name);
     return;
   }
-  registerEvent(func(name), callback);
+  registerEvent(func(name), (_event, ...args) => {
+    callback(_event, ...args);
+    _event.sender.send(func(name), {});
+  });
 }
 export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'close', () => {
@@ -40,7 +43,7 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.maximize();
   });
-  ipcWrap(justRegister, 'minimize', () => {
+  ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.minimize();
   });
