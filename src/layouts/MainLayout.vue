@@ -5,6 +5,8 @@
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title id="drag-area"> liliFLUX </q-toolbar-title>
+        <q-btn dense flat round icon="minimize" @click="minApp" />
+        <q-btn dense flat round icon="crop_din" @click="maxApp" />
         <q-btn dense flat round icon="close" @click="closeApp" />
       </q-toolbar>
     </q-header>
@@ -86,6 +88,12 @@ export default {
       },
       closeApp() {
         _electron.run('FocusedWindow:close');
+      },
+      minApp() {
+        _electron.run('FocusedWindow:minimize');
+      },
+      maxApp() {
+        _electron.run('FocusedWindow:maximize');
       },
     };
   },
