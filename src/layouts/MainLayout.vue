@@ -2,7 +2,9 @@
   <q-layout view="hHh Lpr fFf">
     <q-header class="bg-primary text-white" height-hint="32">
       <q-toolbar>
-        <q-toolbar-title id="drag-area"> liliFLUX </q-toolbar-title>
+        <q-toolbar-title id="drag-area">
+          <div class='brand'>liliFLUX</div>
+        </q-toolbar-title>
         <div class="row items-center full-height">
           <div>
             <div class="window-btn" @click="minApp">
@@ -99,10 +101,10 @@ export default {
   },
   beforeMount() {
     _electron.run('FocusedWindow:listen', { name: 'main'});
-    _electron.on('FocusedWindow:maximize', () => {
+    _electron.on('Window:main:maximize', () => {
       this.isMaximized = true;
     });
-    _electron.on('FocusedWindow:unmaximize', () => {
+    _electron.on('Window:main:unmaximize', () => {
       this.isMaximized = false;
     });
   },
@@ -136,6 +138,11 @@ Tip: disable context menus
 On some platforms, the draggable area will be treated as a non-client frame, so when you right click on it, a system menu will pop up.
 To make the context menu behave correctly on all platforms, you should never use a custom context menu on draggable areas.
 */
+.brand {
+  padding-left: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+}
 #drag-area {
   -webkit-app-region: drag;
 }
