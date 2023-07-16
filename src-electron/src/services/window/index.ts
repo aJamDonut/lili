@@ -54,11 +54,13 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
   });
   ipcWrap(justRegister, 'listen', (_event: MixedEvent, options) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
-    if (focusedWindow)
-      focusedWindow.on('unmaximize', () => {
-        //Send to frontned.
-        focusedWindow.webContents.send(`Window:${options.name}:unmaximize`);
-      });
+    if (focusedWindow) {
+      const oldEmitter = focusedWindow.emit;
+      focusedWindow.emit = function (eventName: string, ...args: any[]) {
+        focusedWindow.webContents.send(`Window:${options.name}:${eventName}`);
+        return oldEmitter.call(focusedWindow, eventName, ...args);
+      };
+    }
   });
   ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
