@@ -59,4 +59,8 @@ export class ElectronEngine implements EngineDriverInterface {
   async getHistoricWorkload(id: number): Promise<WorkloadHistory> {
     return await run('Engine:getHistoricWorkload', { id });
   }
+
+  async hasValidLicense(): Promise<boolean> {
+    return await run('Engine:hasValidLicense');
+  }
 }

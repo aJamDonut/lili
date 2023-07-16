@@ -21,4 +21,6 @@ export interface EngineDriverInterface {
   getHistoricWorkload(id: number): Promise<WorkloadHistory>;
 
   getWorkloads(): Promise<Array<string>>;
+
+  hasValidLicense(): Promise<boolean>;
 }

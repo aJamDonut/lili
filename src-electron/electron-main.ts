@@ -5,6 +5,7 @@ import { setupElectronStorageHandlers } from './src/services/storage/ElectronSto
 import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 import { registerEvent } from './src/services/event';
 import { setupElectronWindowHandlers } from './src/services/window';
+import { getLicense } from './src/services/shopify';
 
 //IMPORTANT: DO NOT USE 'electron/remote' that is for people who don't understand Web Security!!!!!
 //I don't even care that it's in the official documentation. It's wrong! Just add to the context bridge correctly.

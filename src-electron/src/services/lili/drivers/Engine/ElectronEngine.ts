@@ -11,6 +11,7 @@ import {
 import { CompletionMessage, streamCompletion } from '../../../openai/ChatGPT';
 import { WorkloadDefinition, getWorkloadDefinition, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
+import { hasValidLicense } from '../../../shopify';
 
 const functionList: Array<string> = [];
 
@@ -89,6 +90,10 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
 
   ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {
     return getHistory(options.start as number, options.end as number);
+  });
+
+  ipcWrap(justRegister, 'hasValidLicense', async (_event: MixedEvent, options: ElectronEventData) => {
+    return hasValidLicense();
   });
 
   ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
