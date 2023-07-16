@@ -25,7 +25,7 @@
         <q-btn
           flat
           dense
-          @click="showAdvanced = !showAdvanced"
+          @click="settingsStore.showAdvanced = !settingsStore.showAdvanced"
           :icon="showAdvancedIcon"
           :icon-right="showAdvancedIcon"
           color="grey"
@@ -35,7 +35,7 @@
       </div>
     </div>
     <transition name="slidedown">
-      <div v-if="showAdvanced">
+      <div v-if="settingsStore.showAdvanced">
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
             <label>Context</label>
@@ -89,7 +89,8 @@
 
 <script>
 import { mapStores } from 'pinia';
-import { useWorkloadsStore } from 'src/stores/workloads';
+import { useSettingsStore } from 'stores/settings';
+import { useWorkloadsStore } from 'stores/workloads';
 
 function mountWorkloads() {
   this.workloadOptions = [];
@@ -104,7 +105,6 @@ function mountWorkloads() {
 export default {
   data() {
     return {
-      showAdvanced: false,
       workloadOptions: [],
       outputFormatOptions: ['Plaintext', 'Chat', 'HTML'],
       outputToOptions: ['Inline', 'Cursor', 'Folder'],
@@ -121,20 +121,32 @@ export default {
   mounted() {
     mountWorkloads.call(this);
   },
+  beforeMount () {
+    console.log('before mount', this.settingsStore.workload)
+    this.promptConfig.workload = this.settingsStore.workload
+  },
   computed: {
-    ...mapStores(useWorkloadsStore),
+    ...mapStores(useWorkloadsStore, useSettingsStore),
     showAdvancedIcon() {
-      return this.showAdvanced ? 'expand_less' : 'expand_more';
+      return this.settingsStore.showAdvanced ? 'expand_less' : 'expand_more';
     },
     promptConfig: {
       get() {
         return this.modelValue;
       },
       set(value) {
+        // Not working
+        // this.settingsStore.workload = value.workload;
+        // console.log('set workload to', value.workload)
         this.$emit('update:modelValue', value);
-      },
+      }
     },
   },
+  watch: {
+    'promptConfig.workload': function (val) {
+      this.settingsStore.workload = val
+    }
+  }
 };
 </script>
 

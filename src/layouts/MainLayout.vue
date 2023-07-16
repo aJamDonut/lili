@@ -5,7 +5,7 @@
         <q-toolbar-title id="drag-area">
           <div class='brand'>liliFLUX</div>
         </q-toolbar-title>
-        <div class="row items-center full-height">
+        <div class="row items-center full-height non-selectable	">
           <div>
             <div class="window-btn" @click="minApp">
               <img class="icon" srcset="icons/min-w-10.png, icons/min-w-12.png 1.25x, icons/min-w-15.png 1.5x, icons/min-w-15.png 1.75x, icons/min-w-20.png 2x, icons/min-w-20.png 2.25x, icons/min-w-24.png 2.5x, icons/min-w-30.png 3x, icons/min-w-30.png 3.5x" draggable="false">
