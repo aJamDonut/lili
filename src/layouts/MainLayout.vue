@@ -98,10 +98,10 @@ export default {
     };
   },
   beforeMount() {
+    _electron.run('FocusedWindow:listen', { name: 'main'});
     _electron.on('FocusedWindow:maximize', () => {
       this.isMaximized = true;
     });
-    _electron.run('FocusedWindow:unmaximize');
     _electron.on('FocusedWindow:unmaximize', () => {
       this.isMaximized = false;
     });
