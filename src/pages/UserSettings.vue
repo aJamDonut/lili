@@ -7,6 +7,18 @@
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
 
+      <label>{{ $t('language') }}</label>
+      <q-select
+        v-model="locale"
+        :options="localeOptions"
+        filled
+        class="q-mb-md"
+        borderless
+        emit-value
+        map-options
+        options-dense
+      />
+
       <label>{{ $t('chatgpt_key') }}</label>
       <q-input
         :type="chatGPTKeyHide ? 'password' : 'text'"
@@ -24,7 +36,8 @@
         v-model="settingsStore.liliKey"
         filled
         class="q-mb-md"
-        dense>
+        dense
+      >
         <template v-slot:append>
           <q-icon
             :name="liliKeyHide ? 'visibility_off' : 'visibility'"
@@ -57,10 +70,22 @@ import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { hasValidLicense } from '../services/lili/lili_real';
 import { information, error } from '../boot/lili';
+import { useI18n } from 'vue-i18n';
+import { langCodesList } from '../i18n/index';
 
 export default {
   data() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    const locales = [];
+
+    for (const countryCode in langCodesList) {
+      locales.push({ value: countryCode, label: langCodesList[countryCode] });
+    }
+
     return {
+      locale,
+      localeOptions: locales,
       liliKeyHide: true,
       chatGPTKeyHide: true,
       licenseMessage: 'test',
@@ -82,16 +107,14 @@ export default {
   },
   methods: {
     async validateLicense() {
-
-      console.log('validatingLicense')
+      console.log('validatingLicense');
       const isValid = await this.settingsStore.checkKey();
 
-      console.log('isValid', isValid)
-    
+      console.log('isValid', isValid);
+
       // error(license.reason);
       // information('License is valid');
-
-    }
+    },
   },
   computed: {
     ...mapStores(useSettingsStore),
@@ -108,10 +131,13 @@ export default {
     },
   },
   watch: {
+    '$i18n.locale': function (newLanguage) {
+      this.settingsStore.language = newLanguage;
+    },
     'settingsStore.liliKey': function () {
-      console.log('lili key changed')
+      console.log('lili key changed');
       this.validateLicense();
     },
-  }
+  },
 };
 </script>

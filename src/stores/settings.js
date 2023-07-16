@@ -12,6 +12,7 @@ export const useSettingsStore = defineStore('settings', {
     splitterWidth: 25,
     liliKey: '',
     isValidKey: false,
+    language: 'none',
   }),
   actions: {
     async checkKey() {
@@ -19,9 +20,9 @@ export const useSettingsStore = defineStore('settings', {
         await unsetLicense();
       }
       this.isValidKey = false;
-      const response = await getLicense(this.liliKey)
+      const response = await getLicense(this.liliKey);
 
-      console.log('checking Key: ' + this.liliKey, response)
+      console.log('checking Key: ' + this.liliKey, response);
 
       this.isValidKey = response.valid;
       return this.isValidKey;
