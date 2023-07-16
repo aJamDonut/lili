@@ -101,7 +101,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 
   ipcWrap(justRegister, 'getLicense', async (_event: MixedEvent, options: ElectronEventData) => {
-    return getLicense(options.key as string);
+    return getLicense(options.key as string, true);
   });
 
   ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
