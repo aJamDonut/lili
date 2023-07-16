@@ -4,7 +4,8 @@
       v-model="splitterWidth"
       :limits="[25, 60]"
       style="min-height: inherit"
-      before-class="bg-dark-1"
+      before-class="panel-left-bg"
+      after-class="panel-right-bg"
       class="absolute-full"
     >
       <template v-slot:before>
