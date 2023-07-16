@@ -117,7 +117,7 @@ function validateLicense(license: ResponseData) {
 let activeLicense = licenseError('');
 unsetLicense();
 
-export async function getLicense(licenseKey: string, invalidate: boolean = false) {
+export async function getLicense(licenseKey: string, invalidate = false) {
   if (!licenseKey) {
     return licenseError('Not valid license provided');
   }
