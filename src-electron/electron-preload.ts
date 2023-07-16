@@ -22,18 +22,9 @@ contextBridge.exposeInMainWorld('_electron', {
   },
   on: async (event: string, callback: any) => {
     ipcRenderer.removeAllListeners(event); //Remove any active listeners
-    //Check it is in the list of allowed events
-    if (!allowedEventsList.includes(event)) {
-      console.error('Cannot execute non-allowed on event: ' + event);
-      return 'Cannot execute non-allowed on event: ' + event;
-    }
     ipcRenderer.on(event, callback);
   },
   off: async (event: string) => {
-    //Check it is in the list of allowed events
-    if (!allowedEventsList.includes(event)) {
-      return 'Cannot execute non-allowed event: ' + event;
-    }
     return ipcRenderer.removeAllListeners(event);
   },
 });
