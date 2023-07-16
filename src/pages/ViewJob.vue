@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <div class="feature-page">
     <q-splitter
       v-model="splitterWidth"
       :limits="[25, 60]"
@@ -41,6 +42,13 @@
         </q-scroll-area>
       </template>
     </q-splitter>
+    </div>
+    <div class="overlay flex flex-center">
+      <div class="row items-end q-col-gutter-xs">
+        <div><q-icon name="sym_o_info" size="20px" /></div>
+        <div>Validate your license key to unlock all features</div>
+      </div>
+    </div>
   </q-page>
 </template>
 

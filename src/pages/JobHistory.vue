@@ -1,5 +1,6 @@
 <template>
   <q-page padding>
+    <div class="feature-page">
     <q-table
       :rows="jobStore.jobHistory"
       :columns="columns"
@@ -50,7 +51,13 @@
         </div>
       </template>
     </q-table>
-
+    </div>
+    <div class="overlay flex flex-center">
+      <div class="row items-end q-col-gutter-xs">
+        <div><q-icon name="sym_o_info" size="20px" /></div>
+        <div>Validate your license key to unlock all features</div>
+      </div>
+    </div>
   </q-page>
 </template>
 
