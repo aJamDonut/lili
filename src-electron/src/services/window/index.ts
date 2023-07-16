@@ -35,10 +35,6 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   });
 }
 
-interface WindowData {
-  name: string;
-}
-
 export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'close', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
