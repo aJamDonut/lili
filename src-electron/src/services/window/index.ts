@@ -35,6 +35,10 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   });
 }
 
+interface WindowData {
+  name: string;
+}
+
 export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'close', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -46,10 +50,14 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
   });
   ipcWrap(justRegister, 'unmaximize', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow) focusedWindow.unmaximize();
+  });
+  ipcWrap(justRegister, 'listen', (_event: MixedEvent, options) => {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow)
-      focusedWindow.once('unmaximize', () => {
+      focusedWindow.on('unmaximize', () => {
         //Send to frontned.
-        focusedWindow.webContents.send('FocusedWindow:unmaximize');
+        focusedWindow.webContents.send(`FocusedWindow:${options.name}:unmaximize`);
       });
   });
   ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
