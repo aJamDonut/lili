@@ -43,6 +43,7 @@
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { hasValidLicense } from '../services/lili/lili_real';
+import { information, error } from '../boot/lili';
 
 export default {
   data() {
@@ -71,8 +72,10 @@ export default {
       let license = await hasValidLicense();
       if (!license.valid) {
         this.licenseMessage = license.reason;
+        error(license.reason);
       } else {
         this.licenseMessage = 'License is valid';
+        information('License is valid');
       }
     },
   },
