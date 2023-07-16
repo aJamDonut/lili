@@ -52,16 +52,22 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.unmaximize();
   });
+
   ipcWrap(justRegister, 'listen', (_event: MixedEvent, options) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) {
       const oldEmitter = focusedWindow.emit;
       focusedWindow.emit = function (eventName: string, ...args: any[]) {
-        focusedWindow.webContents.send(`Window:${options.name}:${eventName}`);
+        try {
+          if (focusedWindow) focusedWindow.webContents.send(`Window:${options.name}:${eventName}`);
+        } catch (e) {
+          console.log('Window is possible destroyed now');
+        }
         return oldEmitter.call(focusedWindow, eventName, ...args);
       };
     }
   });
+
   ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.minimize();
