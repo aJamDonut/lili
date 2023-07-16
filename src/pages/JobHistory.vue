@@ -46,7 +46,7 @@
       </template>
       <template v-slot:no-data>
         <div class="full-width row flex-center q-my-lg">
-          <div class="text-grey-6">No history found!</div>
+          <div class="text-grey-6">{{ $t('no_job_history') }}</div>
         </div>
       </template>
     </q-table>
@@ -59,26 +59,26 @@
 import { mapStores } from 'pinia'
 import { useJobStore } from 'stores/job';
 
-const columns = [
-  { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
-  { name: 'prompt', label: 'Prompt', field: 'prompt', align: 'left', sortable: true },
-  { name: 'context', label: 'Context', field: 'context', align: 'left', sortable: true },
-  { name: 'first_workload', label: 'First Workload', field: 'first_workload', align: 'left', sortable: true },
-  { name: 'last_workload', label: 'Last Workload', field: 'last_workload', align: 'left', sortable: true },
-  { name: 'response', label: 'Response', field: 'response', align: 'left', sortable: true },
-  { name: 'status', label: 'Status', field: 'status', align: 'left', sortable: true },
-  { name: 'actions', label: 'Actions', field: 'actions', align: 'center', sortable: false },
-]
-
 export default {
   data() {
     return {
-      columns: columns,
       displayOutput: false,
       markdown: " # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```",
     };
   },
   computed: {
+    columns () {
+      return [
+        { name: 'id', label: this.$t('id'), field: 'id', align: 'left', sortable: true },
+        { name: 'prompt', label: this.$t('prompt'), field: 'prompt', align: 'left', sortable: true },
+        { name: 'context', label: this.$t('context'), field: 'context', align: 'left', sortable: true },
+        { name: 'first_workload', label: this.$t('first_workload'), field: 'first_workload', align: 'left', sortable: true },
+        { name: 'last_workload', label: this.$t('last_workload'), field: 'last_workload', align: 'left', sortable: true },
+        { name: 'response', label: this.$t('response'), field: 'response', align: 'left', sortable: true },
+        { name: 'status', label: this.$t('status'), field: 'status', align: 'left', sortable: true },
+        { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false },
+      ]
+    },
     ...mapStores(useJobStore)
   },
   methods: {

@@ -1,15 +1,15 @@
 <template>
   <div>
-    <lili-cont title="Debug" class="q-mb-sm" v-if="showDebug">
+    <lili-cont :title="$t('debug')" class="q-mb-sm" v-if="showDebug">
       <textarea v-model="markdown"></textarea>
       
     </lili-cont>
     <lili-cont :title="true">
       <template v-slot:title>
         <div class="row items-center">
-          <div class="col">Output</div>
+          <div class="col">{{ $t('output') }}</div>
           <div class="col-shrink">
-            <q-btn size="10px" @click="showDebug = !showDebug" outline color="primary">Debug</q-btn>
+            <q-btn size="10px" @click="showDebug = !showDebug" outline color="primary">{{ $t('debug') }}</q-btn>
           </div>
         </div>
       </template>

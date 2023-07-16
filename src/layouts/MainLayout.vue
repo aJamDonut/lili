@@ -5,7 +5,7 @@
         <q-toolbar-title id="drag-area">
           <div class='brand'>liliFLUX</div>
         </q-toolbar-title>
-        <div class="row items-center full-height">
+        <div class="row items-center full-height non-selectable	">
           <div>
             <div class="window-btn" @click="minApp">
               <img class="icon" srcset="icons/min-w-10.png, icons/min-w-12.png 1.25x, icons/min-w-15.png 1.5x, icons/min-w-15.png 1.75x, icons/min-w-20.png 2x, icons/min-w-20.png 2.25x, icons/min-w-24.png 2.5x, icons/min-w-30.png 3x, icons/min-w-30.png 3.5x" draggable="false">
@@ -62,41 +62,11 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-
-const menuList = [
-  {
-    icon: 'dashboard',
-    label: 'Dashboard',
-    url: '',
-    separator: false,
-  },
-  {
-    icon: 'add',
-    label: 'Run A Job',
-    url: 'job',
-    separator: false,
-  },
-  {
-    icon: 'history',
-    label: 'Job History',
-    url: 'history',
-    separator: false,
-  },
-  {
-    icon: 'settings',
-    label: 'Settings',
-    url: 'settings',
-    separator: false,
-  },
-];
-
 export default {
   data() {
     return {
       miniState: false,
-      isMaximized: false,
-      menuList: menuList
+      isMaximized: false
     };
   },
   beforeMount() {
@@ -107,6 +77,36 @@ export default {
     _electron.on('Window:main:unmaximize', () => {
       this.isMaximized = false;
     });
+  },
+  computed: {
+    menuList() {
+      return [
+        {
+          icon: 'dashboard',
+          label: this.$t('dashboard'),
+          url: '',
+          separator: false,
+        },
+        {
+          icon: 'add',
+          label: this.$t('run_job'),
+          url: 'job',
+          separator: false,
+        },
+        {
+          icon: 'history',
+          label: this.$t('job_history'),
+          url: 'history',
+          separator: false,
+        },
+        {
+          icon: 'settings',
+          label: this.$t('settings'),
+          url: 'settings',
+          separator: false,
+        },
+      ]
+    }
   },
   methods: {
     toggleMaximize () {
