@@ -57,7 +57,7 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
     if (focusedWindow)
       focusedWindow.on('unmaximize', () => {
         //Send to frontned.
-        focusedWindow.webContents.send(`FocusedWindow:${options.name}:unmaximize`);
+        focusedWindow.webContents.send(`Window:${options.name}:unmaximize`);
       });
   });
   ipcWrap(justRegister, 'minimize', (_event: MixedEvent) => {
