@@ -10,9 +10,9 @@
             </div>
           </div>
           <div>
-            <div class="window-btn" @click="maxApp">
-              <img class="icon" srcset="icons/max-w-10.png, icons/max-w-12.png 1.25x, icons/max-w-15.png 1.5x, icons/max-w-15.png 1.75x, icons/max-w-20.png 2x, icons/max-w-20.png 2.25x, icons/max-w-24.png 2.5x, icons/max-w-30.png 3x, icons/max-w-30.png 3.5x" draggable="false">
-              <!-- <img class="icon" srcset="icons/restore-w-10.png, icons/restore-w-12.png 1.25x, icons/restore-w-15.png 1.5x, icons/restore-w-15.png 1.75x, icons/restore-w-20.png 2x, icons/restore-w-20.png 2.25x, icons/restore-w-24.png 2.5x, icons/restore-w-30.png 3x, icons/restore-w-30.png 3.5x" draggable="false"> -->
+            <div class="window-btn" @click="toggleMaximize">
+              <img v-if="!isMaximized" class="icon" srcset="icons/max-w-10.png, icons/max-w-12.png 1.25x, icons/max-w-15.png 1.5x, icons/max-w-15.png 1.75x, icons/max-w-20.png 2x, icons/max-w-20.png 2.25x, icons/max-w-24.png 2.5x, icons/max-w-30.png 3x, icons/max-w-30.png 3.5x" draggable="false">
+              <img v-else class="icon" srcset="icons/restore-w-10.png, icons/restore-w-12.png 1.25x, icons/restore-w-15.png 1.5x, icons/restore-w-15.png 1.75x, icons/restore-w-20.png 2x, icons/restore-w-20.png 2.25x, icons/restore-w-24.png 2.5x, icons/restore-w-30.png 3x, icons/restore-w-30.png 3.5x" draggable="false">
             </div>
           </div>
           <div>
@@ -90,27 +90,43 @@ const menuList = [
 ];
 
 export default {
-  setup() {
-    const leftDrawerOpen = ref(false);
-
+  data() {
     return {
-      miniState: ref(true),
-      menuList,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-      closeApp() {
-        _electron.run('FocusedWindow:close');
-      },
-      minApp() {
-        _electron.run('FocusedWindow:minimize');
-      },
-      maxApp() {
-        _electron.run('FocusedWindow:maximize');
-      },
+      miniState: false,
+      isMaximized: false,
+      menuList: menuList
     };
   },
+  beforeMount() {
+    _electron.on('FocusedWindow:maximize', () => {
+      this.isMaximized = true;
+    });
+    _electron.run('FocusedWindow:unmaximize');
+    _electron.on('FocusedWindow:unmaximize', () => {
+      this.isMaximized = false;
+    });
+  },
+  methods: {
+    toggleMaximize () {
+      if (this.isMaximized) {
+        this.unminimizeApp();
+      } else {
+        this.maxApp();
+      }
+    },
+    closeApp() {
+      _electron.run('FocusedWindow:close');
+    },
+    minApp() {
+      _electron.run('FocusedWindow:minimize');
+    },
+    unminimizeApp() {
+      _electron.run('FocusedWindow:unmaximize');
+    },
+    maxApp() {
+      _electron.run('FocusedWindow:maximize');
+    }
+  }
 };
 </script>
 
