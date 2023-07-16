@@ -70,6 +70,6 @@ export async function unsetLicense(): Promise<boolean> {
   return await LILIAI.engineDriver.unsetLicense();
 }
 
-export async function getLicense(): Promise<boolean> {
-  return await LILIAI.engineDriver.getLicense();
+export async function getLicense(key: string) {
+  return await LILIAI.engineDriver.getLicense(key);
 }
