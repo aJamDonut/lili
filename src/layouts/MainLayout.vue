@@ -62,41 +62,11 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-
-const menuList = [
-  {
-    icon: 'dashboard',
-    label: 'Dashboard',
-    url: '',
-    separator: false,
-  },
-  {
-    icon: 'add',
-    label: 'Run A Job',
-    url: 'job',
-    separator: false,
-  },
-  {
-    icon: 'history',
-    label: 'Job History',
-    url: 'history',
-    separator: false,
-  },
-  {
-    icon: 'settings',
-    label: 'Settings',
-    url: 'settings',
-    separator: false,
-  },
-];
-
 export default {
   data() {
     return {
       miniState: false,
-      isMaximized: false,
-      menuList: menuList
+      isMaximized: false
     };
   },
   beforeMount() {
@@ -107,6 +77,36 @@ export default {
     _electron.on('Window:main:unmaximize', () => {
       this.isMaximized = false;
     });
+  },
+  computed: {
+    menuList() {
+      return [
+        {
+          icon: 'dashboard',
+          label: this.$t('dashboard'),
+          url: '',
+          separator: false,
+        },
+        {
+          icon: 'add',
+          label: this.$t('run_job'),
+          url: 'job',
+          separator: false,
+        },
+        {
+          icon: 'history',
+          label: this.$t('job_history'),
+          url: 'history',
+          separator: false,
+        },
+        {
+          icon: 'settings',
+          label: this.$t('settings'),
+          url: 'settings',
+          separator: false,
+        },
+      ]
+    }
   },
   methods: {
     toggleMaximize () {

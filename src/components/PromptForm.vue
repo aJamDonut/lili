@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label>Prompt</label>
+    <label>{{ $t('prompt') }}</label>
     <q-input
       v-model="promptConfig.prompt"
       filled
@@ -11,7 +11,7 @@
       class="q-mb-md"
     ></q-input>
 
-    <label>Workload</label>
+    <label>{{ $t('workload') }}</label>
     <q-select
       v-model="promptConfig.workload"
       filled
@@ -29,7 +29,7 @@
           :icon="showAdvancedIcon"
           :icon-right="showAdvancedIcon"
           color="grey"
-          label="Advanced"
+          :label="$t('advanced')"
           size="10px"
         />
       </div>
@@ -38,14 +38,14 @@
       <div v-if="settingsStore.showAdvanced">
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
-            <label>Context</label>
+            <label>{{ $t('context') }}</label>
             <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
           </div>
         </div>
         <div class="row q-col-gutter-md q-mb-md">
           <!-- Output -->
           <div class="col" style="min-width: 120px">
-            <label>Output Format</label>
+            <label>{{ $t('output_format') }}</label>
             <q-select
               v-model="promptConfig.outputFormat"
               filled
@@ -54,26 +54,26 @@
             ></q-select>
           </div>
           <div class="col" style="min-width: 120px">
-            <label>Output To</label>
+            <label>{{ $t('output_to') }}</label>
             <q-select v-model="promptConfig.outputTo" filled :options="outputToOptions" dense></q-select>
           </div>
         </div>
         <div class="row q-col-gutter-md">
           <!-- Extra Stuff -->
           <div class="col" style="min-width: 120px">
-            <label>Creativity</label>
+            <label>{{ $t('creativity') }}</label>
             <lili-slider v-model="promptConfig.creativity" :step="0.01" :min="0.5" :max="1" />
           </div>
           <div class="col" style="min-width: 120px">
-            <label>Repetitiveness</label>
+            <label>{{ $t('repetitiveness') }}</label>
             <lili-slider v-model="promptConfig.repetitiveness" :step="0.01" :min="0.5" :max="1" />
           </div>
           <div class="col" style="min-width: 120px">
-            <label>Response Limit</label>
+            <label>{{ $t('response_limit') }}</label>
             <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
           </div>
           <div class="col" style="min-width: 120px">
-            <label>Solution Count</label>
+            <label>{{ $t('solution_count') }}</label>
             <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
           </div>
         </div>
@@ -81,7 +81,7 @@
     </transition>
     <div class="row justify-end q-mt-lg">
       <div>
-        <q-btn @click="runJob" size="14px" color="green" icon="arrow_forward_ios" label="Run" />
+        <q-btn @click="runJob" size="14px" color="green" icon="arrow_forward_ios" :label="$t('run')" />
       </div>
     </div>
   </div>

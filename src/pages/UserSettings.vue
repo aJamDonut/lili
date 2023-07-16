@@ -1,13 +1,13 @@
 <template>
   <q-page padding>
     <lili-cont title="Settings">
-      <label>Slider Inputs</label>
+      <label>{{ $t('slider_inputs') }}</label>
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
-      <label>Theme</label>
+      <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
 
-      <label>Lili License Key</label>
+      <label>{{ $t('lili_license_key') }}</label>
       <q-input
         :type="liliKeyHide ? 'password' : 'text'"
         v-model="settingsStore.liliKey"
@@ -24,7 +24,7 @@
         </template>
       </q-input>
 
-      <label>ChatGPT Key</label>
+      <label>{{ $t('chatgpt_key') }}</label>
       <q-input
         :type="chatGPTKeyHide ? 'password' : 'text'"
         v-model="settingsStore.chatGPTKey"
