@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="feature-page">
+    <div :class="lockedPageClass">
     <q-splitter
       v-model="splitterWidth"
       :limits="[25, 60]"
@@ -43,12 +43,7 @@
       </template>
     </q-splitter>
     </div>
-    <div class="overlay flex flex-center">
-      <div class="row items-end q-col-gutter-xs">
-        <div><q-icon name="sym_o_info" size="20px" /></div>
-        <div>Validate your license key to unlock all features</div>
-      </div>
-    </div>
+    <locked-overlay />
   </q-page>
 </template>
 
@@ -97,6 +92,9 @@ export default {
   },
   computed: {
     ...mapStores(useSettingsStore),
+    lockedPageClass () {
+      return this.settingsStore.isValidKey ? '' : 'locked-page';
+    },
     splitterWidth: {
       get() {
         return this.settingsStore.splitterWidth;

@@ -96,7 +96,7 @@
   background-color: $primary;
 }
 
-.feature-page *:not(.overlay-cont) {
+.locked-page * {
   filter: blur(1px);
 }
 

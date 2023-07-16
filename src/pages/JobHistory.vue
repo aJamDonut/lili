@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="feature-page">
+    <div :class="lockedPageClass">
     <q-table
       :rows="jobStore.jobHistory"
       :columns="columns"
@@ -52,12 +52,7 @@
       </template>
     </q-table>
     </div>
-    <div class="overlay flex flex-center">
-      <div class="row items-end q-col-gutter-xs">
-        <div><q-icon name="sym_o_info" size="20px" /></div>
-        <div>Validate your license key to unlock all features</div>
-      </div>
-    </div>
+    <locked-overlay />
   </q-page>
 </template>
 
@@ -65,6 +60,7 @@
 <script>
 import { mapStores } from 'pinia'
 import { useJobStore } from 'stores/job';
+import { useSettingsStore } from 'stores/settings';
 
 export default {
   data() {
@@ -74,6 +70,10 @@ export default {
     };
   },
   computed: {
+    ...mapStores(useJobStore, useSettingsStore),
+    lockedPageClass () {
+      return this.settingsStore.isValidKey ? '' : 'locked-page';
+    },
     columns () {
       return [
         { name: 'id', label: this.$t('id'), field: 'id', align: 'left', sortable: true },
@@ -85,8 +85,7 @@ export default {
         { name: 'status', label: this.$t('status'), field: 'status', align: 'left', sortable: true },
         { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false },
       ]
-    },
-    ...mapStores(useJobStore)
+    }
   },
   methods: {
     viewJob(jobId) {
