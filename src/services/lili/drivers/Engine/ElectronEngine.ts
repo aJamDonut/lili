@@ -2,7 +2,7 @@ import { EngineDriverInterface } from 'app/interfaces/Engine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
 
-import { run, on, off } from 'src/services/electron';
+import { run, on } from 'src/services/electron';
 
 export interface LiliJsonResponse {
   type: 'inline' | 'advanced';
