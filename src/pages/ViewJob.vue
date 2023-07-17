@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { startWorkload } from 'services/lili/lili_real';
+import { startWorkload, reset } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
@@ -124,6 +124,9 @@ export default {
       // if (this.transactionRunning === false) return false;
       return this.transactions[this.transactions.length - 1];
     },
+  },
+  beforeMount() {
+    reset();
   },
   methods: {
     processToken(token) {
