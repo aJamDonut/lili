@@ -34,28 +34,49 @@ export async function getApiKey() {
   return (await getUserSetting('chatGPTKey')) as string;
 }
 
-const offsetStart = 's';
-
+let offsetStart = 's';
+let offsetAmount = 0;
 function getOffset(value?: string) {
   if (value) {
-    return value.charCodeAt(0);
+    return value.charCodeAt(offsetAmount);
   }
-  return offsetStart.charCodeAt(0);
+  return offsetStart.charCodeAt(offsetAmount);
 }
 
 interface LiliSession {
+  _offset_start: string;
+  _skcu_id: number;
   _skcu: string;
 }
 
 const MAX_TRIAL = 10;
-
+function getRandomNumber(min: number, max: number) {
+  // Generate a random number between min (inclusive) and max (inclusive)
+  return Math.floor(min + Math.random() * (max + 1 - min));
+}
+function newSKCU(distance: number) {
+  let str = '';
+  for (let i = 0; i <= 9; i++) {
+    if (distance === i) {
+      str = str + offsetStart;
+    }
+    str = str + String.fromCharCode(getRandomNumber(65, 65 + 24));
+  }
+  return str;
+}
+function getDistance() {
+  return getRandomNumber(0, 9);
+}
 export async function getSession() {
   let session = (await getUserSetting('session')) as LiliSession | string;
-
+  offsetStart = String.fromCharCode(getRandomNumber(65, 65 + 24));
   if (!session || typeof session === 'string') {
     //No session
+    offsetAmount = getDistance(); //Get new distance
     session = {
-      _skcu: offsetStart,
+      _offset_start: offsetStart,
+      _skcu_id: offsetAmount,
+      _skcu: newSKCU(offsetAmount),
     };
   }
   setUserSetting('session', session);
@@ -72,7 +93,11 @@ export async function useTrial() {
     throw 'Failed trying to use a trial';
   }
   let current = getOffset(session._skcu);
-  session._skcu = String.fromCharCode(current++);
+  session._skcu =
+    String.fromCharCode(current++) +
+    String.fromCharCode(Math.random() * 100) +
+    String.fromCharCode(Math.random() * 100) +
+    String.fromCharCode(Math.random() * 100);
 }
 
 export async function getLicenseLeft() {
