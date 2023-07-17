@@ -42,6 +42,11 @@
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
                 <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
                   <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
+                    <!-- <div
+                    v-for="(output, index) in row.outputJson"
+                    :key="index">
+                      {{ output }}
+                    </div> -->
                   <inline-output
                     v-for="(output, index) in row.outputJson"
                     :key="index"
@@ -93,6 +98,7 @@ export default {
         borderRadius: '5px',
         // backgroundColor: '#027be3',
         width: '7px',
+        height: '7px',
         // opacity: 0.75
       },
       barStyle: {

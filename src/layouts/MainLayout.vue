@@ -45,9 +45,9 @@
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
               <q-item-section>
-                {{ menuItem.label }}
+                {{ $t(menuItem.label) }}
               </q-item-section>
-              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="bg-black text-caption">{{ menuItem.label }}</q-tooltip>
+              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="bg-black text-caption">{{ $t(menuItem.label) }}</q-tooltip>
             </q-item>
             <q-separator :key="'sep' + index" v-if="menuItem.separator" />
           </template>
@@ -56,7 +56,15 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <q-page>
+        <div>
+          <q-scroll-area class="absolute-full" style="min-height:inherit;" :visible="true" :thumb-style="thumbStyle" :bar-style="barStyle">
+            <div style="min-height:inherit;">
+              <router-view />
+            </div>
+          </q-scroll-area>
+        </div>
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
@@ -66,7 +74,48 @@ export default {
   data() {
     return {
       miniState: false,
-      isMaximized: false
+      isMaximized: false,
+      menuList: [
+        {
+          icon: 'dashboard',
+          label: 'dashboard',
+          url: '',
+          separator: false,
+        },
+        {
+          icon: 'add',
+          label: 'run_job',
+          url: 'job',
+          separator: false,
+        },
+        {
+          icon: 'history',
+          label: 'job_history',
+          url: 'history',
+          separator: false,
+        },
+        {
+          icon: 'settings',
+          label: 'settings',
+          url: 'settings',
+          separator: false,
+        },
+      ],
+      thumbStyle: {
+        right: '3px',
+        borderRadius: '5px',
+        // backgroundColor: '#027be3',
+        width: '7px',
+        height: '7px',
+        // opacity: 0.75
+      },
+      barStyle: {
+        // right: '2px',
+        // borderRadius: '9px',
+        // backgroundColor: '#027be3',
+        // width: '9px',
+        // opacity: 0.2
+      },
     };
   },
   beforeMount() {
@@ -77,36 +126,6 @@ export default {
     _electron.on('Window:main:unmaximize', () => {
       this.isMaximized = false;
     });
-  },
-  computed: {
-    menuList() {
-      return [
-        {
-          icon: 'dashboard',
-          label: this.$t('dashboard'),
-          url: '',
-          separator: false,
-        },
-        {
-          icon: 'add',
-          label: this.$t('run_job'),
-          url: 'job',
-          separator: false,
-        },
-        {
-          icon: 'history',
-          label: this.$t('job_history'),
-          url: 'history',
-          separator: false,
-        },
-        {
-          icon: 'settings',
-          label: this.$t('settings'),
-          url: 'settings',
-          separator: false,
-        },
-      ]
-    }
   },
   methods: {
     toggleMaximize () {
