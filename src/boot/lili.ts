@@ -51,6 +51,7 @@ export default boot(({ app, router }) => {
   workloads.load();
 
   createNotification = (message: LiliNotification) => {
+    console.log('Create note', message);
     const actions = !message.linkLabel ? [] : getActions(router, message);
     Notify.create({
       group: false,

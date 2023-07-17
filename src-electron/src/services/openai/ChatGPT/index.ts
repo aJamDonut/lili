@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { getApiKey } from '../../settings';
+import { showError } from '../../event';
 
 export type ForEachTokenCallback = (token: string) => void;
 
@@ -42,6 +43,7 @@ export async function streamCompletion(
       onComplete.call(gpt, tokens);
     }
   } catch (e) {
+    showError('Errpr: ' + e);
     if (typeof onComplete === 'function') {
       onComplete.call({}, 'Errpr: ' + e);
     }

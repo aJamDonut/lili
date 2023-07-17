@@ -15,7 +15,7 @@ export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
 
   startWorkload(options: WorkloadOptions): void {
-    const forEachToken = (_event: any, token: string) => {
+    const forEachToken = (token: string) => {
       if (typeof options.onJsonResponse === 'function' && token.length > 10) {
         //It's long enough to potentially be a json update. lets parse it
         try {
@@ -32,7 +32,7 @@ export class ElectronEngine implements EngineDriverInterface {
 
     on('Engine:startWorkload-reply', forEachToken);
 
-    const onComplete = (_event: any, tokens: string) => {
+    const onComplete = (tokens: string) => {
       if (typeof options.onComplete === 'function') {
         options.onComplete(tokens);
       }

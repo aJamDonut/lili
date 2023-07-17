@@ -22,7 +22,9 @@ contextBridge.exposeInMainWorld('_electron', {
   },
   on: async (event: string, callback: any) => {
     ipcRenderer.removeAllListeners(event); //Remove any active listeners
-    ipcRenderer.on(event, callback);
+    ipcRenderer.on(event, (_event: Electron.IpcRendererEvent, ...args) => {
+      callback(...args);
+    });
   },
   off: async (event: string) => {
     return ipcRenderer.removeAllListeners(event);

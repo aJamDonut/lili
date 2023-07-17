@@ -77,15 +77,14 @@ export function showInfo(content: string, linkLabel?: string, linkUrl?: string) 
   }
 }
 
-export function showError(content: string, linkLabel?: string, linkUrl?: string) {
+export function showError(content: string) {
   const status = 'error';
-  if (!app.commandLine.hasSwitch('cli')) {
+  if (app.commandLine.hasSwitch('cli')) {
     return cliOut(content);
   } else {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     try {
-      if (focusedWindow)
-        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+      if (focusedWindow) focusedWindow.webContents.send(`LiliEngine:notify`, { status, content });
     } catch (e) {
       console.log(e);
     }
