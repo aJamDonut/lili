@@ -6,12 +6,14 @@ const hasParam = app?.commandLine.hasSwitch;
 const param = app?.commandLine.getSwitchValue;
 
 export type CliSettings = {
+  id: string;
   action: string;
   prompt: string;
   workload: string;
   [key: string]: string | number | boolean | Array<string | number | boolean>;
 };
 const defaults: CliSettings = {
+  id: 'none',
   action: 'help',
   prompt: '',
   workload: '',
@@ -60,8 +62,8 @@ const commands: CliCommands = {
       return;
     }
     await runWorkload(settings.prompt, {
-      workload: settings.workload,
-      onComplete: (tokens) => {
+      ...settings,
+      onComplete: async (tokens) => {
         finalOutput(tokens);
       },
     });

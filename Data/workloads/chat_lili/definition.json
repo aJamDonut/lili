@@ -1,0 +1,14 @@
+{
+  "name": "Lili Chat",
+  "codename": "chat_lili",
+  "description": "Helps with liliFLUX",
+  "category": "general",
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}

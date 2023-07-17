@@ -1,23 +1,23 @@
 <template>
   <q-page>
     <div :class="lockedPageClass">
-    <q-splitter
-      v-model="splitterWidth"
-      :limits="[25, 60]"
-      style="min-height: inherit"
-      before-class="panel-left-bg"
-      after-class="panel-right-bg"
-      class="absolute-full"
-    >
-      <template v-slot:before>
-        <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
-          <div class="q-pa-md" style="min-height: 100%">
-            <prompt-form v-model="promptConfig" @run="runJob" />
-          </div>
-        </q-scroll-area>
-      </template>
+      <q-splitter
+        v-model="splitterWidth"
+        :limits="[25, 60]"
+        style="min-height: inherit"
+        before-class="panel-left-bg"
+        after-class="panel-right-bg"
+        class="absolute-full"
+      >
+        <template v-slot:before>
+          <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
+            <div class="q-pa-md" style="min-height: 100%">
+              <prompt-form v-model="promptConfig" @run="runJob" />
+            </div>
+          </q-scroll-area>
+        </template>
 
-      <!-- <template v-slot:separator>
+        <!-- <template v-slot:separator>
         <q-icon
           color="grey-5"
           text-color="white"
@@ -26,37 +26,36 @@
         />
       </template> -->
 
-      <template v-slot:after>
-        <q-scroll-area
-          :visible="true"
-          :thumb-style="thumbStyle"
-          :bar-style="barStyle"
-          class="fit"
-          style="min-height: 100%"
-        >
-          <div class="q-pa-md" style="min-height: 100%">
-            <!-- Historic Transactions -->
-            <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
-              <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
-              <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
-                <inline-output v-for="(output, index) in row.outputJson" :key="index" :json="output" />
-              </lili-cont>
-              <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
-              <display-output v-model="row.outputText" />
-              <q-separator class="q-my-md" />
+        <template v-slot:after>
+          <q-scroll-area
+            :visible="true"
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+            class="fit"
+            style="min-height: 100%"
+          >
+            <div class="q-pa-md" style="min-height: 100%">
+              <!-- Historic Transactions -->
+              <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
+                <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
+                <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
+                  <inline-output v-for="(output, index) in row.outputJson" :key="index" :json="output" />
+                </lili-cont>
+                <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
+                <display-output v-model="row.outputText" />
+                <q-separator class="q-my-md" />
+              </div>
             </div>
-
-          </div>
-        </q-scroll-area>
-      </template>
-    </q-splitter>
+          </q-scroll-area>
+        </template>
+      </q-splitter>
     </div>
     <locked-overlay />
   </q-page>
 </template>
 
 <script>
-import { startWorkload } from 'services/lili/lili_real';
+import { startWorkload, reset } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 /**
@@ -95,9 +94,12 @@ export default {
       transactions: [],
     };
   },
+  beforeMount() {
+    reset();
+  },
   computed: {
     ...mapStores(useSettingsStore),
-    lockedPageClass () {
+    lockedPageClass() {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },
     splitterWidth: {
@@ -127,7 +129,7 @@ export default {
         promptConfig: this.promptConfig,
         outputText: '',
         outputJson: [],
-      })
+      });
     },
     runJob() {
       if (this.transactionRunning) return;
@@ -139,7 +141,7 @@ export default {
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: () => {
-          console.log('ONCOMPLETE!!!')
+          console.log('ONCOMPLETE!!!');
           this.transactionRunning = false;
         },
         onJsonResponse: (json) => {

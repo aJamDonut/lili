@@ -294,7 +294,7 @@ export async function parseJSONResult(
   }
 }
 
-function getCurrentDateTime(): string {
+export function getCurrentDateTime(): string {
   const now = new Date();
   const year = now.getFullYear().toString().padStart(4, '0');
   const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -306,7 +306,7 @@ function getCurrentDateTime(): string {
   return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
 }
 
-let COMPLETION_ID = 'default';
+let COMPLETION_ID = 'none';
 let MESSAGE_HISTORY: Array<MessageHistory> = [];
 let INLINE_MESSAGE_HISTORY: InlineMessages = [];
 
@@ -406,6 +406,10 @@ function createMessageHistory(role: ChatRole, content: string) {
 }
 
 function addMessagesHistory(role: ChatRole, content: string) {
+  console.log('-----------------');
+  console.log('PUSH History', MESSAGE_HISTORY);
+  console.log('-----------------');
+
   MESSAGE_HISTORY.push(createMessageHistory('assistant', content));
 }
 
@@ -415,6 +419,17 @@ function setHistory(history: Array<MessageHistory>) {
 
 function resetHistory() {
   MESSAGE_HISTORY = [];
+}
+
+export async function getHistory(id: string) {
+  try {
+    return (await callService('Storage:readJson', {
+      folderName: `workload_history/${id}/`,
+      fileName: `history.json`,
+    })) as Array<MessageHistory>;
+  } catch (_e) {
+    return [];
+  }
 }
 
 /**
@@ -430,10 +445,21 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     contents: JSON.stringify({ prompt, workloadOptions }),
   })) as WorkloadDefinition;
 
-  //Non-Existing workload
-  if (!workloadOptions.id) {
-    resetHistory();
+  if (!workloadOptions.id || workloadOptions.id === 'none') {
     workloadOptions.id = getNewCompletionId();
+  }
+
+  COMPLETION_ID = workloadOptions.id;
+
+  let diskHistory: Array<MessageHistory> = [];
+  try {
+    diskHistory = await getHistory(workloadOptions.id);
+  } catch (e) {
+    diskHistory = [];
+  }
+
+  if (diskHistory) {
+    MESSAGE_HISTORY = diskHistory;
   }
 
   const workload = await getFullWorkloadDefinition(workloadOptions.workload);
@@ -446,10 +472,11 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
   const messages = [
-    ...MESSAGE_HISTORY,
     ...workload.messageHistory,
-    newMessage('user', prompt, workloadOptions, workload),
     ...fileContextMessages.messages,
+    ...MESSAGE_HISTORY,
+    newMessage('user', prompt, workloadOptions, workload),
+
     //...folderContextMessages,
   ];
 

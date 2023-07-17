@@ -27,4 +27,5 @@ export interface EngineDriverInterface {
 
   unsetLicense(): Promise<boolean>;
   getLicense(key: string): Promise<ValidLicenseResponse>;
+  reset(): void;
 }

@@ -1,5 +1,6 @@
 import { EngineDriverInterface } from 'app/interfaces/Engine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
+
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
 
 import { run, on } from 'src/services/electron';
@@ -11,30 +12,58 @@ export interface LiliJsonResponse {
   component?: string;
 }
 
+function getCurrentDateTime(): string {
+  const now = new Date();
+  const year = now.getFullYear().toString().padStart(4, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+
+  return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+}
+let lastId = 'none';
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
 
-  startWorkload(options: WorkloadOptions): void {
-    const forEachToken = (token: string) => {
+  reset() {
+    lastId = 'none';
+  }
+
+  /**
+   *
+   * @param options
+   * @returns string, The id of the workload
+   */
+  startWorkload(options: WorkloadOptions): string {
+    if (!options.id && lastId === 'none') {
+      options.id = getCurrentDateTime();
+      lastId = options.id;
+    }
+    if (!options.id && lastId !== 'none') {
+      options.id = lastId;
+    }
+    const forEachToken = async (token: string) => {
       if (typeof options.onJsonResponse === 'function' && token.length > 10) {
         //It's long enough to potentially be a json update. lets parse it
         try {
-          options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
+          await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
           return;
         } catch (e) {
           console.log('Not a normal JSON response');
         }
       }
       if (typeof options.forEachToken === 'function') {
-        options.forEachToken(token);
+        await options.forEachToken(token);
       }
     };
 
     on('Engine:startWorkload-reply', forEachToken);
 
-    const onComplete = (tokens: string) => {
+    const onComplete = async (tokens: string) => {
       if (typeof options.onComplete === 'function') {
-        options.onComplete(tokens);
+        await options.onComplete(tokens);
       }
     };
 
@@ -47,6 +76,8 @@ export class ElectronEngine implements EngineDriverInterface {
     };
 
     run('Engine:startWorkload', { ...options, ...clearer });
+
+    return options.id;
   }
 
   async getWorkloads() {

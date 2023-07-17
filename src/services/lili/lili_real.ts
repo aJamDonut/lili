@@ -12,10 +12,10 @@ const LILIAI_DEFAULTWORKLOADOPTIONS = {
   repetitiveness: 0.1,
   responseLimit: 10,
   solutionCount: 1,
-  forEachToken: (token: string) => {
+  forEachToken: async (token: string) => {
     console.log(token);
   },
-  onComplete: (token: string) => {
+  onComplete: async (token: string) => {
     console.log(token);
   },
 };
@@ -37,9 +37,13 @@ export function startWorkload(workloadCustomOptions: WorkloadOptions) {
     ...LILIAI_DEFAULTWORKLOADOPTIONS,
     ...workloadCustomOptions,
   };
-  LILIAI.engineDriver.startWorkload(workloadOptions);
+  return LILIAI.engineDriver.startWorkload(workloadOptions);
 }
 
+export function reset() {
+  console.log('Reset');
+  return LILIAI.engineDriver.reset();
+}
 /**
  * Retrieves the history entries within the specified range.
  * @param {number} start - The start index of the history entries.

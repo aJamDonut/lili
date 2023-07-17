@@ -65,19 +65,12 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       _event.sender.send(func('startWorkload-complete'), allTokens);
     };
 
-    const messages: Array<CompletionMessage> = [
-      {
-        role: 'user',
-        content: options.prompt as string,
-      },
-    ];
-
     //streamCompletion(messages, forEachToken, onComplete);
 
     runWorkload(
       options.prompt as string,
       {
-        workload: options.workload,
+        ...options,
         forEachToken: forEachToken,
         onComplete: onComplete,
       } as WorkloadOptions
