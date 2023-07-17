@@ -139,7 +139,7 @@ export default {
     },
     startTransaction() {
       this.transactions.push({
-        promptConfig: this.promptConfig,
+        promptConfig: {...this.promptConfig},
         outputText: '',
         outputJson: [],
       });
