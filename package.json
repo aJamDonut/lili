@@ -27,6 +27,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "gsap": "^3.12.2",
     "highlight.js": "^11.8.0",
     "marked": "^5.1.1",
     "marked-highlight": "^2.0.1",
