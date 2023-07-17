@@ -45,7 +45,7 @@ export default {
 
 <style lang="scss" scoped>
 .output-text{
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 textarea{
   width: 100%;
