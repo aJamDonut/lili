@@ -35,12 +35,27 @@
           style="min-height: 100%"
         >
           <div class="q-pa-md" style="min-height: 100%">
-            <display-prompt class="q-mb-md" v-model="promptConfig" />
-            <lili-cont v-if="outputJson.length > 1" title="Inline Output">
-              <inline-output v-for="(output, index) in outputJson" :key="index" :json="output" />
-            </lili-cont>
-            <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
-            <display-output v-model="outputText" />
+            <!-- Historic Transactions -->
+            <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
+              <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
+              <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
+                <inline-output v-for="(output, index) in row.outputJson" :key="index" :json="output" />
+              </lili-cont>
+              <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
+              <display-output v-model="row.outputText" />
+              <q-separator class="q-my-md" />
+            </div>
+
+            <!-- Active Transaction -->
+            <div v-if="transactionRunning" class="ai_transaction">
+              <display-prompt class="q-mb-md" v-model="promptConfig" />
+              <lili-cont v-if="outputJson.length > 1" title="Inline Output">
+                <inline-output v-for="(output, index) in outputJson" :key="index" :json="output" />
+              </lili-cont>
+              <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
+              <display-output v-model="outputText" />
+            </div>
+
           </div>
         </q-scroll-area>
       </template>
@@ -86,6 +101,8 @@ export default {
         // width: '9px',
         // opacity: 0.2
       },
+      transactionRunning: false,
+      transactions: [],
       outputText: '',
       outputJson: [],
     };
@@ -112,9 +129,18 @@ export default {
     parseJson(json) {
       this.outputJson.push(json)
     },
+    storeTransaction() {
+      this.transactions.push({
+        promptConfig: this.promptConfig,
+        outputText: this.outputText,
+        outputJson: this.outputJson,
+      })
+      this.outputText = '';
+      this.outputJson = [];
+    },
     runJob() {
-      // if (this.jobRunning) return;
-      // this.jobRunning = true;
+      if (this.transactionRunning) return;
+      this.transactionRunning = true;
       this.outputText = '';
 
       startWorkload({
@@ -122,7 +148,8 @@ export default {
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: () => {
-          // this.jobRunning = false;
+          this.transactionRunning = false;
+          this.storeTransaction()
         },
         onJsonResponse: (json) => {
           this.parseJson(json);
