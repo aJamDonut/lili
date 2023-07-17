@@ -1,56 +1,34 @@
 <template>
   <q-page padding>
     <div :class="lockedPageClass">
-    <q-table
-      :rows="jobStore.jobHistory"
-      :columns="columns"
-      row-key="id"
-      flat
-      bordered
-      separator="cell"
-    >
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td :props="props" v-for="row in props.cols" :key="row.name">
-            <div v-if="row.name === 'id'">
-              {{ row.value }}
-            </div>
-            <div v-else-if="row.name === 'status'">
-              <q-chip size="10px" color="green" text-color="white">
-                COMPLETED
-              </q-chip>
-            </div>
-            <div class="row items-center justify-center q-col-gutter-sm" v-else-if="row.name === 'actions'">
-              <div>
-              <q-btn
-                color="primary"
-                label="View"
-                outline
-                size="sm"
-                @click="viewJob(props.row.id)"
-              />
+      <q-table :rows="jobStore.jobHistory" :columns="columns" row-key="id" flat bordered separator="cell">
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td :props="props" v-for="row in props.cols" :key="row.name">
+              <div v-if="row.name === 'id'">
+                {{ row.value }}
               </div>
-              <div>
-              <q-btn
-                color="red"
-                outline
-                size="11px"
-                icon="close"
-                dense
-                @click="deleteJob(props.row.id)"
-              />
+              <div v-else-if="row.name === 'status'">
+                <q-chip size="10px" color="green" text-color="white"> COMPLETED </q-chip>
               </div>
-            </div>
-            <div v-else>{{ row.value }}</div>
-          </q-td>
-        </q-tr>
-      </template>
-      <template v-slot:no-data>
-        <div class="full-width row flex-center q-my-lg">
-          <div class="text-grey-6">{{ $t('no_job_history') }}</div>
-        </div>
-      </template>
-    </q-table>
+              <div class="row items-center justify-center q-col-gutter-sm" v-else-if="row.name === 'actions'">
+                <div>
+                  <q-btn color="primary" label="View" outline size="sm" @click="viewJob(props.row.id)" />
+                </div>
+                <div>
+                  <q-btn color="red" outline size="11px" icon="close" dense @click="deleteJob(props.row.id)" />
+                </div>
+              </div>
+              <div v-else>{{ row.value }}</div>
+            </q-td>
+          </q-tr>
+        </template>
+        <template v-slot:no-data>
+          <div class="full-width row flex-center q-my-lg">
+            <div class="text-grey-6">{{ $t('no_job_history') }}</div>
+          </div>
+        </template>
+      </q-table>
     </div>
     <locked-overlay />
   </q-page>
@@ -58,34 +36,61 @@
 
 
 <script>
-import { mapStores } from 'pinia'
-import { useJobStore } from 'stores/job';
+import { mapStores } from 'pinia';
+import { useJobStore } from 'src/stores/job';
 import { useSettingsStore } from 'stores/settings';
 
 export default {
   data() {
     return {
       displayOutput: false,
-      markdown: " # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```",
+      markdown: ' # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```',
     };
   },
   computed: {
     ...mapStores(useJobStore, useSettingsStore),
-    lockedPageClass () {
+    lockedPageClass() {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },
-    columns () {
+    columns() {
+      /*
+      {
+        "meta": { "id": "2023_07_17_20_06_08", "date": 1689620983264 },
+        "workloadDefinition": {
+          "name": "Fake SQL server",
+          "codename": "fake_sql",
+          "description": "Pretends to be an SQL server",
+          "category": "general",
+          "defaults": {
+            "advanced": { "repetitiveness": 1.5, "creativity": 0, "tokenLength": 15000, "solutionCount": 1 }
+          },
+          "messageHistory": []
+        },
+        "workloadOptions": {
+          "prompt": "select * from users;",
+          "context": "",
+          "workload": "fake_sql",
+          "outputFormat": "plaintext",
+          "outputTo": "inline",
+          "creativity": 0.1,
+          "repetitiveness": 0.1,
+          "responseLimit": 10,
+          "solutionCount": 1,
+          "onJsonResponse": null,
+          "id": "2023_07_17_20_06_08"
+        }
+      }
+      */
+
       return [
-        { name: 'id', label: this.$t('id'), field: 'id', align: 'left', sortable: true },
-        { name: 'prompt', label: this.$t('prompt'), field: 'prompt', align: 'left', sortable: true },
-        { name: 'context', label: this.$t('context'), field: 'context', align: 'left', sortable: true },
-        { name: 'first_workload', label: this.$t('first_workload'), field: 'first_workload', align: 'left', sortable: true },
-        { name: 'last_workload', label: this.$t('last_workload'), field: 'last_workload', align: 'left', sortable: true },
-        { name: 'response', label: this.$t('response'), field: 'response', align: 'left', sortable: true },
+        { name: 'id', label: this.$t('id'), field: (r) => r.meta.id, align: 'left', sortable: true },
+        { name: 'prompt', label: this.$t('prompt'), field: (r) => r.workloadOptions.prompt, align: 'left', sortable: true },
+        { name: 'workload', label: this.$t('workload'), field: (r) => r.workloadDefinition.name, align: 'left', sortable: true },
+        { name: 'category', label: this.$t('category'), field: (r) => r.workloadDefinition.category, align: 'left', sortable: true },
         { name: 'status', label: this.$t('status'), field: 'status', align: 'left', sortable: true },
         { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false },
-      ]
-    }
+      ];
+    },
   },
   methods: {
     viewJob(jobId) {
@@ -93,16 +98,16 @@ export default {
     },
     deleteJob(jobId) {
       this.jobStore.deleteJob(jobId);
-    }
+    },
   },
-  beforeMount () {
+  beforeMount() {
     this.jobStore.getHistory();
-  }
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-textarea{
+textarea {
   width: 100%;
   height: 200px;
 }

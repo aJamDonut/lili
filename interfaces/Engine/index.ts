@@ -1,3 +1,4 @@
+import { type HistoryFile } from '../Lili';
 import type { HistoryEntry, WorkloadHistory, WorkloadOptions } from '../Workload';
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
 
@@ -17,7 +18,7 @@ export interface EngineDriverInterface {
    */
   startWorkload(options: WorkloadOptions): void;
 
-  getHistory(start: number, end: number): Promise<Array<HistoryEntry>>;
+  getHistory(start: number, end: number): Promise<Array<HistoryFile>>;
 
   getHistoricWorkload(id: number): Promise<WorkloadHistory>;
 

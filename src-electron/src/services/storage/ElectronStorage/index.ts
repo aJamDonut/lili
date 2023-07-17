@@ -58,10 +58,6 @@ export const getFolders = async () => {
   return folders;
 };
 
-export const getFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
-  return await fs.readdir(folderName);
-};
-
 export const writeFile = async (
   _event: MixedEvent,
   { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
@@ -165,6 +161,10 @@ export const liliGetFolder = async (
   { folderName }: ElectronStorageHandlerRequestFolder
 ) => {
   return await fs.readdir(path.join(LILI_ROOT, folderName));
+};
+
+export const getFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
+  return await fs.readdir(path.join(ROOT, folderName));
 };
 
 export const deleteFile = async (

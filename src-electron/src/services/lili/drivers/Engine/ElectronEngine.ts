@@ -82,7 +82,29 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 
   ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {
-    return getHistory(options.start as number, options.end as number);
+    let historyIds = (await callService('Storage:getFolder', {
+      folderName: `workload_history`,
+    })) as Array<string>;
+
+    const historyList = [];
+    options.start = parseInt(options.start as string);
+    options.end = parseInt(options.end as string);
+    const start = options.start || 0;
+    const end = options.end || 10;
+    let i = 0;
+
+    for (const id of historyIds) {
+      if (i > start && i < end) {
+        continue;
+      }
+      historyList.push(
+        await callService('Storage:readJson', {
+          folderName: `workload_history/${id}/`,
+          fileName: 'definition.json',
+        })
+      );
+    }
+    return historyList;
   });
 
   ipcWrap(justRegister, 'hasValidLicense', async (_event: MixedEvent, options: ElectronEventData) => {

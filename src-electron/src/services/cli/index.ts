@@ -1,5 +1,6 @@
 import { app } from 'electron';
-import { runWorkload } from '../aiworkload';
+import { getHistory, runWorkload } from '../aiworkload';
+import { callService } from '../event';
 
 //Create aliases
 const hasParam = app?.commandLine.hasSwitch;
@@ -67,6 +68,12 @@ const commands: CliCommands = {
         finalOutput(tokens);
       },
     });
+  },
+  GetHistory: async function (settings: CliSettings) {
+    const history = await callService('Engine:getHistory', { start: 0, end: 10 });
+    console.log('-----------------------');
+    console.log(history);
+    console.log('-----------------------');
   },
 };
 

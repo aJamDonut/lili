@@ -1,69 +1,16 @@
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { callService } from '../event';
 import { ChatRole, CompletionMessage, streamCompletion } from '../openai/ChatGPT';
-
-export interface MessageHistory {
-  role: ChatRole;
-  content: string | null;
-  contentFile?: string;
-  workloadOptions?: WorkloadOptions;
-  workloadDefinition?: WorkloadDefinition;
-}
-
-export interface Defaults {
-  advanced: {
-    repetitiveness: number;
-    creativity: number;
-    tokenLength: number;
-    solutionCount: number;
-  };
-}
-
-type AvailableContexts = 'extract_files';
-
-export interface WorkloadDefinition {
-  name: string;
-  codename: string;
-  context?: Array<AvailableContexts>;
-  type?: 'raw' | 'normal';
-  description: string;
-  messageHistory: MessageHistory[];
-  defaults: Defaults;
-}
-export interface ContexFolder {
-  description: string;
-  folders: Array<string>;
-}
-export interface ContextFolders {
-  folders: Array<ContexFolder>;
-}
-export interface ContextFile {
-  description: string;
-  files: Array<string>;
-}
-
-interface ContextFiles {
-  files: Array<ContextFile>;
-}
-
-export interface JSONFileContext {
-  name: string;
-  content: string;
-}
-export type FileDescriptions = {
-  [key: string]: unknown;
-};
-
-export interface JsonInlineMessage {
-  type: string;
-  content: string;
-  state: string;
-  component: string;
-}
-
-type CompletionMessages = Array<CompletionMessage>;
-
-type InlineMessages = Array<JsonInlineMessage>;
+import {
+  ContextFiles,
+  ContextFolders,
+  FileDescriptions,
+  HistoryFile,
+  InlineMessages,
+  JSONFileContext,
+  MessageHistory,
+  WorkloadDefinition,
+} from 'app/interfaces/Lili';
 
 export async function parseHistoryFile(definition: WorkloadDefinition, history: MessageHistory) {
   if (!history.contentFile) {
@@ -106,13 +53,15 @@ export async function getFullWorkloadDefinition(name: string) {
 }
 
 export function newMessage(
-  role: string,
+  role: ChatRole,
   content: string,
   workloadOptions?: WorkloadOptions,
   workloadDefinition?: WorkloadDefinition
 ): MessageHistory {
   return { role, content, workloadOptions, workloadDefinition };
 }
+
+export type CompletionMessages = Array<CompletionMessage>;
 
 export async function readContextFile(file: string) {
   return (await callService('Storage:readFile', {
@@ -169,6 +118,7 @@ export async function getFilesContextMessages(
 
 export async function getContextFolders(prompt: string) {
   const contextFolders: string = await runWorkloadRaw(prompt, {
+    id: 'raw',
     workload: 'extract_folders',
   });
 
@@ -216,6 +166,7 @@ export async function getFoldersContextMessages(prompt: string) {
 
 export async function getContextFiles(prompt: string) {
   const contextFiles: string = await runWorkloadRaw(prompt, {
+    id: 'raw',
     workload: 'extract_files',
   });
 
@@ -327,17 +278,6 @@ export function getNewCompletionId() {
 
 export async function saveNow(workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
   return await saveHistory(workloadOptions, workloadDefinition, MESSAGE_HISTORY);
-}
-
-export interface HistoryMetaData {
-  id: string;
-  date: number;
-}
-
-export interface HistoryFile {
-  meta: HistoryMetaData;
-  workloadDefinition: WorkloadDefinition;
-  workloadOptions: WorkloadOptions;
 }
 
 export async function saveHistory(

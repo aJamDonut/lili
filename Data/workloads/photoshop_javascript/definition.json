@@ -1,0 +1,15 @@
+{
+  "name": "Javascript Photoshop",
+  "codename": "photoshop_javascript",
+  "description": "Do javascript coding",
+  "category": "general",
+  "context": ["extract_files"],
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}

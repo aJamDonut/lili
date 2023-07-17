@@ -1,4 +1,4 @@
-import { LiliClientConfig } from 'app/interfaces/Lili';
+import { HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
@@ -50,7 +50,7 @@ export function reset() {
  * @param {number} end - The end index of the history entries.
  * @returns {WorkloadHistory[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
-export async function getHistory(start: number, end: number): Promise<Array<HistoryEntry>> {
+export async function getHistory(start: number, end: number): Promise<Array<HistoryFile>> {
   return await LILIAI.engineDriver.getHistory(start, end);
 }
 
