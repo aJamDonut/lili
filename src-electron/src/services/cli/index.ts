@@ -2,8 +2,8 @@ import { app } from 'electron';
 import { runWorkload } from '../aiworkload';
 
 //Create aliases
-const hasParam = app.commandLine.hasSwitch;
-const param = app.commandLine.getSwitchValue;
+const hasParam = app?.commandLine.hasSwitch;
+const param = app?.commandLine.getSwitchValue;
 
 export type CliSettings = {
   action: string;
