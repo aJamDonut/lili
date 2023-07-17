@@ -13,6 +13,7 @@ export const useSettingsStore = defineStore('settings', {
     liliKey: '',
     isValidKey: false,
     language: 'none',
+    session: '',
   }),
   actions: {
     async checkKey() {

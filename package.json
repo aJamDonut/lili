@@ -19,7 +19,8 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "dev-elec": "quasar dev -m electron",
+    "dev-cli": "quasar dev -m electron -- --cli=true",
+    "dev-elec": "quasar dev -m electron -- test --test2=2 test3=2 --testo4",
     "dev-elect": "quasar dev -m electron --devtools",
     "build-elec": "quasar build --mode electron --publish always"
   },

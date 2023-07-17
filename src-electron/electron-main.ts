@@ -61,26 +61,36 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+import { injectCLIApp } from './src/services/cli';
 
-app.on('window-all-closed', () => {
-  if (platform !== 'darwin') {
+async function setup() {
+  //Production?
+  //setupElectronStorageHandlers(path.join(app.getPath('UserData')), 'Data');
+
+  //Dev:
+  await setupElectronStorageHandlers('UserData', 'Data');
+  await setupElectronEngineHandlers(false);
+
+  //Used CLI, end early
+  if (app.commandLine.hasSwitch('cli')) {
+    await injectCLIApp();
     app.quit();
   }
-});
 
-app.on('activate', () => {
-  if (mainWindow === undefined) {
-    createWindow();
-  }
-});
+  await setupElectronWindowHandlers(false);
 
-//Production:
-//setupElectronStorageHandlers(path.join(app.getPath('UserData')), 'Data');
+  app.whenReady().then(createWindow);
 
-//Dev:
-setupElectronWindowHandlers(false);
+  app.on('window-all-closed', () => {
+    if (platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-setupElectronStorageHandlers('UserData', 'Data').then(() => {
-  setupElectronEngineHandlers(false);
-});
+  app.on('activate', () => {
+    if (mainWindow === undefined) {
+      createWindow();
+    }
+  });
+}
+setup();

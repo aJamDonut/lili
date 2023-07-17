@@ -1,4 +1,4 @@
-import { type IpcMainInvokeEvent, ipcMain } from 'electron';
+import { type IpcMainInvokeEvent, ipcMain, app, BrowserWindow } from 'electron';
 
 export type ElectronEventData = {
   [key: string]: string | number | boolean | Array<string | number | boolean>;
@@ -26,8 +26,8 @@ const events: ElectronEvents = {};
 export function createMockInternalEvent(): InternalMainInvokeEvent {
   return {
     sender: {
-      send: () => {
-        console.log('_event.sender.send NOT IMPLEMENTED IN BACKEND YET');
+      send: (eventName: string, ...args: any[]) => {
+        ipcMain.emit(eventName, ...args);
       },
     },
   };
@@ -58,6 +58,52 @@ export function registerClientEvent(event: string, callback: EventCallback) {
 export function registerEvent(event: string, callback: EventCallback) {
   registerInternalEvent(event, callback);
   registerClientEvent(event, callback);
+}
+
+import { cliOut } from '../cli';
+
+export function showInfo(content: string, linkLabel?: string, linkUrl?: string) {
+  const status = 'information';
+  if (!app.commandLine.hasSwitch('cli')) {
+    return cliOut(content);
+  } else {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    try {
+      if (focusedWindow)
+        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
+
+export function showError(content: string, linkLabel?: string, linkUrl?: string) {
+  const status = 'error';
+  if (!app.commandLine.hasSwitch('cli')) {
+    return cliOut(content);
+  } else {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    try {
+      if (focusedWindow)
+        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
+export function showWarning(content: string, linkLabel?: string, linkUrl?: string) {
+  const status = 'warning';
+  if (!app.commandLine.hasSwitch('cli')) {
+    return cliOut(content);
+  } else {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    try {
+      if (focusedWindow)
+        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
 
 export async function callService(event: string, data: ElectronEventData) {
