@@ -8,8 +8,12 @@
     "content": "You must NOT output anything other than JSON when saving the chat"
   },
   {
+    "role": "system",
+    "content": "Pay careful attention to encoding responses, if you are storing JSON inside the response format, you need to escape twice."
+  },
+  {
     "role": "user",
-    "content": "Save the chat history excluding this message and system messages but include all other messages I sent and that you sent excluding the history of the example file."
+    "content": "Save the request part of the chat history excluding this message and system messages but include all other messages the user sent and that you sent excluding the history of the example file."
   },
   {
     "role": "assistant",
