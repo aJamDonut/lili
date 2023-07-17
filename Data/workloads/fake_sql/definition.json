@@ -1,0 +1,14 @@
+{
+  "name": "Fake SQL server",
+  "codename": "fake_sql",
+  "description": "Pretends to be an SQL server",
+  "category": "general",
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}

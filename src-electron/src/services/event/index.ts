@@ -77,7 +77,9 @@ export function showInfo(content: string, linkLabel?: string, linkUrl?: string) 
       if (focusedWindow)
         focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
     } catch (e) {
-      console.log(e);
+      if (showErrors()) {
+        console.log(e);
+      }
     }
   }
 }
@@ -98,7 +100,9 @@ export function showError(content: string) {
     try {
       if (focusedWindow) focusedWindow.webContents.send(`LiliEngine:notify`, { status, content });
     } catch (e) {
-      console.log(e);
+      if (showErrors()) {
+        console.log(e);
+      }
     }
   }
 }
@@ -117,21 +121,29 @@ export function showWarning(content: string, linkLabel?: string, linkUrl?: strin
       if (focusedWindow)
         focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
     } catch (e) {
-      console.log(e);
+      if (showErrors()) {
+        console.log(e);
+      }
     }
   }
 }
 
+export function showErrors() {
+  return false;
+}
+
 export async function callService(event: string, data: ElectronEventData) {
+  console.log(event);
+  /*
+  TODO: add commnd line switcherooney
   console.log('Call ' + event);
   console.log('Data', data);
+  */
   if (!events[event]) {
     console.error('[LILI-ALERT] Cannot find event: ' + event);
     console.log('Events', events);
-    return false;
+    throw new Error('[LILI-ALERT] Cannot find event: ' + event);
   }
 
-  console.log(events[event].toString());
-
-  return await events[event].call(null, createMockInternalEvent(), data);
+  return await events[event](createMockInternalEvent(), data);
 }

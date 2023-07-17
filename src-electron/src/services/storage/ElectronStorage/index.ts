@@ -68,10 +68,20 @@ export const writeFile = async (
 ) => {
   try {
     await fs.access(path.join(ROOT, folderName));
+    console.log(path.join(ROOT, folderName) + ' Folder Exists ...');
   } catch (_error) {
-    fs.mkdir(path.join(ROOT, folderName));
+    console.log('Make dir ' + path.join(ROOT, folderName));
+    await fs.mkdir(path.join(ROOT, folderName), { recursive: true });
   }
-  return await fs.writeFile(path.join(ROOT, folderName, fileName), contents);
+
+  console.log(path.join(ROOT, folderName) + ' Write... ' + fileName);
+
+  try {
+    return await fs.writeFile(path.join(ROOT, folderName, fileName), contents);
+  } catch (e) {
+    console.log(e);
+    return 'Failed';
+  }
 };
 
 export const fileExists = async (
@@ -145,7 +155,7 @@ export const liliWriteFile = async (
   try {
     await fs.access(path.join(LILI_ROOT, folderName));
   } catch (_error) {
-    fs.mkdir(path.join(LILI_ROOT, folderName));
+    fs.mkdir(path.join(ROOT, folderName), { recursive: true });
   }
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };

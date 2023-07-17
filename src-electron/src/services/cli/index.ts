@@ -97,5 +97,8 @@ export async function injectCLIApp() {
   }
 
   //Execute command
-  await commands[settings.action].call(settings, settings);
+  let response = await commands[settings.action](settings);
+  filterz(response as unknown as string);
+
+  app.quit();
 }

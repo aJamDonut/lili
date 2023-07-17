@@ -74,7 +74,6 @@ async function setup() {
   //Used CLI, end early
   if (app.commandLine.hasSwitch('cli')) {
     await injectCLIApp();
-    app.quit();
   }
 
   await setupElectronWindowHandlers(false);

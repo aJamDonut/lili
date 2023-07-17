@@ -1,11 +1,13 @@
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { callService } from '../event';
-import { CompletionMessage, streamCompletion } from '../openai/ChatGPT';
+import { ChatRole, CompletionMessage, streamCompletion } from '../openai/ChatGPT';
 
 export interface MessageHistory {
-  role: string;
-  content?: string | null;
+  role: ChatRole;
+  content: string | null;
   contentFile?: string;
+  workloadOptions?: WorkloadOptions;
+  workloadDefinition?: WorkloadDefinition;
 }
 
 export interface Defaults {
@@ -41,6 +43,25 @@ interface ContextFiles {
   files: Array<ContextFile>;
 }
 
+export interface JSONFileContext {
+  name: string;
+  content: string;
+}
+export type FileDescriptions = {
+  [key: string]: unknown;
+};
+
+export interface JsonInlineMessage {
+  type: string;
+  content: string;
+  state: string;
+  component: string;
+}
+
+type CompletionMessages = Array<CompletionMessage>;
+
+type InlineMessages = Array<JsonInlineMessage>;
+
 export async function parseHistoryFile(definition: WorkloadDefinition, history: MessageHistory) {
   if (!history.contentFile) {
     return history;
@@ -49,8 +70,6 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
     folderName: `workloads/${definition.codename}`,
     fileName: history.contentFile,
   })) as string;
-
-  delete history.contentFile; //Drop property unused in OpenAI
 
   return history;
 }
@@ -83,8 +102,13 @@ export async function getFullWorkloadDefinition(name: string) {
   return definition;
 }
 
-export function newMessage(role: string, content: string): MessageHistory {
-  return { role, content };
+export function newMessage(
+  role: string,
+  content: string,
+  workloadOptions?: WorkloadOptions,
+  workloadDefinition?: WorkloadDefinition
+): MessageHistory {
+  return { role, content, workloadOptions, workloadDefinition };
 }
 
 export async function readContextFile(file: string) {
@@ -112,13 +136,13 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
       try {
         files.push({ name: file, content: await readContextFile(file) });
         if (typeof workloadOptions.forEachToken === 'function') {
-          workloadOptions.forEachToken(
+          await workloadOptions.forEachToken(
             jsonResponse('inline', contextFile.description + ': ' + file, 'success')
           );
         }
       } catch (e) {
         if (typeof workloadOptions.forEachToken === 'function') {
-          workloadOptions.forEachToken(
+          await workloadOptions.forEachToken(
             jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning')
           );
         }
@@ -228,17 +252,18 @@ export function getContextJSON(prompt: string) {
   return [];
 }
 
-export interface JSONFileContext {
-  name: string;
-  content: string;
-}
-export type FileDescriptions = {
-  [key: string]: unknown;
-};
-
 export function jsonResponse(type: string, content: string, state = 'success', component = 'default') {
+  addInlineMessageHistory(type, content, state, component);
   return JSON.stringify({ type, content, state, component });
 }
+
+function addInlineMessageHistory(type: string, content: string, state = 'success', component = 'default') {
+  //TODO: For now, we'll stringify since that is how it works on the frontend, and it may make sense
+  //for parity of how output operations work.
+  INLINE_MESSAGE_HISTORY.push({ type, content, state, component });
+  addMessagesHistory('assistant', JSON.stringify({ type, content, state, component }));
+}
+
 export async function parseJSONResult(
   fileDescriptions: FileDescriptions,
   files: Array<JSONFileContext>,
@@ -257,7 +282,7 @@ export async function parseJSONResult(
     }
 
     if (fileDescriptions[file.name] && typeof workloadOptions.forEachToken === 'function') {
-      workloadOptions.forEachToken(
+      await workloadOptions.forEachToken(
         jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state)
       );
       continue;
@@ -265,10 +290,83 @@ export async function parseJSONResult(
 
     //No file descriptor, just send general message
     if (typeof workloadOptions.forEachToken === 'function')
-      workloadOptions.forEachToken(jsonResponse('inline', `Made changes to ${file.name}`, state));
+      await workloadOptions.forEachToken(jsonResponse('inline', `Made changes to ${file.name}`, state));
   }
 }
 
+function getCurrentDateTime(): string {
+  const now = new Date();
+  const year = now.getFullYear().toString().padStart(4, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+
+  return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+}
+
+let COMPLETION_ID = 'default';
+let MESSAGE_HISTORY: Array<MessageHistory> = [];
+let INLINE_MESSAGE_HISTORY: InlineMessages = [];
+
+export function getNewCompletionId() {
+  COMPLETION_ID = getCurrentDateTime();
+  return COMPLETION_ID;
+}
+
+export async function saveNow(workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
+  return await saveHistory(workloadOptions, workloadDefinition, MESSAGE_HISTORY);
+}
+
+export interface HistoryMetaData {
+  id: string;
+  date: number;
+}
+
+export interface HistoryFile {
+  meta: HistoryMetaData;
+  workloadDefinition: WorkloadDefinition;
+  workloadOptions: WorkloadOptions;
+}
+
+export async function saveHistory(
+  workloadOptions: WorkloadOptions,
+  workloadDefinition: WorkloadDefinition,
+  completions: Array<MessageHistory>
+) {
+  const workloadDefinitionCopy: WorkloadDefinition = { ...workloadDefinition, ...{ messageHistory: [] } };
+
+  workloadOptions.id = COMPLETION_ID;
+
+  console.log('Write history...');
+
+  await callService('Storage:writeFile', {
+    folderName: 'workload_history/' + workloadOptions.id + '/',
+    fileName: 'history.json',
+    contents: JSON.stringify(completions),
+  });
+
+  console.log('Write definition...');
+
+  const historyFile: HistoryFile = {
+    meta: {
+      id: workloadOptions.id,
+      date: Date.now(),
+    },
+    workloadDefinition: workloadDefinitionCopy,
+    workloadOptions,
+  };
+
+  await callService('Storage:writeFile', {
+    folderName: 'workload_history/' + workloadOptions.id + '/',
+    fileName: 'definition.json',
+    contents: JSON.stringify(historyFile),
+  });
+}
+export function showLines() {
+  return false;
+}
 export async function runWorkloadRaw(
   prompt: string,
   workloadOptions: WorkloadOptions,
@@ -280,8 +378,10 @@ export async function runWorkloadRaw(
 
   //Init AI, send the callback function
   //For every token
-  const forEachToken = (token: string) => {
-    console.log(token);
+  const forEachToken = async (token: string) => {
+    if (showLines()) {
+      console.log(token);
+    }
     if (typeof workloadOptions.forEachToken === 'function') {
       workloadOptions.forEachToken(token);
     }
@@ -301,12 +401,40 @@ export async function runWorkloadRaw(
   return streamCompletion(messages as Array<CompletionMessage>, forEachToken, onComplete);
 }
 
+function createMessageHistory(role: ChatRole, content: string) {
+  return { role, content };
+}
+
+function addMessagesHistory(role: ChatRole, content: string) {
+  MESSAGE_HISTORY.push(createMessageHistory('assistant', content));
+}
+
+function setHistory(history: Array<MessageHistory>) {
+  MESSAGE_HISTORY = history;
+}
+
+function resetHistory() {
+  MESSAGE_HISTORY = [];
+}
+
+/**
+ * Run Workload, the main meat. Runs a workload
+ * @param prompt The text to send in the next prompt
+ * @param workloadOptions
+ * @returns void
+ */
 export async function runWorkload(prompt: string, workloadOptions: WorkloadOptions) {
   (await callService('Storage:writeFile', {
     folderName: `logs`,
     fileName: `lastworkload.json`,
     contents: JSON.stringify({ prompt, workloadOptions }),
   })) as WorkloadDefinition;
+
+  //Non-Existing workload
+  if (!workloadOptions.id) {
+    resetHistory();
+    workloadOptions.id = getNewCompletionId();
+  }
 
   const workload = await getFullWorkloadDefinition(workloadOptions.workload);
 
@@ -318,18 +446,21 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
   const messages = [
+    ...MESSAGE_HISTORY,
     ...workload.messageHistory,
-    newMessage('user', prompt),
+    newMessage('user', prompt, workloadOptions, workload),
     ...fileContextMessages.messages,
     //...folderContextMessages,
   ];
 
-  console.log('Messages', messages);
+  setHistory(messages);
 
-  const forEachToken = (token: string) => {
-    console.log(token);
+  const forEachToken = async (token: string) => {
+    if (showLines()) {
+      console.log(token);
+    }
     if (typeof workloadOptions.forEachToken === 'function') {
-      workloadOptions.forEachToken(token);
+      return await workloadOptions.forEachToken(token);
     }
   };
   //... when its finally doone
@@ -343,20 +474,24 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
       jsonResult = (await getContextJSON(allTokens)) as Array<JSONFileContext>;
     }
 
-    parseJSONResult(fileContextMessages.fileDescriptions, jsonResult, workloadOptions);
+    await parseJSONResult(fileContextMessages.fileDescriptions, jsonResult, workloadOptions);
 
     if (typeof workloadOptions.onComplete === 'function') {
-      workloadOptions.onComplete(allTokens);
+      await workloadOptions.onComplete(allTokens);
     }
 
-    (await callService('Storage:writeFile', {
+    addMessagesHistory('system', allTokens);
+
+    await saveNow(workloadOptions, workload);
+
+    await callService('Storage:writeFile', {
       folderName: `logs`,
       fileName: `lastcompletion.json`,
       contents: allTokens,
-    })) as WorkloadDefinition;
+    });
   };
 
-  logMessages(messages);
+  await logMessages(messages);
 
-  return streamCompletion(messages as Array<CompletionMessage>, forEachToken, onComplete);
+  return await streamCompletion(messages as Array<CompletionMessage>, forEachToken, onComplete);
 }
