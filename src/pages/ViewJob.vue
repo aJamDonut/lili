@@ -58,6 +58,9 @@
 import { startWorkload, reset } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
+// import gsap from 'gsap';
+import { scroll } from 'quasar';
+const { getScrollPosition, setScrollPosition } = scroll;
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
  */
@@ -92,6 +95,7 @@ export default {
       },
       transactionRunning: false,
       transactions: [],
+      vSize: 0,
     };
   },
   beforeMount() {
@@ -149,6 +153,35 @@ export default {
         },
       });
     },
+    scrollHandler(arg) {
+      if (arg.verticalSize === this.vSize) return false; // Content height not changed
+      this.vSize = arg.verticalSize;
+      const scrollArea = this.$refs.outputWindow;
+      const scrollTarget = scrollArea.getScrollTarget();
+      const duration = 300; // ms - use 0 to instant scroll
+      scrollArea.setScrollPosition('vertical', scrollTarget.scrollHeight, duration);
+    },
+    // onBeforeEnter(el) {
+    //   el.style.opacity = 0
+    //   el.style.height = 0
+    // },
+    // onEnter(el, done) {
+    //   console.log('onEnter', el.dataset.index);
+    //   gsap.to(el, {
+    //     opacity: 1,
+    //     height: '1.6em',
+    //     delay: el.dataset.index * 5,
+    //     onComplete: done
+    //   })
+    // },
+    // onLeave(el, done) {
+    //   gsap.to(el, {
+    //     opacity: 0,
+    //     height: 0,
+    //     delay: el.dataset.index * 0.15,
+    //     onComplete: done
+    //   })
+    // }
   },
 };
 </script>
