@@ -33,13 +33,17 @@
           :bar-style="barStyle"
           class="fit"
           style="min-height: 100%"
+          ref="outputWindow"
+          @scroll="scrollHandler"
         >
           <div class="q-pa-md" style="min-height: 100%">
             <!-- Historic Transactions -->
             <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
               <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
               <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
-                <inline-output v-for="(output, index) in row.outputJson" :key="index" :json="output" />
+                <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
+                  <inline-output v-for="(output, index) in row.outputJson" :key="index" :data-index="index" :json="output" />
+                <!-- </TransitionGroup> -->
               </lili-cont>
               <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
               <display-output v-model="row.outputText" />
@@ -59,6 +63,9 @@
 import { startWorkload } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
+// import gsap from 'gsap';
+import { scroll } from 'quasar'
+const { getScrollPosition, setScrollPosition } = scroll
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
  */
@@ -93,6 +100,7 @@ export default {
       },
       transactionRunning: false,
       transactions: [],
+      vSize: 0,
     };
   },
   computed: {
@@ -147,6 +155,35 @@ export default {
         },
       });
     },
+    scrollHandler (arg) {
+      if (arg.verticalSize === this.vSize) return false;  // Content height not changed
+      this.vSize = arg.verticalSize;
+      const scrollArea = this.$refs.outputWindow;
+      const scrollTarget = scrollArea.getScrollTarget();
+      const duration = 300; // ms - use 0 to instant scroll
+      scrollArea.setScrollPosition('vertical', scrollTarget.scrollHeight, duration);
+    },
+    // onBeforeEnter(el) {
+    //   el.style.opacity = 0
+    //   el.style.height = 0
+    // },
+    // onEnter(el, done) {
+    //   console.log('onEnter', el.dataset.index);
+    //   gsap.to(el, {
+    //     opacity: 1,
+    //     height: '1.6em',
+    //     delay: el.dataset.index * 5,
+    //     onComplete: done
+    //   })
+    // },
+    // onLeave(el, done) {
+    //   gsap.to(el, {
+    //     opacity: 0,
+    //     height: 0,
+    //     delay: el.dataset.index * 0.15,
+    //     onComplete: done
+    //   })
+    // }
   },
 };
 </script>
