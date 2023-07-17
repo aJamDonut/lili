@@ -28,9 +28,9 @@
         dense
       />
     </lili-cont>
-
+    <br />
     <lili-cont title="License">
-      <label>{{ $t('lili_key') }}</label>
+      <label>{{ $t('lili_license_key') }}</label>
       <q-input
         :type="liliKeyHide ? 'password' : 'text'"
         v-model="settingsStore.liliKey"
