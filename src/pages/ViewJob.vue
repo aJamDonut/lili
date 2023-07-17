@@ -33,13 +33,22 @@
             :bar-style="barStyle"
             class="fit"
             style="min-height: 100%"
+            ref="outputWindow"
+            @scroll="scrollHandler"
           >
             <div class="q-pa-md" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
                 <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
-                  <inline-output v-for="(output, index) in row.outputJson" :key="index" :json="output" />
+                  <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
+                  <inline-output
+                    v-for="(output, index) in row.outputJson"
+                    :key="index"
+                    :data-index="index"
+                    :json="output"
+                  />
+                  <!-- </TransitionGroup> -->
                 </lili-cont>
                 <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
                 <display-output v-model="row.outputText" />
@@ -55,7 +64,7 @@
 </template>
 
 <script>
-import { startWorkload, reset } from 'services/lili/lili_real';
+import { startWorkload } from 'services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
@@ -97,9 +106,6 @@ export default {
       transactions: [],
       vSize: 0,
     };
-  },
-  beforeMount() {
-    reset();
   },
   computed: {
     ...mapStores(useSettingsStore),
