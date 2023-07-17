@@ -63,6 +63,11 @@ export function registerEvent(event: string, callback: EventCallback) {
 import { cliOut } from '../cli';
 
 export function showInfo(content: string, linkLabel?: string, linkUrl?: string) {
+  if (lastContent === content) {
+    lastContent = '';
+    return;
+  }
+  lastContent = content;
   const status = 'information';
   if (!app.commandLine.hasSwitch('cli')) {
     return cliOut(content);
@@ -77,7 +82,14 @@ export function showInfo(content: string, linkLabel?: string, linkUrl?: string) 
   }
 }
 
+let lastContent = '';
+
 export function showError(content: string) {
+  if (lastContent === content) {
+    lastContent = '';
+    return;
+  }
+  lastContent = content;
   const status = 'error';
   if (app.commandLine.hasSwitch('cli')) {
     return cliOut(content);
@@ -91,6 +103,11 @@ export function showError(content: string) {
   }
 }
 export function showWarning(content: string, linkLabel?: string, linkUrl?: string) {
+  if (lastContent === content) {
+    lastContent = '';
+    return;
+  }
+  lastContent = content;
   const status = 'warning';
   if (!app.commandLine.hasSwitch('cli')) {
     return cliOut(content);
