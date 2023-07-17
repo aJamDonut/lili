@@ -46,16 +46,6 @@
               <q-separator class="q-my-md" />
             </div>
 
-            <!-- Active Transaction -->
-            <div v-if="transactionRunning" class="ai_transaction">
-              <display-prompt class="q-mb-md" v-model="promptConfig" />
-              <lili-cont v-if="outputJson.length > 1" title="Inline Output">
-                <inline-output v-for="(output, index) in outputJson" :key="index" :json="output" />
-              </lili-cont>
-              <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
-              <display-output v-model="outputText" />
-            </div>
-
           </div>
         </q-scroll-area>
       </template>
@@ -103,8 +93,6 @@ export default {
       },
       transactionRunning: false,
       transactions: [],
-      outputText: '',
-      outputJson: [],
     };
   },
   computed: {
@@ -120,36 +108,39 @@ export default {
         this.settingsStore.splitterWidth = value;
       },
     },
+    activeTransaction() {
+      // if (this.transactionRunning === false) return false;
+      return this.transactions[this.transactions.length - 1];
+    },
   },
   methods: {
     processToken(token) {
-      this.outputText = this.outputText + token;
-      console.log(token);
+      this.activeTransaction.outputText = this.activeTransaction.outputText + token;
+      console.log('processToken', token);
     },
     parseJson(json) {
-      this.outputJson.push(json)
+      this.activeTransaction.outputJson.push(json);
+      console.log('parseJson', json);
     },
-    storeTransaction() {
+    startTransaction() {
       this.transactions.push({
         promptConfig: this.promptConfig,
-        outputText: this.outputText,
-        outputJson: this.outputJson,
+        outputText: '',
+        outputJson: [],
       })
-      this.outputText = '';
-      this.outputJson = [];
     },
     runJob() {
       if (this.transactionRunning) return;
       this.transactionRunning = true;
-      this.outputText = '';
+      this.startTransaction();
 
       startWorkload({
         prompt: this.promptConfig.prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: () => {
+          console.log('ONCOMPLETE!!!')
           this.transactionRunning = false;
-          this.storeTransaction()
         },
         onJsonResponse: (json) => {
           this.parseJson(json);
