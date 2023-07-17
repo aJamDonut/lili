@@ -13,7 +13,7 @@
           </div>
         </div>
       </template>
-      <div v-html="markdownToHtml"></div>
+      <div class="output-text" v-html="markdownToHtml"></div>
     </lili-cont>
   </div>
 </template>
@@ -44,6 +44,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.output-text{
+  word-break: break-all;
+}
 textarea{
   width: 100%;
   height: 200px;
