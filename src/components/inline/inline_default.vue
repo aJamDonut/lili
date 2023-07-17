@@ -1,11 +1,14 @@
 <template>
-  <div>
-    <div class="row items-center q-col-gutter-sm q-mb-xs">
-      <div class="col-shrink">
-        <q-icon :name="iconName" :color="iconColor" size="20px" />
+  <div class="inline_default">
+    <div class="row items-center">
+      <div class="col-shrink q-pa-xs">
+        <q-icon name="psychology" size="22px" color="grey-6" />
       </div>
-      <div class="col inline-output">
+      <div class="col inline-output q-pa-xs">
         {{ json.content }}
+      </div>
+      <div class="col-shrink q-pa-xs">
+        <q-icon :name="iconName" :color="iconColor" size="20px" />
       </div>
     </div>
   </div>
@@ -43,6 +46,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.inline_default {
+  background: $dark;
+  margin-bottom: 3px;
+  border-radius: 4px;
+}
 .inline-output{
   opacity: .8;
   font-size: 13px;
