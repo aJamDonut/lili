@@ -8,9 +8,9 @@
       <template v-slot:title>
         <div class="row items-center">
           <div class="col">{{ $t('output') }}</div>
-          <div class="col-shrink">
+          <!-- <div class="col-shrink">
             <q-btn size="10px" @click="showDebug = !showDebug" outline color="primary">{{ $t('debug') }}</q-btn>
-          </div>
+          </div> -->
         </div>
       </template>
       <div class="output-text" v-html="markdownToHtml"></div>

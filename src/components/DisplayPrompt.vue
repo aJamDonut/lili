@@ -1,6 +1,6 @@
 <template>
   <div>
-    <lili-cont :title="true">
+    <lili-cont :title="false">
       <template v-slot:title>
         <div class="row items-center">
           <div class="col">{{ $t('prompt') }}</div>
