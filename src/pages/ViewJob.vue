@@ -40,7 +40,7 @@
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
-                <lili-cont v-if="row.outputJson.length > 1" class="q-mb-xs" title="Inline Output">
+                <div v-if="row.outputJson.length > 1" class="q-mb-xs">
                   <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
                     <!-- <div
                     v-for="(output, index) in row.outputJson"
@@ -54,7 +54,7 @@
                     :json="output"
                   />
                   <!-- </TransitionGroup> -->
-                </lili-cont>
+                </div>
                 <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
                 <display-output v-model="row.outputText" />
                 <q-separator class="q-my-md" />
