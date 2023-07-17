@@ -36,7 +36,10 @@
         >
           <div class="q-pa-md" style="min-height: 100%">
             <display-prompt class="q-mb-md" v-model="promptConfig" />
-            <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" />
+            <lili-cont v-if="outputJson.length > 1" title="Inline Output">
+              <inline-output v-for="(output, index) in outputJson" :key="index" :json="output" />
+            </lili-cont>
+            <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
             <display-output v-model="outputText" />
           </div>
         </q-scroll-area>
@@ -55,9 +58,6 @@ import { useSettingsStore } from 'stores/settings';
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
  */
 
-function logMessage(log) {
-  return `<li>${log.content}... (${log.state})</li>`;
-}
 export default {
   data() {
     return {
@@ -87,7 +87,7 @@ export default {
         // opacity: 0.2
       },
       outputText: '',
-      outputJson: '',
+      outputJson: [],
     };
   },
   computed: {
@@ -109,6 +109,9 @@ export default {
       this.outputText = this.outputText + token;
       console.log(token);
     },
+    parseJson(json) {
+      this.outputJson.push(json)
+    },
     runJob() {
       // if (this.jobRunning) return;
       // this.jobRunning = true;
@@ -122,7 +125,7 @@ export default {
           // this.jobRunning = false;
         },
         onJsonResponse: (json) => {
-          this.outputJson = this.outputJson + logMessage(json);
+          this.parseJson(json);
         },
       });
     },
