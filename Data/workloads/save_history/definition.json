@@ -1,9 +1,8 @@
 {
-  "name": "Changes files",
-  "codename": "change_files",
-  "description": "Makes changes to files contents",
+  "name": "Save History",
+  "codename": "save_history",
+  "description": "Saves the history of a chat",
   "category": "general",
-  "context": ["extract_files"],
   "defaults": {
     "advanced": {
       "repetitiveness": 1.5,

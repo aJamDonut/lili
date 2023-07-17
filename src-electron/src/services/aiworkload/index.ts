@@ -19,9 +19,12 @@ export interface Defaults {
   };
 }
 
+type AvailableContexts = 'extract_files';
+
 export interface WorkloadDefinition {
   name: string;
   codename: string;
+  context?: Array<AvailableContexts>;
   type?: 'raw' | 'normal';
   description: string;
   messageHistory: MessageHistory[];
@@ -118,7 +121,14 @@ export async function readContextFile(file: string) {
   })) as string;
 }
 
-export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions) {
+export async function getFilesContextMessages(
+  prompt: string,
+  workloadOptions: WorkloadOptions,
+  workloadDefinition: WorkloadDefinition
+) {
+  if (!workloadDefinition?.context?.includes('extract_files')) {
+    return { messages: [], fileDescriptions: {} };
+  }
   const context = await getContextFiles(prompt);
 
   const messages: Array<MessageHistory> = [];
@@ -449,6 +459,10 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     workloadOptions.id = getNewCompletionId();
   }
 
+  if (COMPLETION_ID !== workloadOptions.id) {
+    MESSAGE_HISTORY = []; //Reset history for changing id
+  }
+
   COMPLETION_ID = workloadOptions.id;
 
   let diskHistory: Array<MessageHistory> = [];
@@ -468,7 +482,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     return runWorkloadRaw(prompt, workloadOptions, workload);
   }
 
-  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions);
+  let fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
   const messages = [

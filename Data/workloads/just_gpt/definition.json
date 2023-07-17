@@ -1,0 +1,14 @@
+{
+  "name": "Vanilla GPT 3.5",
+  "codename": "just_gpt",
+  "description": "Just a normal chatgpt chat",
+  "category": "raw",
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}
