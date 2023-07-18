@@ -5,15 +5,15 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td :props="props" v-for="row in props.cols" :key="row.name">
-              <div class="row items-center justify-center q-col-gutter-sm" v-if="row.name === 'actions'">
+              <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
-                  <q-btn color="primary" label="View" outline size="sm" :to="{ path: '/job/' + props.row.meta.id }" />
+                  <q-btn color="primary" size="11px" icon="replay"  :to="{ path: '/job/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn color="red" outline size="11px" icon="edit" dense :to="{ path: '/edit/' + props.row.meta.id }" />
+                  <q-btn color="orange-8" size="11px" icon="tune"  :to="{ path: '/edit/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn color="red" outline size="11px" icon="close" dense @click="deleteJob(props.row.id)" />
+                  <q-btn color="red" size="11px" icon="close"  @click="deleteJob(props.row.id)" />
                 </div>
               </div>
               <div v-else-if="row.name === 'id'">
@@ -86,7 +86,7 @@ export default {
       */
 
       return [
-        { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false },
+        { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false, headerClasses: 'q-table--col-auto-width' },
         { name: 'id', label: this.$t('id'), field: (r) => r.meta.id, align: 'left', sortable: true },
         { name: 'prompt', label: this.$t('prompt'), field: (r) => r.workloadOptions.prompt, align: 'left', sortable: true },
         { name: 'workload', label: this.$t('workload'), field: (r) => r.workloadDefinition.name, align: 'left', sortable: true },
