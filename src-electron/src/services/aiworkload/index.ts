@@ -437,7 +437,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
 
-  messages = [...messages, ...fileContextMessages.messages];
+  messages = [...MESSAGE_HISTORY, ...fileContextMessages.messages];
 
   setHistory(messages); //Now set history
 
