@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: '/job/:id?', component: () => import('pages/ViewJob.vue') },
       { path: '/edit/:id?', component: () => import('pages/JobDetail.vue') },
+      { path: '/workloads', component: () => import('pages/WorkloadList.vue') },
       { path: '/history', component: () => import('pages/JobHistory.vue') },
       { path: '/settings', component: () => import('src/pages/UserSettings.vue') },
     ],
