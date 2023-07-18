@@ -51,7 +51,7 @@ export class ElectronEngine implements EngineDriverInterface {
       console.log('Message', message);
       const token = message.content || '';
 
-      if (message.role === 'system' && !userHasPrompted) {
+      if (message.role === 'system') {
         continue;
       }
 
