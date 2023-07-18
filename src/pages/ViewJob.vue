@@ -143,7 +143,7 @@ export default {
 
       this.transactionRunning = true;
 
-      recallWorkload({
+      await recallWorkload({
         workloadHistory: jobDetail,
         forEachToken: this.processToken,
         onComplete: async () => {
@@ -164,6 +164,8 @@ export default {
           this.transactionRunning = true;
         },
       });
+
+      this.transactionRunning = false;
     },
     async processToken(token) {
       console.log('TOKEN', token);
@@ -195,6 +197,7 @@ export default {
       this.startTransaction();
 
       startWorkload({
+        id: this.$route.params.id || false,
         prompt: this.promptConfig.prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
