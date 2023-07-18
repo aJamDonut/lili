@@ -61,6 +61,12 @@
         </div>
       </div>
     </lili-cont>
+    <br />
+    
+    <lili-cont title="Manage Data">
+      <label>{{ $t('purge_history') }}</label>
+      <q-btn label="Delete All History" color="red" @click="settingsStore.purgeHistory" />
+    </lili-cont>
   </q-page>
 </template>
 

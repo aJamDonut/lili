@@ -11,6 +11,9 @@ export const useJobStore = defineStore('job', {
       this.jobHistory = await getHistory(0, 100);
       return this.jobHistory;
     },
+    purgeHistory() {
+      this.jobHistory = [];
+    },
     getJob(jobId: string) {
       return this.jobHistory.find((job: HistoryFile) => job.meta.id === jobId);
     },
