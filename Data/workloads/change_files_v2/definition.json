@@ -1,0 +1,15 @@
+{
+  "name": "Changes files V2",
+  "codename": "change_files_v2",
+  "description": "Makes changes to files contents",
+  "category": "general",
+  "context": ["extract_files"],
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}
