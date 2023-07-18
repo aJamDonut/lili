@@ -122,7 +122,7 @@ export default {
       },
     },
     activeTransaction() {
-      // if (this.transactionRunning === false) return false;
+      if (this.transactionRunning === false) return false;
       return this.transactions[this.transactions.length - 1];
     },
   },
@@ -131,10 +131,18 @@ export default {
   },
   methods: {
     async processToken(token) {
+      if (!this.activeTransaction) {
+        console.error('processToken - recieved after onComplete')
+        return;
+      }
       this.activeTransaction.outputText = this.activeTransaction.outputText + token;
       console.log('processToken', token);
     },
     parseJson(json) {
+      if (!this.activeTransaction) {
+        console.error('parseJson - recieved after onComplete')
+        return;
+      }
       this.activeTransaction.outputJson.push(json);
       console.log('parseJson', json);
     },
