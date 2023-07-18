@@ -463,7 +463,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
       await workloadOptions.onComplete(allTokens);
     }
 
-    addMessagesHistory('system', allTokens);
+    addMessagesHistory('assistant', allTokens);
 
     await saveNow(workloadOptions, workload);
 
