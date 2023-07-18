@@ -1,5 +1,5 @@
-import { EngineDriverInterface } from 'app/interfaces/Engine';
-import { HistoryFile } from 'app/interfaces/Lili';
+import { EngineDriverInterface, RecallHistoryOptions } from 'app/interfaces/Engine';
+import { HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
@@ -24,12 +24,54 @@ function getCurrentDateTime(): string {
 
   return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
 }
+
 let lastId = 'none';
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
 
   reset() {
     lastId = 'none';
+  }
+
+  /**
+   *
+   * @param options
+   * @returns string, The id of the workload
+   */
+  async recallWorkload(options: RecallHistoryOptions): Promise<string> {
+    console.log('RUN', options);
+    if (!options.workloadHistory.definition.meta.id) {
+      throw 'No definition meta id options';
+    }
+
+    for (const message of options.workloadHistory.history) {
+      console.log('Message', message);
+      const token = message.content || '';
+      if (message.role === 'lili') {
+        if (typeof options.onJsonResponse === 'function') {
+          //It's long enough to potentially be a json update. lets parse it
+          try {
+            await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
+            continue;
+          } catch (e) {
+            console.log('Not a normal JSON response');
+          }
+          continue;
+        }
+      }
+      if (message.role === 'user' && !message.workloadOptions) {
+        //Hidden from user usually
+        continue;
+      }
+      if (message.role === 'user' && message.workloadOptions) {
+        await options.forEachUserPrompt(message.workloadOptions);
+        continue;
+      }
+      if (typeof options.forEachToken === 'function') await options.forEachToken(token);
+      if (typeof options.onComplete === 'function') await options.onComplete(token);
+    }
+
+    return options.workloadHistory.definition.meta.id;
   }
 
   /**

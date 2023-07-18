@@ -1,6 +1,7 @@
 import { HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
+import { RecallHistoryOptions } from 'app/interfaces/Engine';
 
 const LILIAI_DEFAULTWORKLOADOPTIONS = {
   prompt: 'Hi there',
@@ -76,4 +77,8 @@ export async function unsetLicense(): Promise<boolean> {
 
 export async function getLicense(key: string) {
   return await LILIAI.engineDriver.getLicense(key);
+}
+
+export async function recallWorkload(options: RecallHistoryOptions): Promise<string> {
+  return await LILIAI.engineDriver.recallWorkload(options);
 }

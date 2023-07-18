@@ -1,6 +1,11 @@
-import { type HistoryFile } from '../Lili';
+import { HistoricWorkload, type HistoryFile } from '../Lili';
 import type { HistoryEntry, WorkloadHistory, WorkloadOptions } from '../Workload';
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
+
+export interface RecallHistoryOptions extends WorkloadOptions {
+  workloadHistory: HistoricWorkload;
+  forEachUserPrompt: (options: WorkloadOptions) => Promise<void>;
+}
 
 /**
  * Represents the interface for an engine driver.
@@ -29,4 +34,5 @@ export interface EngineDriverInterface {
   unsetLicense(): Promise<boolean>;
   getLicense(key: string): Promise<ValidLicenseResponse>;
   reset(): void;
+  recallWorkload(options: RecallHistoryOptions): Promise<string>;
 }

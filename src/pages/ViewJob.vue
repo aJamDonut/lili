@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { startWorkload, reset } from 'services/lili/lili_real';
+import { startWorkload, reset, recallWorkload } from '../services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
@@ -151,9 +151,11 @@ export default {
           this.transactionRunning = false;
         },
         onJsonResponse: async (json) => {
+          console.log('JSON', json);
           this.parseJson(json);
         },
         forEachUserPrompt: async (promptConfig) => {
+          console.log('Prompto', promptConfig);
           this.transactions.push({
             promptConfig: { ...promptConfig },
             outputText: '',
@@ -163,6 +165,7 @@ export default {
       });
     },
     async processToken(token) {
+      console.log('TOKEN', token);
       if (!this.activeTransaction) {
         console.error('processToken - recieved after onComplete');
         return;
