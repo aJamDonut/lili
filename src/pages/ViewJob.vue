@@ -13,6 +13,7 @@
           <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
             <div class="q-pa-md" style="min-height: 100%">
               <prompt-form v-model="promptConfig" @run="runJob" />
+              <!-- {{ workloadStore.workloads }} -->
             </div>
           </q-scroll-area>
         </template>
@@ -74,6 +75,7 @@ import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
 import { scroll } from 'quasar';
 import { useJobStore } from 'stores/job';
+import { useWorkloadStore } from 'src/stores/workload';
 const { getScrollPosition, setScrollPosition } = scroll;
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
@@ -114,7 +116,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(useSettingsStore, useJobStore),
+    ...mapStores(useSettingsStore, useJobStore, useWorkloadStore),
     lockedPageClass() {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },

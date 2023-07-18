@@ -91,11 +91,11 @@
 <script>
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
-import { useWorkloadsStore } from 'stores/workloads';
+import { useWorkloadStore } from 'stores/workload';
 
 function mountWorkloads() {
   this.workloadOptions = [];
-  for (const item of this.workloadsStore.workloads) {
+  for (const item of this.workloadStore.workloads) {
     this.workloadOptions.push({
       label: item.name,
       value: item.codename,
@@ -127,7 +127,7 @@ export default {
     this.promptConfig.workload = this.settingsStore.workload
   },
   computed: {
-    ...mapStores(useWorkloadsStore, useSettingsStore),
+    ...mapStores(useWorkloadStore, useSettingsStore),
     showAdvancedIcon() {
       return this.settingsStore.showAdvanced ? 'expand_less' : 'expand_more';
     },

@@ -1,10 +1,10 @@
 import { Notify } from 'quasar';
 import { boot } from 'quasar/wrappers';
-import { useWorkloadsStore } from 'src/stores/workloads';
+import { useWorkloadStore } from 'src/stores/workload';
 import { on } from '../services/electron';
 import { type Router } from 'vue-router';
 
-const workloads = useWorkloadsStore();
+const workloads = useWorkloadStore();
 
 interface LiliNotification {
   status: 'warning' | 'information' | 'error';

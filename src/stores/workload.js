@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { getWorkloads } from 'src/services/lili/lili_real';
 
-export const useWorkloadsStore = defineStore('workloads', {
+export const useWorkloadStore = defineStore('workload', {
   state: () => ({
     workloads: [],
   }),
@@ -9,5 +9,8 @@ export const useWorkloadsStore = defineStore('workloads', {
     async load() {
       this.workloads = await getWorkloads();
     },
+    getWorkload(id) {
+      return this.workloads.find((workload) => workload.id === id);
+    }
   },
 });
