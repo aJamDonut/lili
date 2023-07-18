@@ -7,15 +7,14 @@ export type ForEachTokenCallback = (token: string) => Promise<void>;
 
 export type OnCompleteCallback = (token: string) => Promise<void>;
 
-export type ChatRole = 'function' | 'system' | 'user' | 'assistant';
+export type ChatRole = 'function' | 'system' | 'user' | 'assistant' | 'lili';
 
 export interface ChatMessage {
   role: ChatRole;
   content: string;
 }
 
-export type CompletionMessage =
-  OpenAI.Chat.CompletionCreateParams.CreateChatCompletionRequestStreaming.Message;
+export type CompletionMessage = OpenAI.Chat.CompletionCreateParams.CreateChatCompletionRequestStreaming.Message;
 
 /**
  * Takes in messages and reduces them down to the desired token count, removing oldest histories
@@ -47,11 +46,7 @@ function cleanMessages(messages: Array<MessageHistory>): Array<CompletionMessage
 }
 
 //TODO: I want to expose this on the event service but it would mean internal events need to handle replies etc.
-export async function streamCompletion(
-  messages: Array<MessageHistory>,
-  forEachToken: ForEachTokenCallback,
-  onComplete: OnCompleteCallback
-) {
+export async function streamCompletion(messages: Array<MessageHistory>, forEachToken: ForEachTokenCallback, onComplete: OnCompleteCallback) {
   let tokens = '';
 
   //Remove any custom lili history data
