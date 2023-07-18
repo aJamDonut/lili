@@ -13,10 +13,10 @@
   },
   {
     "role": "user",
-    "content": "Save the request part of the chat history excluding this message and system messages but include all other messages the user sent and that you sent excluding the history of the example file."
+    "content": "Create a sample vue page for showing job history"
   },
   {
     "role": "assistant",
-    "contentFile": "message1.txt"
+    "contentFile": "message1.json"
   }
 ]

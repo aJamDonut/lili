@@ -46,7 +46,7 @@ export class ElectronEngine implements EngineDriverInterface {
       options.id = lastId;
     }
     const forEachToken = async (token: string) => {
-      if (typeof options.onJsonResponse === 'function' && token.length > 10) {
+      if (typeof options.onJsonResponse === 'function' && token.length > 20) {
         //It's long enough to potentially be a json update. lets parse it
         try {
           await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);

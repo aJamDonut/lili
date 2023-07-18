@@ -77,7 +77,8 @@ export interface ContextFiles {
 }
 
 export interface JSONFileContext {
-  name: string;
+  name?: string;
+  file?: string;
   content: string;
 }
 export type FileDescriptions = {

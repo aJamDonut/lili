@@ -1,0 +1,14 @@
+{
+  "name": "Edit Vue Files",
+  "codename": "edit_vue_files",
+  "description": "Saves the history of a chat",
+  "category": "general",
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 0,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}

@@ -33,13 +33,15 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
     //Singular content files
     for (const file of jsonContent) {
       const reParse = await parseHistoryFile(definition, file);
-      file.content = JSON.stringify(reParse.content);
+      file.content = reParse.content;
       delete file.contentFile; //Unset the key since its bad for gpt
     }
     history.content = JSON.stringify(jsonContent);
   } catch (e) {
     return history;
   }
+
+  delete history.contentFile;
 
   return history;
 }
@@ -240,6 +242,8 @@ function addInlineMessageHistory(type: string, content: string, state = 'success
 export async function parseJSONResult(fileDescriptions: FileDescriptions, files: Array<JSONFileContext>, workloadOptions: WorkloadOptions) {
   for (const file of files) {
     let state = 'success';
+    file.name = file.name || file.file;
+    file.name = file.name || 'NONE';
     try {
       (await callService('Storage:writeFile', {
         folderName: 'workspaces/default',
