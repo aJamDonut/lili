@@ -44,34 +44,43 @@ export class ElectronEngine implements EngineDriverInterface {
       throw 'No definition meta id options';
     }
 
+    let userHasPrompted = false;
+
     for (const message of options.workloadHistory.history) {
       console.log('Message', message);
       const token = message.content || '';
-      if (message.role === 'lili') {
-        if (typeof options.onJsonResponse === 'function') {
-          //It's long enough to potentially be a json update. lets parse it
-          try {
-            await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
-            continue;
-          } catch (e) {
-            console.log('Not a normal JSON response');
-          }
-          continue;
-        }
+
+      if (message.role === 'system') {
+        continue;
       }
+
       if (message.role === 'user' && !message.workloadOptions) {
         //Hidden from user usually
         continue;
       }
+
       if (message.role === 'user' && message.workloadOptions) {
+        userHasPrompted = true; //Allow tokens to flow
+        if (userHasPrompted && typeof options.onComplete === 'function') await options.onComplete(token);
         await options.forEachUserPrompt(message.workloadOptions);
         continue;
       }
-      if (message.role === 'system') {
+
+      if (message.role === 'lili') {
+        if (typeof options.onJsonResponse !== 'function') {
+          continue; //Can never process if this function isnt available
+        }
+        //It's long enough to potentially be a json update. lets parse it
+        try {
+          await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
+          continue;
+        } catch (e) {
+          console.log('Not a normal JSON response');
+        }
         continue;
       }
-      if (typeof options.forEachToken === 'function') await options.forEachToken(token);
-      if (typeof options.onComplete === 'function') await options.onComplete(token);
+      console.log('SEND TOKEN', token);
+      if (userHasPrompted && typeof options.forEachToken === 'function') await options.forEachToken(token);
     }
 
     return options.workloadHistory.definition.meta.id;
