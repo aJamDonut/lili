@@ -236,7 +236,7 @@ function addInlineMessageHistory(type: string, content: string, state = 'success
   //TODO: For now, we'll stringify since that is how it works on the frontend, and it may make sense
   //for parity of how output operations work.
   INLINE_MESSAGE_HISTORY.push({ type, content, state, component });
-  addMessagesHistory('assistant', JSON.stringify({ type, content, state, component }));
+  addMessagesHistory('lili', JSON.stringify({ type, content, state, component }));
 }
 
 export async function parseJSONResult(fileDescriptions: FileDescriptions, files: Array<JSONFileContext>, workloadOptions: WorkloadOptions) {

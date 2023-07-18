@@ -40,6 +40,9 @@ function backoffMessages(messages: Array<CompletionMessage>) {
 function cleanMessages(messages: Array<MessageHistory>): Array<CompletionMessage> {
   const messageCopy: Array<CompletionMessage> = [];
   for (let message of messages) {
+    if (message.role === 'lili') {
+      continue;
+    }
     messageCopy.push({ role: message.role, content: message.content });
   }
   return messageCopy;
