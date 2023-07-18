@@ -362,7 +362,7 @@ function addMessagesHistory(role: ChatRole, content: string) {
   console.log('PUSH History', MESSAGE_HISTORY);
   console.log('-----------------');
 
-  MESSAGE_HISTORY.push(createMessageHistory('assistant', content));
+  MESSAGE_HISTORY.push(createMessageHistory(role, content));
 }
 
 function setHistory(history: Array<MessageHistory>) {
