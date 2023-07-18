@@ -67,6 +67,9 @@ export class ElectronEngine implements EngineDriverInterface {
         await options.forEachUserPrompt(message.workloadOptions);
         continue;
       }
+      if (message.role === 'system') {
+        continue;
+      }
       if (typeof options.forEachToken === 'function') await options.forEachToken(token);
       if (typeof options.onComplete === 'function') await options.onComplete(token);
     }

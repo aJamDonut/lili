@@ -161,6 +161,7 @@ export default {
             outputText: '',
             outputJson: [],
           });
+          this.transactionRunning = true;
         },
       });
     },
