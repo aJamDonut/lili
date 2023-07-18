@@ -39,6 +39,10 @@
             <div class="q-pa-md" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
+                {{ row }}
+                <div v-if="row.workloadDefinition">
+                  {{ workloadDefinition }}
+                </div>
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
                 <div v-if="row.outputJson.length > 0" class="q-mb-xs">
                   <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
@@ -69,6 +73,7 @@ import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
 import { scroll } from 'quasar';
+import { useJobStore } from 'stores/job';
 const { getScrollPosition, setScrollPosition } = scroll;
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
@@ -109,7 +114,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(useSettingsStore),
+    ...mapStores(useSettingsStore, useJobStore),
     lockedPageClass() {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },
@@ -126,10 +131,37 @@ export default {
       return this.transactions[this.transactions.length - 1];
     },
   },
-  beforeMount() {
+  async mounted() {
     reset();
+    if (this.$route.params.id) {
+      this.loadHistory();
+    }
   },
   methods: {
+    async loadHistory () {
+      const jobDetail = await this.jobStore.loadJobDetail(this.$route.params.id);
+      
+      this.transactionRunning = true;
+
+      recallWorkload({
+        workloadHistory: jobDetail.history || [],
+        forEachToken: this.processToken,
+        onComplete: async () => {
+          console.log('ONCOMPLETE!!!');
+          this.transactionRunning = false;
+        },
+        onJsonResponse: async (json) => {
+          this.parseJson(json);
+        },
+        forEachUserPrompt: async (promptConfig) => {
+          this.transactions.push({
+            promptConfig: { ...promptConfig },
+            outputText: '',
+            outputJson: [],
+          });
+        },
+      });
+    },
     async processToken(token) {
       if (!this.activeTransaction) {
         console.error('processToken - recieved after onComplete')
