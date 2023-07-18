@@ -12,7 +12,12 @@ import {
   WorkloadDefinition,
 } from 'app/interfaces/Lili';
 
-export async function parseHistoryFile(definition: WorkloadDefinition, history: MessageHistory) {
+interface ParseableHistory {
+  content: string;
+  contentFile?: string;
+}
+
+export async function parseHistoryFile(definition: WorkloadDefinition, history: ParseableHistory) {
   if (!history.contentFile) {
     return history;
   }
@@ -21,12 +26,27 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
     fileName: history.contentFile,
   })) as string;
 
+  //Try looping over the context file to see if it reads more
+  try {
+    //Check if it has a content file to parse
+    let jsonContent = JSON.parse(history.content) as Array<ParseableHistory>;
+    //Singular content files
+    for (const file of jsonContent) {
+      const reParse = await parseHistoryFile(definition, file);
+      file.content = JSON.stringify(reParse.content);
+      delete file.contentFile; //Unset the key since its bad for gpt
+    }
+    history.content = JSON.stringify(jsonContent);
+  } catch (e) {
+    return history;
+  }
+
   return history;
 }
 
 export async function parseDefinitionFiles(definition: WorkloadDefinition) {
   for (const history of definition.messageHistory) {
-    await parseHistoryFile(definition, history);
+    await parseHistoryFile(definition, history as ParseableHistory);
   }
   return definition;
 }
@@ -70,11 +90,7 @@ export async function readContextFile(file: string) {
   })) as string;
 }
 
-export async function getFilesContextMessages(
-  prompt: string,
-  workloadOptions: WorkloadOptions,
-  workloadDefinition: WorkloadDefinition
-) {
+export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
   if (!workloadDefinition?.context?.includes('extract_files')) {
     return { messages: [], fileDescriptions: {} };
   }
@@ -95,15 +111,11 @@ export async function getFilesContextMessages(
       try {
         files.push({ name: file, content: await readContextFile(file) });
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(
-            jsonResponse('inline', contextFile.description + ': ' + file, 'success')
-          );
+          await workloadOptions.forEachToken(jsonResponse('inline', contextFile.description + ': ' + file, 'success'));
         }
       } catch (e) {
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(
-            jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning')
-          );
+          await workloadOptions.forEachToken(jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning'));
         }
         //Cannot find file, it must just not exist yet or not be found.
         //Atleast push it back as a blank reference to retain normality.
@@ -225,11 +237,7 @@ function addInlineMessageHistory(type: string, content: string, state = 'success
   addMessagesHistory('assistant', JSON.stringify({ type, content, state, component }));
 }
 
-export async function parseJSONResult(
-  fileDescriptions: FileDescriptions,
-  files: Array<JSONFileContext>,
-  workloadOptions: WorkloadOptions
-) {
+export async function parseJSONResult(fileDescriptions: FileDescriptions, files: Array<JSONFileContext>, workloadOptions: WorkloadOptions) {
   for (const file of files) {
     let state = 'success';
     try {
@@ -243,9 +251,7 @@ export async function parseJSONResult(
     }
 
     if (fileDescriptions[file.name] && typeof workloadOptions.forEachToken === 'function') {
-      await workloadOptions.forEachToken(
-        jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state)
-      );
+      await workloadOptions.forEachToken(jsonResponse('inline', fileDescriptions[file.name] + ': ' + file.name, state));
       continue;
     }
 
@@ -280,11 +286,7 @@ export async function saveNow(workloadOptions: WorkloadOptions, workloadDefiniti
   return await saveHistory(workloadOptions, workloadDefinition, MESSAGE_HISTORY);
 }
 
-export async function saveHistory(
-  workloadOptions: WorkloadOptions,
-  workloadDefinition: WorkloadDefinition,
-  completions: Array<MessageHistory>
-) {
+export async function saveHistory(workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition, completions: Array<MessageHistory>) {
   const workloadDefinitionCopy: WorkloadDefinition = { ...workloadDefinition, ...{ messageHistory: [] } };
 
   workloadOptions.id = COMPLETION_ID;
@@ -317,11 +319,7 @@ export async function saveHistory(
 export function showLines() {
   return false;
 }
-export async function runWorkloadRaw(
-  prompt: string,
-  workloadOptions: WorkloadOptions,
-  workload?: WorkloadDefinition
-) {
+export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions, workload?: WorkloadDefinition) {
   workload = workload || (await getFullWorkloadDefinition(workloadOptions.workload));
 
   const messages = [...workload.messageHistory, newMessage('user', prompt)];
