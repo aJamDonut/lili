@@ -424,17 +424,18 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     return runWorkloadRaw(prompt, workloadOptions, workload);
   }
 
-  let fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
-  const messages = [
+  let messages = [
     ...workload.messageHistory,
     ...MESSAGE_HISTORY,
-    ...fileContextMessages.messages,
     newMessage('user', prompt, workloadOptions, workload),
-
     //...folderContextMessages,
   ];
+
+  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
+
+  messages = [...messages, ...fileContextMessages.messages];
 
   setHistory(messages);
 
