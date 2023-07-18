@@ -1,7 +1,7 @@
 <template>
   <q-page padding class="job-detail">
     <div>
-      <q-btn dense flat size="sm" :label="$t('job_history')" icon="arrow_back" @click="$router.back()" class="q-mb-md" />
+      <q-btn dense flat size="sm" :label="$t('job_history')" text-color="grey-5" icon="arrow_back" @click="$router.back()" class="q-py-sm q-mb-sm" />
       <div class="row q-mb-md">
         <div class="col">
           <lili-cont title="Workload Id">
@@ -18,7 +18,7 @@
             <q-input v-model="message.content" filled type="textarea" rows="2" autogrow dense></q-input>
           </div>
           <div class="col-shrink">
-            <q-btn outline dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
+            <q-btn flat dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
           </div>
         </div>
       </lili-cont>
