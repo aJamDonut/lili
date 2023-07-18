@@ -24,6 +24,8 @@ export interface EngineDriverInterface {
   startWorkload(options: WorkloadOptions): void;
 
   getHistory(start: number, end: number): Promise<Array<HistoryFile>>;
+  
+  purgeHistory(): Promise<void>;
 
   getHistoricWorkload(id: string): Promise<WorkloadHistory>;
 

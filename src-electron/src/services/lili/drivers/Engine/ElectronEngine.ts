@@ -111,6 +111,12 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     return getLicense(options.key as string, true);
   });
 
+  ipcWrap(justRegister, 'purgeHistory', async (_event: MixedEvent) => {
+    return await callService('Storage:deleteFolder', {
+      folderName: `workload_history`
+    });
+  });
+
   ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<HistoricWorkload> => {
     const id = options.id;
     const definition = (await callService('Storage:readJson', {
