@@ -1,54 +1,27 @@
 <template>
   <q-page padding class="job-detail">
     <div>
-      <q-card class="job-info-card">
-        <div class="q-pa-md">
-          <div class="row items-start">
-            <div class="q-col-gutter-md">
-              <div class="text-h6">Workload ID:</div>
-              <div class="text-subtitle1">{{ job.definition.meta.id }}</div>
-            </div>
-            <div class="q-col-gutter-md">
-              <div class="text-h6">Prompt:</div>
-              <div class="text-subtitle1">{{ job.prompt }}</div>
-            </div>
+      <q-btn dense flat size="sm" :label="$t('job_history')" icon="arrow_back" @click="$router.back()" class="q-mb-md" />
+      <div class="row q-mb-md">
+        <div class="col">
+          <lili-cont title="Workload Id">
+            <div class="text-subtitle1">{{ job.definition.meta.id }}</div>
+          </lili-cont>
+        </div>
+      </div>
+      <lili-cont :title="$t('history')" class="q-mb-sm">
+        <div v-for="(message, index) in job.history" :key="index" class="row items-start q-col-gutter-sm q-mb-sm">
+          <div class="col-2">
+            <q-select v-model="message.role" filled :options="roleOptions" dense></q-select>
           </div>
-          <div class="row items-start q-mt-md">
-            <div class="q-col-gutter-md">
-              <div class="text-h6">Workload:</div>
-              <div class="text-subtitle1">{{ job.workload }}</div>
-            </div>
-            <div class="q-col-gutter-md">
-              <div class="text-h6">Category:</div>
-              <div class="text-subtitle1">{{ job.category }}</div>
-            </div>
+          <div class="col">
+            <q-input v-model="message.content" filled type="textarea" rows="2" autogrow dense></q-input>
           </div>
-          <div class="q-mt-md">
-            <div class="text-h6">Status:</div>
-            <q-chip size="10px" :color="statusColor" text-color="white">{{ job.status }}</q-chip>
+          <div class="col-shrink">
+            <q-btn outline dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
           </div>
         </div>
-        <q-separator />
-        <div class="q-pa-md">
-          <div class="text-h6">Actions:</div>
-          <q-btn color="red" label="Delete" outline dense @click="deleteJob(job.id)" class="q-mr-sm" />
-          <q-btn color="accent" label="Download" outline dense @click="downloadJob(job.id)" />
-        </div>
-      </q-card>
-      <br />
-      <q-card>
-        <q-card-section>
-          <div class="text-h5 mb-sm">Job History</div>
-          <q-list bordered>
-            <q-item v-for="message in job.history" :key="message.id">
-              <q-item-section>
-                <q-input v-model="message.role" filled type="textarea" rows="1" autogrow dense class="q-mb-md"></q-input>
-                <q-input v-model="message.content" filled type="textarea" rows="2" autogrow dense class="q-mb-md"></q-input>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-      </q-card>
+      </lili-cont>
     </div>
   </q-page>
 </template>
@@ -63,6 +36,12 @@ export default {
   data() {
     return {
       job: { definition: { meta: {} }, history: [{ role: 'user', content: 'hello world' }] },
+      roleOptions: [
+        { label: 'User', value: 'user' },
+        { label: 'liliFLOW', value: 'lili' },
+        { label: 'Assistant', value: 'assistant' },
+        { label: 'System', value: 'system' },
+      ]
     };
   },
   computed: {
@@ -81,6 +60,9 @@ export default {
   methods: {
     deleteJob(jobId) {
       this.jobStore.deleteJob(jobId);
+    },
+    deleteMessage(index) {
+      this.job.history.splice(index, 1);
     },
     downloadJob(jobId) {
       const jobInfo = this.jobStore.loadJobDetail(jobId);
