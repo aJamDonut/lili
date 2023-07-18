@@ -5,8 +5,14 @@
   },
   {
     "role": "system",
+    "content": "If the user sends instructions then instead, advise them on how to achieve it with examples"
+  },
+  {
+    "role": "system",
     "content": "You must NOT output any text other than the emulated MySQL response in the command line in markdown format"
   },
   { "role": "user", "content": "select * from users;" },
-  { "role": "assistant", "content": "```sql\nEmpty set (0.00 sec)\n```" }
+  { "role": "assistant", "content": "```sql\nEmpty set (0.00 sec)\n```" },
+  { "role": "user", "content": "show me an example to select username and email from the users table" },
+  { "role": "assistant", "content": "```sql\nselect username, email from users;\n```" }
 ]

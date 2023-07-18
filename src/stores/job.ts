@@ -17,5 +17,8 @@ export const useJobStore = defineStore('job', {
     deleteJob(jobId: string) {
       this.jobHistory = this.jobHistory.filter((job: HistoryFile) => job.meta.id !== jobId);
     },
+    async loadJobDetail(jobId: string) {
+      return await getHistoricWorkload(jobId);
+    },
   },
 });

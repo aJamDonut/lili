@@ -62,7 +62,7 @@ export async function getWorkloads(): Promise<Array<string>> {
  * Recalls a specific job from the history.
  * @param {number} id - The ID of the history entry to recall.
  */
-export async function getHistoricWorkload(id: number): Promise<WorkloadHistory> {
+export async function getHistoricWorkload(id: string): Promise<WorkloadHistory> {
   return await LILIAI.engineDriver.getHistoricWorkload(id);
 }
 

@@ -1,17 +1,9 @@
-import { getHistory, getHistoricWorkload } from 'app/src/services/lili';
+import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callService } from '../../../event';
 
-import {
-  type EventCallback,
-  registerEvent,
-  ElectronEventData,
-  MixedEvent,
-  callService,
-} from '../../../event';
-
-import { CompletionMessage, streamCompletion } from '../../../openai/ChatGPT';
-import { WorkloadDefinition, getWorkloadDefinition, runWorkload } from '../../../aiworkload';
+import { getWorkloadDefinition, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
+import { HistoricWorkload, HistoryFile, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
 
 const functionList: Array<string> = [];
 
@@ -119,8 +111,18 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     return getLicense(options.key as string, true);
   });
 
-  ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
-    return getHistoricWorkload(options.id as number);
+  ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<HistoricWorkload> => {
+    const id = options.id;
+    const definition = (await callService('Storage:readJson', {
+      folderName: `workload_history/${id}/`,
+      fileName: 'definition.json',
+    })) as HistoryFile;
+
+    const history = (await callService('Storage:readJson', {
+      folderName: `workload_history/${id}/`,
+      fileName: 'history.json',
+    })) as Array<MessageHistory>;
+    return { definition, history };
   });
 }
 

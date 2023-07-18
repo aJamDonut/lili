@@ -20,7 +20,7 @@ export interface EngineDriverInterface {
 
   getHistory(start: number, end: number): Promise<Array<HistoryFile>>;
 
-  getHistoricWorkload(id: number): Promise<WorkloadHistory>;
+  getHistoricWorkload(id: string): Promise<WorkloadHistory>;
 
   getWorkloads(): Promise<Array<string>>;
 

@@ -93,3 +93,8 @@ export interface JsonInlineMessage {
 }
 
 export type InlineMessages = Array<JsonInlineMessage>;
+
+export interface HistoricWorkload {
+  definition: HistoryFile;
+  history: Array<MessageHistory>;
+}
