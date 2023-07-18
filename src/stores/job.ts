@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getHistory, getHistoricWorkload } from '../services/lili/lili_real';
+import { getHistory, purgeHistory, getHistoricWorkload } from '../services/lili/lili_real';
 import { HistoryFile } from 'app/interfaces/Lili';
 
 export const useJobStore = defineStore('job', {
@@ -12,7 +12,9 @@ export const useJobStore = defineStore('job', {
       return this.jobHistory;
     },
     purgeHistory() {
+      console.log('Purging history');
       this.jobHistory = [];
+      purgeHistory();
     },
     getJob(jobId: string) {
       return this.jobHistory.find((job: HistoryFile) => job.meta.id === jobId);

@@ -65,7 +65,7 @@
     
     <lili-cont title="Manage Data">
       <label>{{ $t('purge_history') }}</label>
-      <q-btn label="Delete All History" color="red" @click="settingsStore.purgeHistory" />
+      <q-btn label="Delete All History" color="red" @click="purgeHistory" />
     </lili-cont>
   </q-page>
 </template>
@@ -78,6 +78,7 @@ import { hasValidLicense } from '../services/lili/lili_real';
 import { information, error } from '../boot/lili';
 import { useI18n } from 'vue-i18n';
 import { langCodesList } from '../i18n/index';
+import { useJobStore } from 'stores/job';
 
 export default {
   data() {
@@ -112,6 +113,16 @@ export default {
     };
   },
   methods: {
+    purgeHistory() {
+      this.$q.dialog({
+        title: 'Delete All History',
+        message: 'Are you sure you want to delete all history?',
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        this.jobStore.purgeHistory();
+      });
+    },
     async validateLicense() {
       console.log('validatingLicense');
       const isValid = await this.settingsStore.checkKey();
@@ -123,7 +134,7 @@ export default {
     },
   },
   computed: {
-    ...mapStores(useSettingsStore),
+    ...mapStores(useSettingsStore, useJobStore),
     theme: {
       get() {
         return {

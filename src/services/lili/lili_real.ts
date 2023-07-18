@@ -55,6 +55,10 @@ export async function getHistory(start: number, end: number): Promise<Array<Hist
   return await LILIAI.engineDriver.getHistory(start, end);
 }
 
+export async function purgeHistory(): Promise<void> {
+  return await LILIAI.engineDriver.purgeHistory();
+}
+
 export async function getWorkloads(): Promise<Array<string>> {
   return await LILIAI.engineDriver.getWorkloads();
 }
