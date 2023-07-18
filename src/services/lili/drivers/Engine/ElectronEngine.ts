@@ -45,12 +45,13 @@ export class ElectronEngine implements EngineDriverInterface {
     }
 
     let userHasPrompted = false;
+    let eventQueue: Array<LiliJsonResponse> = [];
 
     for (const message of options.workloadHistory.history) {
       console.log('Message', message);
       const token = message.content || '';
 
-      if (message.role === 'system') {
+      if (message.role === 'system' && !userHasPrompted) {
         continue;
       }
 
@@ -60,9 +61,19 @@ export class ElectronEngine implements EngineDriverInterface {
       }
 
       if (message.role === 'user' && message.workloadOptions) {
-        userHasPrompted = true; //Allow tokens to flow
         if (userHasPrompted && typeof options.onComplete === 'function') await options.onComplete(token);
         await options.forEachUserPrompt(message.workloadOptions);
+
+        if (!userHasPrompted && typeof options.onJsonResponse === 'function') {
+          //Will have to clear down json queue
+          for (const json of eventQueue) {
+            console.log('Deque', json);
+            await options.onJsonResponse(json);
+          }
+          eventQueue = [];
+        }
+
+        userHasPrompted = true; //Allow tokens to flow
         continue;
       }
 
@@ -72,14 +83,19 @@ export class ElectronEngine implements EngineDriverInterface {
         }
         //It's long enough to potentially be a json update. lets parse it
         try {
-          await options.onJsonResponse(JSON.parse(token) as LiliJsonResponse);
+          let json = JSON.parse(token) as LiliJsonResponse;
+          if (!json) continue;
+          if (userHasPrompted) await options.onJsonResponse(json);
+          eventQueue.push(json);
           continue;
         } catch (e) {
           console.log('Not a normal JSON response');
         }
         continue;
       }
+
       console.log('SEND TOKEN', token);
+
       if (userHasPrompted && typeof options.forEachToken === 'function') await options.forEachToken(token);
     }
 
