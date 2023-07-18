@@ -429,8 +429,8 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   const messages = [
     ...workload.messageHistory,
-    ...fileContextMessages.messages,
     ...MESSAGE_HISTORY,
+    ...fileContextMessages.messages,
     newMessage('user', prompt, workloadOptions, workload),
 
     //...folderContextMessages,
