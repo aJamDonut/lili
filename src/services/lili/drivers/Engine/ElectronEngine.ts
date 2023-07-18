@@ -73,8 +73,6 @@ export class ElectronEngine implements EngineDriverInterface {
           eventQueue = [];
         }
 
-        if (!userHasPrompted && typeof options.onComplete === 'function') await options.onComplete(token);
-
         userHasPrompted = true; //Allow tokens to flow
 
         continue;
