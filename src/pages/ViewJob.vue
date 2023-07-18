@@ -40,19 +40,14 @@
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
-                <div v-if="row.outputJson.length > 1" class="q-mb-xs">
+                <div v-if="row.outputJson.length > 0" class="q-mb-xs">
                   <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
-                    <!-- <div
+                  <!-- <div
                     v-for="(output, index) in row.outputJson"
                     :key="index">
                       {{ output }}
                     </div> -->
-                  <inline-output
-                    v-for="(output, index) in row.outputJson"
-                    :key="index"
-                    :data-index="index"
-                    :json="output"
-                  />
+                  <inline-output v-for="(output, index) in row.outputJson" :key="index" :data-index="index" :json="output" />
                   <!-- </TransitionGroup> -->
                 </div>
                 <!-- <display-output class="q-mb-md" v-if="outputJson.length > 1" v-model="outputJson" /> -->
@@ -135,7 +130,7 @@ export default {
     reset();
   },
   methods: {
-    processToken(token) {
+    async processToken(token) {
       this.activeTransaction.outputText = this.activeTransaction.outputText + token;
       console.log('processToken', token);
     },
@@ -145,7 +140,7 @@ export default {
     },
     startTransaction() {
       this.transactions.push({
-        promptConfig: {...this.promptConfig},
+        promptConfig: { ...this.promptConfig },
         outputText: '',
         outputJson: [],
       });
@@ -159,11 +154,11 @@ export default {
         prompt: this.promptConfig.prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
-        onComplete: () => {
+        onComplete: async () => {
           console.log('ONCOMPLETE!!!');
           this.transactionRunning = false;
         },
-        onJsonResponse: (json) => {
+        onJsonResponse: async (json) => {
           this.parseJson(json);
         },
       });
