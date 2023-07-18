@@ -433,11 +433,13 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     //...folderContextMessages,
   ];
 
+  setHistory(messages); //Because lili will inject after
+
   const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
 
   messages = [...messages, ...fileContextMessages.messages];
 
-  setHistory(messages);
+  setHistory(messages); //Now set history
 
   const forEachToken = async (token: string) => {
     if (showLines()) {
