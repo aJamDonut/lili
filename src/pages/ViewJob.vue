@@ -138,13 +138,13 @@ export default {
     }
   },
   methods: {
-    async loadHistory () {
+    async loadHistory() {
       const jobDetail = await this.jobStore.loadJobDetail(this.$route.params.id);
-      
+
       this.transactionRunning = true;
 
       recallWorkload({
-        workloadHistory: jobDetail.history || [],
+        workloadHistory: jobDetail,
         forEachToken: this.processToken,
         onComplete: async () => {
           console.log('ONCOMPLETE!!!');
@@ -164,7 +164,7 @@ export default {
     },
     async processToken(token) {
       if (!this.activeTransaction) {
-        console.error('processToken - recieved after onComplete')
+        console.error('processToken - recieved after onComplete');
         return;
       }
       this.activeTransaction.outputText = this.activeTransaction.outputText + token;
@@ -172,7 +172,7 @@ export default {
     },
     parseJson(json) {
       if (!this.activeTransaction) {
-        console.error('parseJson - recieved after onComplete')
+        console.error('parseJson - recieved after onComplete');
         return;
       }
       this.activeTransaction.outputJson.push(json);
