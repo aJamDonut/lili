@@ -10,17 +10,30 @@
         </div>
       </div>
       <lili-cont :title="$t('history')" class="q-mb-sm">
-        <div v-for="(message, index) in job.history" :key="index" class="row items-start q-col-gutter-sm q-mb-sm">
-          <div class="col-2">
-            <q-select v-model="message.role" filled :options="roleOptions" dense></q-select>
-          </div>
-          <div class="col">
-            <q-input v-model="message.content" filled rows="2" :autogrow="this.autoGrow[index]" @focus="this.autoGrow[index] = true;" @blur="onBlur(index)" dense></q-input>
-          </div>
-          <div class="col-shrink">
-            <q-btn flat dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
-          </div>
-        </div>
+        <drop-list :items="job.history" @reorder="$event.apply(job.history)" mode="cut">
+            <template v-slot:item="{item, index, reorder}">
+              <drag :key="index" :data="item" handle=".drag-handle">
+                <div :class="dragClass(reorder)">
+                  <div class="col-shrink">
+                      <q-icon color="grey-6" size="20px" name="drag_indicator" class="drag-handle q-mt-sm" />
+                  </div>
+                  <div class="col-2">
+                    <q-select v-model="item.role" filled :options="roleOptions" dense></q-select>
+                  </div>
+                  <div class="col">
+                    <q-input v-model="item.content" filled rows="2" :autogrow="this.autoGrow[index]" @focus="this.autoGrow[index] = true;" @blur="onBlur(index)" dense></q-input>
+                  </div>
+                  <div class="col-shrink">
+                    <q-btn flat dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
+                  </div>
+                </div>
+              </drag>
+            </template>
+            <template v-slot:feedback="{data}">
+                {{ data.title }}
+            </template>
+        </drop-list>
+        
         <div class="row items-center justify-end">
           <div>
             <q-btn flat dense icon="add" color="positive" @click="job.history.push({ role: 'user', content: '' })" />
@@ -36,6 +49,8 @@
 import { mapStores } from 'pinia';
 import { useJobStore } from 'src/stores/job';
 import { useSettingsStore } from 'stores/settings';
+import { Drag, DropList } from "vue-easy-dnd";
+import 'vue-easy-dnd/dist/dnd.css'
 
 export default {
   data() {
@@ -50,6 +65,10 @@ export default {
       count: 0,
       autoGrow: {}
     };
+  },
+  components: {
+    Drag,
+    DropList
   },
   computed: {
     ...mapStores(useJobStore, useSettingsStore),
@@ -71,6 +90,13 @@ export default {
         this.autoGrow[index] = false
         this.count = 0
       }
+    },
+    dragClass( reorder ) {
+      let classes = ['row items-start q-col-gutter-sm q-mb-sm']
+      if (reorder) {
+        classes.push('dragging')
+      }
+      return classes
     },
     deleteJob(jobId) {
       this.jobStore.deleteJob(jobId);
@@ -95,3 +121,16 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+  .job-detail {
+    .dragging {
+      background-color: $primary;
+      color: white;
+    }
+    .drag-handle {
+        cursor: move;
+        cursor: grab;
+    }
+  }
+</style>
