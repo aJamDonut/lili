@@ -113,7 +113,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
 
   ipcWrap(justRegister, 'purgeHistory', async (_event: MixedEvent) => {
     return await callService('Storage:deleteFolder', {
-      folderName: `workload_history`
+      folderName: `workload_history`,
     });
   });
 
@@ -129,6 +129,32 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       fileName: 'history.json',
     })) as Array<MessageHistory>;
     return { definition, history };
+  });
+
+  ipcWrap(justRegister, 'saveHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<string> => {
+    console.log('Save', options);
+    const historicWorkload = options.workloadHistory as unknown as HistoricWorkload;
+    if (
+      !historicWorkload.definition ||
+      !historicWorkload.definition.meta ||
+      !historicWorkload.definition.meta.id ||
+      typeof historicWorkload.history !== 'object'
+    ) {
+      throw 'Cannot save history without atleast a definition and history.';
+    }
+    await callService('Storage:writeFile', {
+      folderName: `workload_history/${historicWorkload.definition.meta.id}/`,
+      fileName: 'definition.json',
+      contents: JSON.stringify(historicWorkload.definition),
+    });
+
+    await callService('Storage:writeFile', {
+      folderName: `workload_history/${historicWorkload.definition.meta.id}/`,
+      fileName: 'history.json',
+      contents: JSON.stringify(historicWorkload.history),
+    });
+
+    return historicWorkload.definition.meta.id;
   });
 }
 

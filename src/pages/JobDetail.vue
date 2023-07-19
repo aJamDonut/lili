@@ -1,39 +1,58 @@
 <template>
   <q-page padding class="job-detail">
     <div>
-      <q-btn dense flat size="sm" :label="$t('job_history')" text-color="grey-5" icon="arrow_back" @click="$router.back()" class="q-py-sm q-pr-sm q-mb-sm" />
+      <q-btn
+        dense
+        flat
+        size="sm"
+        :label="$t('job_history')"
+        text-color="grey-5"
+        icon="arrow_back"
+        @click="$router.back()"
+        class="q-py-sm q-pr-sm q-mb-sm"
+      />
       <div class="row q-mb-md">
         <div class="col">
           <lili-cont title="Workload Id">
             <div class="text-subtitle1">{{ job.definition.meta.id }}</div>
+            <q-btn flat dense icon="save" @click="saveHistoricWorkload()" />
+            <q-btn flat dense icon="content_copy" @click="copyHistoricWorkload()" />
           </lili-cont>
         </div>
       </div>
       <lili-cont :title="$t('history')" class="q-mb-sm">
         <drop-list :items="job.history" @reorder="$event.apply(job.history)" mode="cut">
-            <template v-slot:item="{item, index, reorder}">
-              <drag :key="index" :data="item" handle=".drag-handle">
-                <div :class="dragClass(reorder)">
-                  <div class="col-shrink">
-                      <q-icon color="grey-6" size="20px" name="drag_indicator" class="drag-handle q-mt-sm" />
-                  </div>
-                  <div class="col-2">
-                    <q-select v-model="item.role" filled :options="roleOptions" dense></q-select>
-                  </div>
-                  <div class="col">
-                    <q-input v-model="item.content" filled rows="2" :autogrow="this.autoGrow[index]" @focus="this.autoGrow[index] = true;" @blur="onBlur(index)" dense></q-input>
-                  </div>
-                  <div class="col-shrink">
-                    <q-btn flat dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
-                  </div>
+          <template v-slot:item="{ item, index, reorder }">
+            <drag :key="index" :data="item" handle=".drag-handle">
+              <div :class="dragClass(reorder)">
+                <div class="col-shrink">
+                  <q-icon color="grey-6" size="20px" name="drag_indicator" class="drag-handle q-mt-sm" />
                 </div>
-              </drag>
-            </template>
-            <template v-slot:feedback="{data}">
-                {{ data.title }}
-            </template>
+                <div class="col-2">
+                  <q-select v-model="item.role" filled :options="roleOptions" dense></q-select>
+                </div>
+                <div class="col">
+                  <q-input
+                    v-model="item.content"
+                    filled
+                    rows="2"
+                    :autogrow="this.autoGrow[index]"
+                    @focus="this.autoGrow[index] = true"
+                    @blur="onBlur(index)"
+                    dense
+                  ></q-input>
+                </div>
+                <div class="col-shrink">
+                  <q-btn flat dense color="red" icon="close" class="q-mt-xs" @click="deleteMessage(index)" />
+                </div>
+              </div>
+            </drag>
+          </template>
+          <template v-slot:feedback="{ data }">
+            {{ data.title }}
+          </template>
         </drop-list>
-        
+
         <div class="row items-center justify-end">
           <div>
             <q-btn flat dense icon="add" color="positive" @click="job.history.push({ role: 'user', content: '' })" />
@@ -49,8 +68,10 @@
 import { mapStores } from 'pinia';
 import { useJobStore } from 'src/stores/job';
 import { useSettingsStore } from 'stores/settings';
-import { Drag, DropList } from "vue-easy-dnd";
-import 'vue-easy-dnd/dist/dnd.css'
+import { Drag, DropList } from 'vue-easy-dnd';
+import 'vue-easy-dnd/dist/dnd.css';
+import { saveHistoricWorkload } from '../services/lili/lili_real';
+import { information } from '../boot/lili';
 
 export default {
   data() {
@@ -63,12 +84,12 @@ export default {
         { label: 'System', value: 'system' },
       ],
       count: 0,
-      autoGrow: {}
+      autoGrow: {},
     };
   },
   components: {
     Drag,
-    DropList
+    DropList,
   },
   computed: {
     ...mapStores(useJobStore, useSettingsStore),
@@ -85,27 +106,27 @@ export default {
   },
   methods: {
     onBlur(index) {
-      this.count++
+      this.count++;
       if (this.count > 1) {
-        this.autoGrow[index] = false
-        this.count = 0
+        this.autoGrow[index] = false;
+        this.count = 0;
       }
     },
-    dragClass( reorder ) {
-      let classes = ['row items-start q-col-gutter-sm q-mb-sm']
+    dragClass(reorder) {
+      let classes = ['row items-start q-col-gutter-sm q-mb-sm'];
       if (reorder) {
-        classes.push('dragging')
+        classes.push('dragging');
       }
-      return classes
+      return classes;
     },
     deleteJob(jobId) {
       this.jobStore.deleteJob(jobId);
     },
     autoGrowEnabled(index) {
       if (this.autoGrow[index] === true) {
-        return true
+        return true;
       }
-      return false
+      return false;
     },
     deleteMessage(index) {
       this.job.history.splice(index, 1);
@@ -114,23 +135,35 @@ export default {
       const jobInfo = this.jobStore.loadJobDetail(jobId);
       // Download logic here
     },
+    async saveHistoricWorkload() {
+      await saveHistoricWorkload(JSON.parse(JSON.stringify(this.job)));
+
+      information('Successfully saved!');
+    },
+    async copyHistoricWorkload() {
+      const historyCopy = JSON.parse(JSON.stringify(this.job));
+      historyCopy.definition.meta.id = false;
+      let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
+      this.$router.push({ path: '/edit/' + newJobId });
+      this.job = await this.jobStore.loadJobDetail(newJobId);
+      information('Now working on the copy!');
+    },
   },
   async beforeMount() {
     this.job = await this.jobStore.loadJobDetail(this.$route.params.id);
-    console.log('jobo', this.job);
   },
 };
 </script>
 
 <style lang="scss" scoped>
-  .job-detail {
-    .dragging {
-      background-color: $primary;
-      color: white;
-    }
-    .drag-handle {
-        cursor: move;
-        cursor: grab;
-    }
+.job-detail {
+  .dragging {
+    background-color: $primary;
+    color: white;
   }
+  .drag-handle {
+    cursor: move;
+    cursor: grab;
+  }
+}
 </style>
