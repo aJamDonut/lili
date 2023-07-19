@@ -14,6 +14,7 @@ export const useSettingsStore = defineStore('settings', {
     isValidKey: false,
     language: 'none',
     session: '',
+    hadTrial: false,
   }),
   actions: {
     async checkKey() {

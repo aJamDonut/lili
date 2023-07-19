@@ -1,6 +1,7 @@
 <template>
   <q-page padding>
     <div :class="lockedPageClass">
+      <h1 class="page-title">{{ $t('job_history') }}</h1>
       <q-table :rows="jobStore.jobHistory" :pagination="pagination" :columns="columns" row-key="id" flat bordered separator="cell">
         <template v-slot:body="props">
           <q-tr :props="props">

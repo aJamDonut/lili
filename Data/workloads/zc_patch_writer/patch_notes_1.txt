@@ -1,0 +1,10 @@
+Scavenge
+- Chance of success is now based on your scavenge level
+- Morale will have a small boost to the chance of success
+- A min level has been added to scrapyard
+- Scavenges will show a list of "Discovered Loot", the list of items will unlock as you find them
+- Luck skill maths have been changed to apply to all types of loot
+
+- When a hunt is completed, you will be returned back to the same area
+- Bug has been fixed when ordering faction members by level or last active
+- Fixed a bug where leveling up would give the wrong energy if you have membership

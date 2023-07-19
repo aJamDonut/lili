@@ -89,6 +89,12 @@ export default {
           separator: false,
         },
         {
+          icon: 'receipt',
+          label: 'workloads',
+          url: 'workloads',
+          separator: false,
+        },
+        {
           icon: 'history',
           label: 'job_history',
           url: 'history',
