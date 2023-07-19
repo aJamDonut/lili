@@ -9,16 +9,17 @@
       :min="min"
       :max="max"
       dense />
-    <q-slider
-      v-else
-      v-model="slideValue"
-      class="q-py-lg"
-      label-always
-      switch-label-side
-      :step="step"
-      :min="min"
-      :max="max"
-      dense />
+      <div v-else class="q-px-md q-pb-md">
+        <q-slider
+          v-model="slideValue"
+          class="q-pt-sm q-pb-lg"
+          label-always
+          switch-label-side
+          :step="step"
+          :min="min"
+          :max="max"
+          dense />
+      </div>
   </div>
 </template>
 
