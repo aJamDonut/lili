@@ -7,13 +7,13 @@
             <q-td :props="props" v-for="row in props.cols" :key="row.name">
               <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
-                  <q-btn color="primary" size="11px" icon="replay"  :to="{ path: '/job/' + props.row.meta.id }" />
+                  <q-btn outline color="primary" size="11px" icon="replay"  :to="{ path: '/job/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn color="orange-8" size="11px" icon="tune"  :to="{ path: '/edit/' + props.row.meta.id }" />
+                  <q-btn outline color="orange-8" size="11px" icon="tune"  :to="{ path: '/edit/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn color="red" size="11px" icon="close"  @click="deleteJob(props.row.id)" />
+                  <q-btn outline color="red" size="11px" icon="close"  @click="deleteJob(props.row.id)" />
                 </div>
               </div>
               <div v-else-if="row.name === 'id'">
