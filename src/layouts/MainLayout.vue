@@ -40,14 +40,14 @@
       <q-scroll-area class="fit">
         <q-list>
           <template v-for="(menuItem, index) in menuList" :key="index">
-            <q-item clickable :active="false" :to="{ path: '/' + menuItem.url }" v-ripple>
+            <q-item clickable :active="activePage(menuItem)" :to="{ path: '/' + menuItem.url }" v-ripple>
               <q-item-section avatar>
                 <q-icon :name="menuItem.icon" />
               </q-item-section>
               <q-item-section>
                 {{ $t(menuItem.label) }}
               </q-item-section>
-              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="bg-black text-caption">{{ $t(menuItem.label) }}</q-tooltip>
+              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
             </q-item>
             <q-separator :key="'sep' + index" v-if="menuItem.separator" />
           </template>
@@ -60,6 +60,7 @@
         <div>
           <q-scroll-area class="absolute-full" style="min-height:inherit;" :visible="true" :thumb-style="thumbStyle" :bar-style="barStyle">
             <div style="min-height:inherit;">
+              {{ $route.name }}
               <router-view />
             </div>
           </q-scroll-area>
@@ -140,6 +141,9 @@ export default {
       } else {
         this.maxApp();
       }
+    },
+    activePage(menuItem) {
+      return this.$route.path === '/' + menuItem.url;
     },
     closeApp() {
       _electron.run('FocusedWindow:close');
