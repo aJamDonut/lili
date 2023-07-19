@@ -40,7 +40,6 @@
             <div class="q-pa-md" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
-                {{ row }}
                 <div v-if="row.workloadDefinition">
                   {{ workloadDefinition }}
                 </div>
