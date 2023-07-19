@@ -1,0 +1,13 @@
+Make scavenge based off skill level
+
+Use morale to calc some extra % chance on scavenges
+
+Add min lvl 1 to scavenges (Scrapyard)
+
+Add "Discovered Loot" to Scavenge jobs
+
+[TICKET] Change order of hunting / scavenge on skills page
+
+[BUG] Leveling up gives wrong energy if membership active
+
+[TICKET] Add shortcut back to hunting page when finished hunting

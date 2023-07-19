@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "Take on the role of a community manager for an online game, the user will send you a list of the completed tasks and you will write more substantial patch notes for the community to read."
+  },
+  {
+    "role": "user",
+    "contentFile": "user_prompt.txt"
+  },
+  {
+    "role": "assistant",
+    "contentFile": "patch_notes_1.txt"
+  }
+]
