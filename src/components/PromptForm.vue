@@ -42,7 +42,6 @@
               filled
               :options="workloadOptions"
               dense
-              class="q-mb-md"
             ></q-select>
           </div>
         </div>
