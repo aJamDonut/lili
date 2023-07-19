@@ -47,7 +47,6 @@ export default {
 
 <style lang="scss" scoped>
 .inline_default {
-  background: $dark;
   margin-bottom: 3px;
   border-radius: 4px;
 }
