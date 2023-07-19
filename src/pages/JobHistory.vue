@@ -8,13 +8,13 @@
             <q-td :props="props" v-for="row in props.cols" :key="row.name">
               <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
-                  <q-btn outline color="primary" size="11px" icon="replay"  :to="{ path: '/job/' + props.row.meta.id }" />
+                  <q-btn outline color="primary" size="11px" icon="replay" :to="{ path: '/job/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn outline color="orange-8" size="11px" icon="tune"  :to="{ path: '/edit/' + props.row.meta.id }" />
+                  <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/edit/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn outline color="red" size="11px" icon="close"  @click="deleteJob(props.row.id)" />
+                  <q-btn outline color="red" size="11px" icon="close" @click="deleteJob(props.row.meta.id)" />
                 </div>
               </div>
               <div v-else-if="row.name === 'id'">
@@ -53,7 +53,7 @@ export default {
         rowsPerPage: 15,
         sortBy: 'id',
         descending: true,
-      }
+      },
     };
   },
   computed: {
@@ -95,7 +95,14 @@ export default {
         { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false, headerClasses: 'q-table--col-auto-width' },
         { name: 'id', label: this.$t('id'), field: (r) => r.meta.id, align: 'left', sortable: true, headerClasses: 'q-table--col-auto-width' },
         { name: 'prompt', label: this.$t('prompt'), field: (r) => r.workloadOptions.prompt, align: 'left', sortable: true },
-        { name: 'workload', label: this.$t('workload'), field: (r) => r.workloadDefinition.name, align: 'left', sortable: true, headerClasses: 'q-table--col-auto-width' },
+        {
+          name: 'workload',
+          label: this.$t('workload'),
+          field: (r) => r.workloadDefinition.name,
+          align: 'left',
+          sortable: true,
+          headerClasses: 'q-table--col-auto-width',
+        },
         { name: 'status', label: this.$t('status'), field: 'status', align: 'left', sortable: true, headerClasses: 'q-table--col-auto-width' },
       ];
     },
@@ -105,6 +112,7 @@ export default {
       this.$router.push({ path: '/jobs/' + jobId });
     },
     deleteJob(jobId) {
+      console.log('Del jobo', jobId);
       this.jobStore.deleteJob(jobId);
     },
   },

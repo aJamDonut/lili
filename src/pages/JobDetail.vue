@@ -135,6 +135,7 @@ export default {
       const jobInfo = this.jobStore.loadJobDetail(jobId);
       // Download logic here
     },
+    //TODO: move to job store right?
     async saveHistoricWorkload() {
       await saveHistoricWorkload(JSON.parse(JSON.stringify(this.job)));
 
@@ -142,6 +143,15 @@ export default {
     },
     async copyHistoricWorkload() {
       const historyCopy = JSON.parse(JSON.stringify(this.job));
+      historyCopy.definition.meta.id = false;
+      let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
+      this.$router.push({ path: '/edit/' + newJobId });
+      this.job = await this.jobStore.loadJobDetail(newJobId);
+      information('Now working on the copy!');
+    },
+    async copyHistoricWorkloadAsPrimer() {
+      const historyCopy = JSON.parse(JSON.stringify(this.job));
+      historyCopy.definition.meta.primer = true;
       historyCopy.definition.meta.id = false;
       let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
       this.$router.push({ path: '/edit/' + newJobId });
