@@ -102,6 +102,10 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
 
   const fileDescriptions: FileDescriptions = {};
 
+  if (!context.files) {
+    return { messages, fileDescriptions };
+  }
+
   for (const contextFile of context.files) {
     if (!contextFile.files) {
       continue; //Malformed? Record exists but no files
@@ -191,7 +195,17 @@ export async function getContextFiles(prompt: string) {
   console.log('Context files', contextFiles);
 
   try {
-    contextFilesObject = JSON.parse(contextFiles);
+    const parsedContextFilesObject = JSON.parse(contextFiles);
+    //Handle cases where it's good JSON, but not quite our file json.
+    if (
+      parsedContextFilesObject.files && //It has a files property
+      parsedContextFilesObject.files[0] && //It has atleast 1 object
+      (parsedContextFilesObject.files[0].file || parsedContextFilesObject.files[0].name) && //It has a file or name property on that 1 object
+      (parsedContextFilesObject.files[0].content || parsedContextFilesObject.files[0].contentFile) //That one object also has content
+      //TODO: In future, handle contentFile if AI starts reading workload history files. (i.e. go and read that file)
+    ) {
+      contextFilesObject = parsedContextFilesObject;
+    }
   } catch (e) {
     console.error("Can't parse response");
   }

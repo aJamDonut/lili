@@ -79,8 +79,17 @@ export async function streamCompletion(messages: Array<MessageHistory>, forEachT
     if (typeof onComplete === 'function') {
       await onComplete.call(gpt, tokens); //Needs to await for command line
     }
-  } catch (e) {
-    showError(e as string);
+  } catch (e: any) {
+    let error = e.message || e;
+    if (typeof error !== 'string') {
+      try {
+        error = e.toString();
+      } catch (e) {
+        error = 'Undefined error... This is likely.... REEEEALLY BAD';
+      }
+    }
+
+    showError(e.message || e);
     if (typeof onComplete === 'function') {
       await onComplete.call({}, 'Error: ' + e); //Needs to await for command line
     }
