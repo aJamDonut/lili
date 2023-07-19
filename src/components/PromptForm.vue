@@ -17,7 +17,6 @@
       filled
       :options="workloadOptions"
       dense
-      :rules="[val => !!val || 'Workload is required']"
       class="q-mb-md"
     ></q-select>
 
