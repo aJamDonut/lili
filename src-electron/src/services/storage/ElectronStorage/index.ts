@@ -58,10 +58,7 @@ export const getFolders = async () => {
   return folders;
 };
 
-export const writeFile = async (
-  _event: MixedEvent,
-  { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
-) => {
+export const writeFile = async (_event: MixedEvent, { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite) => {
   try {
     await fs.access(path.join(ROOT, folderName));
     console.log(path.join(ROOT, folderName) + ' Folder Exists ...');
@@ -80,10 +77,7 @@ export const writeFile = async (
   }
 };
 
-export const fileExists = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const fileExists = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   try {
     await fs.access(path.join(ROOT, folderName, fileName));
     return true;
@@ -92,10 +86,7 @@ export const fileExists = async (
   }
 };
 
-export const folderExists = async (
-  _event: MixedEvent,
-  { folderName }: ElectronStorageHandlerRequestFolder
-) => {
+export const folderExists = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   try {
     await fs.access(path.join(ROOT, folderName));
     return true;
@@ -104,17 +95,11 @@ export const folderExists = async (
   }
 };
 
-export const readFile = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const readFile = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   return await fs.readFile(path.join(ROOT, folderName, fileName), { encoding: 'utf8' });
 };
 
-export const readJson = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const readJson = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   try {
     return JSON.parse(await fs.readFile(path.join(ROOT, folderName, fileName), { encoding: 'utf8' }));
   } catch (error) {
@@ -123,10 +108,7 @@ export const readJson = async (
 };
 
 //lili functions can access any folder
-export const liliReadJson = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const liliReadJson = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   try {
     const contents: string = await fs.readFile(path.join(LILI_ROOT, folderName, fileName), {
       encoding: 'utf8',
@@ -137,17 +119,11 @@ export const liliReadJson = async (
   }
 };
 
-export const liliReadFile = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const liliReadFile = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   return await fs.readFile(path.join(LILI_ROOT, folderName, fileName), { encoding: 'utf8' });
 };
 
-export const liliWriteFile = async (
-  _event: MixedEvent,
-  { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite
-) => {
+export const liliWriteFile = async (_event: MixedEvent, { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite) => {
   try {
     await fs.access(path.join(LILI_ROOT, folderName));
   } catch (_error) {
@@ -156,10 +132,7 @@ export const liliWriteFile = async (
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
-export const liliGetFolder = async (
-  _event: MixedEvent,
-  { folderName }: ElectronStorageHandlerRequestFolder
-) => {
+export const liliGetFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   return await fs.readdir(path.join(LILI_ROOT, folderName));
 };
 
@@ -167,18 +140,12 @@ export const getFolder = async (_event: MixedEvent, { folderName }: ElectronStor
   return await fs.readdir(path.join(ROOT, folderName));
 };
 
-export const deleteFile = async (
-  _event: MixedEvent,
-  { folderName, fileName }: ElectronStorageHandlerRequestFile
-) => {
+export const deleteFile = async (_event: MixedEvent, { folderName, fileName }: ElectronStorageHandlerRequestFile) => {
   return await fs.unlink(path.join(ROOT, folderName, fileName));
 };
 
-export const deleteFolder = async (
-  _event: MixedEvent,
-  { folderName }: ElectronStorageHandlerRequestFolder
-) => {
-  return await fs.unlink(path.join(ROOT, folderName));
+export const deleteFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
+  return await fs.rmdir(path.join(ROOT, folderName));
 };
 
 export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {

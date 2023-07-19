@@ -1,4 +1,4 @@
-import { HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
+import { HistoricWorkload, HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 import { RecallHistoryOptions } from 'app/interfaces/Engine';
@@ -77,6 +77,10 @@ export async function getHistoricWorkload(id: string): Promise<HistoricWorkload>
  */
 export async function saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string> {
   return await LILIAI.engineDriver.saveHistoricWorkload(workloadHistory);
+}
+
+export async function deleteHistoricWorkload(id: string): Promise<boolean> {
+  return await LILIAI.engineDriver.deleteHistoricWorkload(id);
 }
 
 export async function hasValidLicense(): Promise<boolean> {

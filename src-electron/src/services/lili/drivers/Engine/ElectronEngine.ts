@@ -3,7 +3,7 @@ import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callS
 import { getWorkloadDefinition, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
-import { HistoricWorkload, HistoryFile, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
+import { HistoricWorkload, HistoryFile, HistoryMetaData, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
 
 const functionList: Array<string> = [];
 
@@ -89,12 +89,13 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       if (i > start && i < end) {
         continue;
       }
-      historyList.push(
-        await callService('Storage:readJson', {
-          folderName: `workload_history/${id}/`,
-          fileName: 'definition.json',
-        })
-      );
+      const definition = (await callService('Storage:readJson', {
+        folderName: `workload_history/${id}/`,
+        fileName: 'definition.json',
+      })) as HistoryFile;
+      if (definition && definition.meta) {
+        historyList.push(definition);
+      }
     }
     return historyList;
   });
@@ -115,6 +116,26 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     return await callService('Storage:deleteFolder', {
       folderName: `workload_history`,
     });
+  });
+
+  ipcWrap(justRegister, 'deleteHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {
+    const id = options.id;
+
+    await callService('Storage:deleteFile', {
+      folderName: `workload_history/${id}/`,
+      fileName: 'definition.json',
+    });
+
+    await callService('Storage:deleteFile', {
+      folderName: `workload_history/${id}/`,
+      fileName: 'history.json',
+    });
+
+    await callService('Storage:deleteFolder', {
+      folderName: `workload_history/${id}/`,
+    });
+
+    return true;
   });
 
   ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<HistoricWorkload> => {

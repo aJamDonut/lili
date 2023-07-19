@@ -38,4 +38,5 @@ export interface EngineDriverInterface {
   reset(): void;
   recallWorkload(options: RecallHistoryOptions): Promise<string>;
   saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string>;
+  deleteHistoricWorkload(id: string): Promise<boolean>;
 }
