@@ -90,7 +90,7 @@ export default {
           separator: false,
         },
         {
-          icon: 'receipt',
+          icon: 'psychology',
           label: 'workloads',
           url: 'workloads',
           separator: false,
