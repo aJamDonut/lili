@@ -30,5 +30,10 @@
   "job_history": "Job History",
   "settings": "Settings",
   "failed": "Action failed",
-  "success": "Action was successful"
+  "success": "Action was successful",
+  "workloads": "Workloads",
+  "name": "Name",
+  "description": "Description",
+  "codename": "Codename",
+  "category": "Category"
 }
