@@ -22,7 +22,7 @@
             <div class="col-shrink">
               <q-icon name="psychology" />
             </div>
-            <div class="col q-ml-sm">
+            <div class="col q-ml-sm q-mr-xs">
               {{ promptConfig.workload.label }}
             </div>
             <div class="col-shrink">
