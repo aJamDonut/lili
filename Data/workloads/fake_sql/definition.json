@@ -3,6 +3,7 @@
   "codename": "fake_sql",
   "description": "Pretends to be an SQL server",
   "category": "general",
+  "context": ["extract_files"],
   "defaults": {
     "advanced": {
       "repetitiveness": 1.5,

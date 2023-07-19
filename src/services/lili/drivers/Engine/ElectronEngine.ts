@@ -152,6 +152,14 @@ export class ElectronEngine implements EngineDriverInterface {
     return options.id;
   }
 
+  async saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string> {
+    if (!workloadHistory.definition.meta.id) {
+      workloadHistory.definition.meta.id = getCurrentDateTime();
+    }
+    await run('Engine:saveHistoricWorkload', { workloadHistory });
+    return workloadHistory.definition.meta.id;
+  }
+
   async getWorkloads() {
     return await run('Engine:getWorkloads');
   }
@@ -164,7 +172,7 @@ export class ElectronEngine implements EngineDriverInterface {
     return await run('Engine:purgeHistory');
   }
 
-  async getHistoricWorkload(id: string): Promise<WorkloadHistory> {
+  async getHistoricWorkload(id: string): Promise<HistoricWorkload> {
     return await run('Engine:getHistoricWorkload', { id });
   }
 

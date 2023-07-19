@@ -94,6 +94,9 @@ export async function readContextFile(file: string) {
 
 export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
   if (!workloadDefinition?.context?.includes('extract_files')) {
+    if (typeof workloadOptions.forEachToken === 'function')
+      await workloadOptions.forEachToken(jsonResponse('inline', 'Doesnt need context', 'warning'));
+    console.log('Prompt', prompt);
     return { messages: [], fileDescriptions: {} };
   }
   const context = await getContextFiles(prompt);
@@ -103,6 +106,8 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
   const fileDescriptions: FileDescriptions = {};
 
   if (!context.files) {
+    if (typeof workloadOptions.forEachToken === 'function')
+      await workloadOptions.forEachToken(jsonResponse('inline', 'No files to parse', 'warning'));
     return { messages, fileDescriptions };
   }
 
@@ -113,19 +118,32 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
     const files = [];
 
     for (const file of contextFile.files) {
+      let pushed = false;
       fileDescriptions[file] = contextFile.description;
+      const description = contextFile.description || '';
       try {
-        files.push({ name: file, content: await readContextFile(file) });
+        const content = await readContextFile(file);
+        if (typeof content == 'string' && content.length > 0) {
+          pushed = true;
+          files.push({ name: file, content: content });
+        }
+
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(jsonResponse('inline', contextFile.description + ': ' + file, 'success'));
+          await workloadOptions.forEachToken(jsonResponse('inline', description + ': ' + file, 'success'));
         }
       } catch (e) {
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning'));
+          await workloadOptions.forEachToken(jsonResponse('inline', description + ' (New file): ' + file, 'warning'));
         }
         //Cannot find file, it must just not exist yet or not be found.
         //Atleast push it back as a blank reference to retain normality.
+        pushed = true;
         files.push({ name: file, content: '' });
+      }
+      if (!pushed) {
+        if (typeof workloadOptions.forEachToken === 'function') {
+          await workloadOptions.forEachToken(jsonResponse('inline', '[Exception] Failure handling files... ' + file, 'error'));
+        }
       }
     }
 
@@ -199,10 +217,7 @@ export async function getContextFiles(prompt: string) {
     //Handle cases where it's good JSON, but not quite our file json.
     if (
       parsedContextFilesObject.files && //It has a files property
-      parsedContextFilesObject.files[0] && //It has atleast 1 object
-      (parsedContextFilesObject.files[0].file || parsedContextFilesObject.files[0].name) && //It has a file or name property on that 1 object
-      (parsedContextFilesObject.files[0].content || parsedContextFilesObject.files[0].contentFile) //That one object also has content
-      //TODO: In future, handle contentFile if AI starts reading workload history files. (i.e. go and read that file)
+      parsedContextFilesObject.files[0]
     ) {
       contextFilesObject = parsedContextFilesObject;
     }
