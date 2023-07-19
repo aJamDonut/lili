@@ -1,5 +1,22 @@
 <template>
   <div>
+    <div class="row items-center justify-end">
+      <div>
+        <q-btn dense unelevated text-color="grey-8" size="12px">
+          <div class="row items-end">
+            <div class="col-shrink">
+              <q-icon name="psychology" />
+            </div>
+            <div class="col q-ml-sm">
+              {{ promptConfig.workload.label }}
+            </div>
+            <div class="col-shrink">
+              <q-icon name="expand_more" />
+            </div>
+          </div>
+        </q-btn>
+      </div>
+    </div>
     <label>{{ $t('prompt') }}</label>
     <q-input
       v-model="promptConfig.prompt"
@@ -9,8 +26,13 @@
       autogrow
       dense
       class="q-mb-md"
-    ></q-input>
+    >
+    <template v-slot:append>
+      <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
+    </template>
+    </q-input>
 
+<!-- 
     <label>{{ $t('workload') }}</label>
     <q-select
       v-model="promptConfig.workload"
@@ -18,7 +40,7 @@
       :options="workloadOptions"
       dense
       class="q-mb-md"
-    ></q-select>
+    ></q-select> -->
 
     <div class="row justify-center" key="adv-btn">
       <div>
@@ -42,22 +64,6 @@
             <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
           </div>
         </div>
-        <div class="row q-col-gutter-md q-mb-md">
-          <!-- Output -->
-          <div class="col" style="min-width: 120px">
-            <label>{{ $t('output_format') }}</label>
-            <q-select
-              v-model="promptConfig.outputFormat"
-              filled
-              :options="outputFormatOptions"
-              dense
-            ></q-select>
-          </div>
-          <div class="col" style="min-width: 120px">
-            <label>{{ $t('output_to') }}</label>
-            <q-select v-model="promptConfig.outputTo" filled :options="outputToOptions" dense></q-select>
-          </div>
-        </div>
         <div class="row q-col-gutter-md">
           <!-- Extra Stuff -->
           <div class="col" style="min-width: 120px">
@@ -79,11 +85,6 @@
         </div>
       </div>
     </transition>
-    <div class="row justify-end q-mt-lg">
-      <div>
-        <q-btn @click="runJob" size="14px" color="green" icon="arrow_forward_ios" :label="$t('run')" />
-      </div>
-    </div>
   </div>
 </template>
 
@@ -105,9 +106,7 @@ function mountWorkloads() {
 export default {
   data() {
     return {
-      workloadOptions: [],
-      outputFormatOptions: ['Plaintext', 'Chat', 'HTML'],
-      outputToOptions: ['Inline', 'Cursor', 'Folder'],
+      workloadOptions: []
     };
   },
   props: {
