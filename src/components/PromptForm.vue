@@ -1,22 +1,5 @@
 <template>
   <div>
-    <div class="row items-center justify-end">
-      <div>
-        <q-btn dense unelevated text-color="grey-8" size="12px">
-          <div class="row items-end">
-            <div class="col-shrink">
-              <q-icon name="psychology" />
-            </div>
-            <div class="col q-ml-sm">
-              {{ promptConfig.workload.label }}
-            </div>
-            <div class="col-shrink">
-              <q-icon name="expand_more" />
-            </div>
-          </div>
-        </q-btn>
-      </div>
-    </div>
     <label>{{ $t('prompt') }}</label>
     <q-input
       v-model="promptConfig.prompt"
@@ -32,32 +15,36 @@
     </template>
     </q-input>
 
-<!-- 
-    <label>{{ $t('workload') }}</label>
-    <q-select
-      v-model="promptConfig.workload"
-      filled
-      :options="workloadOptions"
-      dense
-      class="q-mb-md"
-    ></q-select> -->
-
-    <div class="row justify-center" key="adv-btn">
+    <div class="row justify-end" key="adv-btn">
       <div>
-        <q-btn
-          flat
-          dense
-          @click="settingsStore.showAdvanced = !settingsStore.showAdvanced"
-          :icon="showAdvancedIcon"
-          :icon-right="showAdvancedIcon"
-          color="grey"
-          :label="$t('advanced')"
-          size="10px"
-        />
+        <q-btn dense unelevated text-color="grey-8" size="12px" @click="settingsStore.showAdvanced = !settingsStore.showAdvanced">
+          <div class="row items-end">
+            <div class="col-shrink">
+              <q-icon name="psychology" />
+            </div>
+            <div class="col q-ml-sm q-mr-xs">
+              {{ promptConfig.workload.label }}
+            </div>
+            <div class="col-shrink">
+              <q-icon :name="showAdvancedIcon" />
+            </div>
+          </div>
+        </q-btn>
       </div>
     </div>
     <transition name="slidedown">
       <div v-if="settingsStore.showAdvanced">
+        <div class="row q-col-gutter-md q-mb-md">
+          <div class="col-xs-12">
+            <label>{{ $t('workload') }}</label>
+            <q-select
+              v-model="promptConfig.workload"
+              filled
+              :options="workloadOptions"
+              dense
+            ></q-select>
+          </div>
+        </div>
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
             <label>{{ $t('context') }}</label>
