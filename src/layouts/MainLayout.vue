@@ -36,22 +36,46 @@
       :width="200"
       :breakpoint="500"
       bordered
+      class="main-menu"
     >
       <q-scroll-area class="fit">
-        <q-list>
-          <template v-for="(menuItem, index) in menuList" :key="index">
-            <q-item clickable :active="activePage(menuItem)" :to="{ path: '/' + menuItem.url }" v-ripple>
-              <q-item-section avatar>
-                <q-icon :name="menuItem.icon" />
-              </q-item-section>
-              <q-item-section>
-                {{ $t(menuItem.label) }}
-              </q-item-section>
-              <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
-            </q-item>
-            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
-          </template>
-        </q-list>
+        <div class="column justify-between" style="min-height: 100%">
+          <div class="col">
+            <q-list>
+              <template v-for="(menuItem, index) in menuList" :key="index">
+                <q-item clickable :active="activePage(menuItem)" :to="{ path: '/' + menuItem.url }" v-ripple>
+                  <q-item-section avatar>
+                    <q-icon :name="menuItem.icon" />
+                  </q-item-section>
+                  <q-item-section>
+                    {{ $t(menuItem.label) }}
+                  </q-item-section>
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
+                </q-item>
+                <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+              </template>
+            </q-list>
+          </div>
+          <div>
+            <q-list>
+              <template v-for="(menuItem, index) in bottomMenu" :key="index">
+                <q-item clickable :active="activePage(menuItem)" :to="{ path: '/' + menuItem.url }" v-ripple>
+                  <q-item-section avatar>
+                    <q-icon :name="menuItem.icon" />
+                  </q-item-section>
+                  <q-item-section>
+                    {{ $t(menuItem.label) }}
+                  </q-item-section>
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
+                </q-item>
+                <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+              </template>
+            </q-list>
+            <div class="row justify-center">
+              <div class="q-px-sm app-ver">v1.2.3<!-- App Ver --></div>
+            </div>
+          </div>
+        </div>
       </q-scroll-area>
     </q-drawer>
 
@@ -78,12 +102,6 @@ export default {
       isMaximized: false,
       menuList: [
         {
-          icon: 'dashboard',
-          label: 'dashboard',
-          url: '',
-          separator: false,
-        },
-        {
           icon: 'add',
           label: 'run_job',
           url: 'job',
@@ -107,6 +125,14 @@ export default {
           url: 'settings',
           separator: false,
         },
+      ],
+      bottomMenu: [
+        {
+          icon: 'help',
+          label: 'help',
+          url: '',
+          separator: false,
+        }
       ],
       thumbStyle: {
         right: '3px',
@@ -167,6 +193,16 @@ Tip: disable context menus
 On some platforms, the draggable area will be treated as a non-client frame, so when you right click on it, a system menu will pop up.
 To make the context menu behave correctly on all platforms, you should never use a custom context menu on draggable areas.
 */
+
+.main-menu .q-scrollarea__content {
+  display: contents;
+}
+
+.app-ver {
+  font-size: 10px;
+  opacity: .6;
+}
+
 .brand {
   padding-left: 12px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
