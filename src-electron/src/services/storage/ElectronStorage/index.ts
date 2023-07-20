@@ -167,6 +167,24 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
     } catch (_error) {
       fs.mkdir(ROOT + '/config');
     }
+
+    try {
+      await fs.access(ROOT + '/primer');
+    } catch (_error) {
+      fs.mkdir(ROOT + '/primer');
+    }
+
+    try {
+      await fs.access(ROOT + '/primer/user');
+    } catch (_error) {
+      fs.mkdir(ROOT + '/primer/user');
+    }
+
+    try {
+      await fs.access(ROOT + '/primer/thirdparty');
+    } catch (_error) {
+      fs.mkdir(ROOT + '/primer/thirdparty');
+    }
   }
 
   //Add functions to register internally and for client here (public functions)
