@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       promptConfig: {
-        prompt: 'Please take file1.csv and merge it with file2.csv into file3.csv',
+        prompt: '',
         context: '',
         workload: { label: 'Change files', value: 'change_files' },
         outputFormat: 'Plaintext',

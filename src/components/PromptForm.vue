@@ -1,9 +1,10 @@
 <template>
   <div>
-    <label>{{ $t('prompt') }}</label>
+    <!-- <label>{{ $t('prompt') }}</label> -->
     <q-input
       v-model="promptConfig.prompt"
       filled
+      :placeholder="$t('enter_prompt')"
       type="textarea"
       rows="3"
       autogrow
@@ -17,7 +18,7 @@
 
     <div class="row justify-end" key="adv-btn">
       <div>
-        <q-btn dense unelevated text-color="grey-8" size="12px" @click="settingsStore.showAdvanced = !settingsStore.showAdvanced">
+        <q-btn dense unelevated class="workload-btn" size="12px" @click="settingsStore.showAdvanced = !settingsStore.showAdvanced">
           <div class="row items-end">
             <div class="col-shrink">
               <q-icon name="psychology" />

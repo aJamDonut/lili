@@ -35,5 +35,6 @@
   "name": "Name",
   "description": "Description",
   "codename": "Codename",
-  "category": "Category"
+  "category": "Category",
+  "enter_prompt": "Enter your prompt here"
 }
