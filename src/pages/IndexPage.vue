@@ -23,7 +23,7 @@
             <div class="q-pa-lg q-ma-lg">
               <h1 class="page-title">Recent</h1>
               <q-list>
-                <template v-for="(history, index) in jobStore.jobHistory" :key="index">
+                <template v-for="(history, index) in recentJobs" :key="index">
                   <q-item dense clickable :active="false" :to="{ path: '/job/' + history.meta.id }" v-ripple>
                     <q-item-section avatar>
                       <q-icon name="receipt" />
@@ -101,6 +101,15 @@ export default {
   },
   computed: {
     ...mapStores(useSettingsStore, useJobStore),
+    // Create a computed property that returns 5 of the most recent jobs (from the end of the array) - try again it didnt work
+    recentJobs() {
+      if (!this.jobStore.jobHistory) return [];
+      if (this.jobStore.jobHistory.length > 5) {
+        return this.jobStore.jobHistory.slice(-5)
+      } else {
+        return this.jobStore.jobHistory;
+      }
+    },
   },
   methods: {
     toggleDisplayOutput() {
