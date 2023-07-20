@@ -8,6 +8,9 @@ export const useJobStore = defineStore('job', {
     jobHistory: [] as Array<HistoryFile>,
   }),
   actions: {
+    empty() {
+      this.jobHistory = [];
+    },
     async getHistory(start: number, end: number, type: string) {
       this.jobHistory = await getHistory(start, end, type);
       return this.jobHistory;
@@ -16,7 +19,7 @@ export const useJobStore = defineStore('job', {
       information('Beginning purge...');
       console.log('Purging history');
       for (const job of this.jobHistory) {
-        await deleteHistoricWorkload(job.meta.id);
+        await deleteHistoricWorkload(job.meta.id, 'history');
       }
       information('All history purged...');
       this.jobHistory = [];

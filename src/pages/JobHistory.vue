@@ -113,8 +113,13 @@ export default {
     },
     deleteJob(jobId) {
       console.log('Del jobo', jobId);
+
       this.jobStore.deleteJob(jobId, this.$route.params.type);
     },
+  },
+  beforeMount() {
+    this.jobStore.empty();
+    this.jobStore.getHistory(0, 100, this.$route.params.type);
   },
   watch: {
     '$route.params.type'() {
