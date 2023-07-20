@@ -8,15 +8,18 @@ export const useJobStore = defineStore('job', {
     jobHistory: [] as Array<HistoryFile>,
   }),
   actions: {
-    async getHistory() {
-      this.jobHistory = await getHistory(0, 100);
+    empty() {
+      this.jobHistory = [];
+    },
+    async getHistory(start: number, end: number, type: string) {
+      this.jobHistory = await getHistory(start, end, type);
       return this.jobHistory;
     },
     async purgeHistory() {
       information('Beginning purge...');
       console.log('Purging history');
       for (const job of this.jobHistory) {
-        await deleteHistoricWorkload(job.meta.id);
+        await deleteHistoricWorkload(job.meta.id, 'history');
       }
       information('All history purged...');
       this.jobHistory = [];
@@ -24,10 +27,10 @@ export const useJobStore = defineStore('job', {
     getJob(jobId: string) {
       return this.jobHistory.find((job: HistoryFile) => job.meta.id === jobId);
     },
-    async deleteJob(jobId: string) {
+    async deleteJob(jobId: string, type: string) {
       this.jobHistory = this.jobHistory.filter((job: HistoryFile) => job.meta.id !== jobId);
       console.log('Delete', jobId);
-      if (await deleteHistoricWorkload(jobId)) {
+      if (await deleteHistoricWorkload(jobId, type)) {
         information('Job deleted!');
       }
     },

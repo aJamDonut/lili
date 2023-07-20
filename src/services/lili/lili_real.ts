@@ -1,4 +1,4 @@
-import { HistoricWorkload, HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
+import { DefinitionSource, HistoricWorkload, HistoryFile, LiliClientConfig } from 'app/interfaces/Lili';
 import { ElectronEngine } from './drivers/Engine/ElectronEngine';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 import { RecallHistoryOptions } from 'app/interfaces/Engine';
@@ -51,8 +51,8 @@ export function reset() {
  * @param {number} end - The end index of the history entries.
  * @returns {WorkloadHistory[] | Promise<FakeHistoryEntry[]>} The history entries within the specified range.
  */
-export async function getHistory(start: number, end: number): Promise<Array<HistoryFile>> {
-  return await LILIAI.engineDriver.getHistory(start, end);
+export async function getHistory(start: number, end: number, type: DefinitionSource): Promise<Array<HistoryFile>> {
+  return await LILIAI.engineDriver.getHistory(start, end, type);
 }
 
 export async function purgeHistory(): Promise<void> {
@@ -79,8 +79,8 @@ export async function saveHistoricWorkload(workloadHistory: HistoricWorkload): P
   return await LILIAI.engineDriver.saveHistoricWorkload(workloadHistory);
 }
 
-export async function deleteHistoricWorkload(id: string): Promise<boolean> {
-  return await LILIAI.engineDriver.deleteHistoricWorkload(id);
+export async function deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean> {
+  return await LILIAI.engineDriver.deleteHistoricWorkload(id, type);
 }
 
 export async function hasValidLicense(): Promise<boolean> {

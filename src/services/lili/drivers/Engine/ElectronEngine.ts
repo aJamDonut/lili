@@ -1,5 +1,5 @@
 import { EngineDriverInterface, RecallHistoryOptions } from 'app/interfaces/Engine';
-import { HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
+import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
@@ -164,8 +164,8 @@ export class ElectronEngine implements EngineDriverInterface {
     return await run('Engine:getWorkloads');
   }
 
-  async getHistory(start: number, end: number): Promise<Array<HistoryFile>> {
-    return await run('Engine:getHistory', { start, end });
+  async getHistory(start: number, end: number, type: DefinitionSource): Promise<Array<HistoryFile>> {
+    return await run('Engine:getHistory', { start, end, type });
   }
 
   async purgeHistory(): Promise<void> {
@@ -186,7 +186,7 @@ export class ElectronEngine implements EngineDriverInterface {
   async getLicense(key: string): Promise<ValidLicenseResponse> {
     return await run('Engine:getLicense', { key });
   }
-  async deleteHistoricWorkload(id: string): Promise<boolean> {
-    return await run('Engine:deleteHistoricWorkload', { id });
+  async deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean> {
+    return await run('Engine:deleteHistoricWorkload', { id, type });
   }
 }
