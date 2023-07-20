@@ -3,7 +3,7 @@ import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callS
 import { getWorkloadDefinition, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
-import { HistoricWorkload, HistoryFile, HistoryMetaData, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
+import { DefinitionSource, HistoricWorkload, HistoryFile, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
 
 const functionList: Array<string> = [];
 
@@ -44,7 +44,89 @@ async function getWorkloads() {
 
 /* Setup is done... meat here. */
 
+function getFolderMap() {
+  return {
+    history: 'workload_history',
+    user: 'primer/user',
+    thirdparty: 'primer/thirdparty',
+    core: 'primer',
+  };
+}
+
+function getReadCallsMap() {
+  return {
+    history: 'readJson',
+    user: 'readJson',
+    thirdparty: 'readJson',
+    core: 'liliReadJson',
+  };
+}
+
+async function getDefinition(type: DefinitionSource, id: string) {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const definition = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'definition.json',
+  })) as HistoryFile;
+
+  return definition ? definition : false;
+}
+
+async function getHistory(type: DefinitionSource, id: string): Promise<Array<MessageHistory>> {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const history = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'history.json',
+  })) as Array<MessageHistory>;
+
+  return history ? history : [];
+}
+
+async function getHistoricWorkload(id: string) {
+  let type: DefinitionSource = 'history';
+  let definition = await getDefinition(type, id);
+  let history: Array<MessageHistory> = [];
+  if (definition) {
+    history = await getHistory(type, id);
+    return { definition, history };
+  }
+
+  type = 'user';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    return { definition, history };
+  }
+
+  type = 'thirdparty';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    return { definition, history };
+  }
+
+  type = 'core';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    return { definition, history };
+  }
+}
+
 export async function setupElectronEngineHandlers(justRegister: boolean) {
+  ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
+    return getHistoricWorkload(options.id as string);
+  });
+
   //Add new functions here
   ipcWrap(justRegister, 'startWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
     //Init AI, send the callback function
@@ -74,8 +156,18 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 
   ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {
-    let historyIds = (await callService('Storage:getFolder', {
-      folderName: `workload_history`,
+    const type = (options.type ? options.type : 'history') as DefinitionSource;
+    console.log('get history', options);
+    const folders = getFolderMap();
+    const readCalls = getReadCallsMap();
+
+    const folder = folders[type];
+    const readCall = readCalls[type];
+
+    const getFolderCall = options.type === 'core' ? 'liliGetFolder' : 'getFolder';
+
+    let historyIds = (await callService(`Storage:${getFolderCall}`, {
+      folderName: folder,
     })) as Array<string>;
 
     const historyList = [];
@@ -89,8 +181,8 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
       if (i > start && i < end) {
         continue;
       }
-      const definition = (await callService('Storage:readJson', {
-        folderName: `workload_history/${id}/`,
+      const definition = (await callService(`Storage:${readCall}`, {
+        folderName: `${folder}/${id}/`,
         fileName: 'definition.json',
       })) as HistoryFile;
       if (definition && definition.meta) {
@@ -121,35 +213,26 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'deleteHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {
     const id = options.id;
 
+    const type = (options.type ? options.type : 'history') as DefinitionSource;
+    const folders = getFolderMap();
+
+    const folder = folders[type];
+
     await callService('Storage:deleteFile', {
-      folderName: `workload_history/${id}/`,
+      folderName: `${folder}/${id}/`,
       fileName: 'definition.json',
     });
 
     await callService('Storage:deleteFile', {
-      folderName: `workload_history/${id}/`,
+      folderName: `${folder}/${id}/`,
       fileName: 'history.json',
     });
 
     await callService('Storage:deleteFolder', {
-      folderName: `workload_history/${id}/`,
+      folderName: `${folder}/${id}/`,
     });
 
     return true;
-  });
-
-  ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<HistoricWorkload> => {
-    const id = options.id;
-    const definition = (await callService('Storage:readJson', {
-      folderName: `workload_history/${id}/`,
-      fileName: 'definition.json',
-    })) as HistoryFile;
-
-    const history = (await callService('Storage:readJson', {
-      folderName: `workload_history/${id}/`,
-      fileName: 'history.json',
-    })) as Array<MessageHistory>;
-    return { definition, history };
   });
 
   ipcWrap(justRegister, 'saveHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<string> => {
@@ -163,14 +246,17 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     ) {
       throw 'Cannot save history without atleast a definition and history.';
     }
+
+    const folder = historicWorkload.definition.meta.isPrimer ? 'primer/user' : 'workload_history';
+
     await callService('Storage:writeFile', {
-      folderName: `workload_history/${historicWorkload.definition.meta.id}/`,
+      folderName: `${folder}/${historicWorkload.definition.meta.id}/`,
       fileName: 'definition.json',
       contents: JSON.stringify(historicWorkload.definition),
     });
 
     await callService('Storage:writeFile', {
-      folderName: `workload_history/${historicWorkload.definition.meta.id}/`,
+      folderName: `${folder}/${historicWorkload.definition.meta.id}/`,
       fileName: 'history.json',
       contents: JSON.stringify(historicWorkload.history),
     });

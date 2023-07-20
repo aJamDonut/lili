@@ -15,8 +15,9 @@
         <div class="col">
           <lili-cont title="Workload Id">
             <div class="text-subtitle1">{{ job.definition.meta.id }}</div>
-            <q-btn flat dense icon="save" @click="saveHistoricWorkload()" />
-            <q-btn flat dense icon="content_copy" @click="copyHistoricWorkload()" />
+            <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
+            <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
+            <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
           </lili-cont>
         </div>
       </div>
@@ -129,6 +130,7 @@ export default {
       return false;
     },
     deleteMessage(index) {
+      //TODO: set to hidden...
       this.job.history.splice(index, 1);
     },
     downloadJob(jobId) {
@@ -151,7 +153,7 @@ export default {
     },
     async copyHistoricWorkloadAsPrimer() {
       const historyCopy = JSON.parse(JSON.stringify(this.job));
-      historyCopy.definition.meta.primer = true;
+      historyCopy.definition.meta.isPrimer = true;
       historyCopy.definition.meta.id = false;
       let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
       this.$router.push({ path: '/edit/' + newJobId });
