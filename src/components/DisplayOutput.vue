@@ -2,7 +2,6 @@
   <div>
     <lili-cont :title="$t('debug')" class="q-mb-sm" v-if="showDebug">
       <textarea v-model="markdown"></textarea>
-      
     </lili-cont>
     <lili-cont :title="true">
       <template v-slot:title>
@@ -35,6 +34,14 @@ export default {
   computed: {
     markdown: {
       get () { return this.modelValue },
+    },
+    isOutputJson () {
+      try {
+        JSON.parse(this.modelValue);
+      } catch (e) {
+        return false;
+      }
+      return true;
     },
     markdownToHtml() {
       return marked(this.markdown);
