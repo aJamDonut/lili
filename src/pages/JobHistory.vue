@@ -14,7 +14,7 @@
                   <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/edit/' + props.row.meta.id }" />
                 </div>
                 <div>
-                  <q-btn outline color="red" disabled size="11px" icon="close" @click="deleteJob(props.row.meta.id)" />
+                  <q-btn outline color="red" size="11px" icon="close" @click="deleteJob(props.row.meta.id)" />
                 </div>
               </div>
               <div v-else-if="row.name === 'id'">
