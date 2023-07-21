@@ -10,6 +10,7 @@
       autogrow
       dense
       class="q-mb-md"
+      @keyup.ctrl.enter="runJob"
     >
     <template v-slot:append>
       <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
@@ -102,8 +103,9 @@ export default {
   },
   methods: {
     runJob() {
+      console.log('run Job')
       this.$emit('run');
-    },
+    }
   },
   mounted() {
     mountWorkloads.call(this);
