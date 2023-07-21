@@ -197,9 +197,13 @@ export default {
       this.transactionRunning = true;
       this.startTransaction();
 
+      const prompt = this.promptConfig.prompt;
+
+      this.promptConfig.prompt = ''
+
       startWorkload({
         id: this.$route.params.id || false,
-        prompt: this.promptConfig.prompt,
+        prompt: prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: async () => {
