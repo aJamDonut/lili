@@ -79,6 +79,7 @@ import { useWorkloadStore } from 'stores/workload';
 
 function mountWorkloads() {
   this.workloadOptions = [];
+  this.workloadStore.refresh();
   for (const item of this.workloadStore.workloads) {
     this.workloadOptions.push({
       label: item.workloadDefinition.name,
