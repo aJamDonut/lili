@@ -10,7 +10,7 @@
               <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
                   <div v-if="type === 'history'">
-                    <q-btn outline color="primary" size="11px" icon="send" :to="{ path: '/job/history/' + props.row.meta.id }" />
+                    <q-btn outline color="primary" size="11px" icon="replay" :to="{ path: '/job/history/' + props.row.meta.id }" />
                   </div>
                   <div v-else>
                     <q-btn outline color="primary" size="11px" icon="send" :to="{ path: '/job/workload/' + props.row.meta.id }" />
@@ -48,7 +48,7 @@
               <q-td :props="props" v-for="row in props.cols" :key="row.name">
                 <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                   <div>
-                    <q-btn outline color="primary" size="11px" icon="replay" :to="{ path: '/job/workload/' + props.row.meta.id }" />
+                    <q-btn outline color="primary" size="11px" icon="send" :to="{ path: '/job/workload/' + props.row.meta.id }" />
                   </div>
                   <div>
                     <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/edit/' + props.row.meta.id }" />
