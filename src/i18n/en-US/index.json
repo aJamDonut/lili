@@ -36,5 +36,6 @@
   "description": "Description",
   "codename": "Codename",
   "category": "Category",
-  "enter_prompt": "Enter your prompt here"
+  "enter_prompt": "Enter your prompt here",
+  "your_workloads": "Your workloads"
 }
