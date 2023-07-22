@@ -37,5 +37,7 @@
   "codename": "Codename",
   "category": "Category",
   "enter_prompt": "Enter your prompt here",
-  "your_workloads": "Your workloads"
+  "your_workloads": "Your workloads",
+  "help": "Help",
+  "purge_history": "Purge history"
 }

@@ -159,7 +159,7 @@ export default {
       isMaximized: false,
       menuList: [
         {
-          icon: 'add',
+          icon: 'chat',
           label: 'run_job',
           url: 'job/history',
           separator: false,
