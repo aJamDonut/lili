@@ -165,6 +165,12 @@ export default {
           separator: false,
         },
         {
+          icon: 'add',
+          label: 'run_job',
+          url: 'messages/new',
+          separator: false,
+        },
+        {
           icon: 'receipt',
           label: 'workloads',
           url: 'history/user',
