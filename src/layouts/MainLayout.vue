@@ -87,15 +87,7 @@
       :mini="miniState"
       @mouseover="miniState = false"
       @mouseout="miniState = true" -->
-    <q-drawer
-      :model-value="true"
-      show-if-above
-      :mini="true"
-      :width="200"
-      :breakpoint="500"
-      bordered
-      class="main-menu"
-    >
+    <q-drawer :model-value="true" show-if-above :mini="true" :width="200" :breakpoint="500" bordered class="main-menu">
       <q-scroll-area class="fit">
         <div class="column justify-between" style="min-height: 100%">
           <div class="col">
@@ -108,7 +100,9 @@
                   <q-item-section>
                     {{ $t(menuItem.label) }}
                   </q-item-section>
-                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{
+                    $t(menuItem.label)
+                  }}</q-tooltip>
                 </q-item>
                 <q-separator :key="'sep' + index" v-if="menuItem.separator" />
               </template>
@@ -124,13 +118,15 @@
                   <q-item-section>
                     {{ $t(menuItem.label) }}
                   </q-item-section>
-                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{ $t(menuItem.label) }}</q-tooltip>
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]" class="g-black text-captionb">{{
+                    $t(menuItem.label)
+                  }}</q-tooltip>
                 </q-item>
                 <q-separator :key="'sep' + index" v-if="menuItem.separator" />
               </template>
             </q-list>
             <div class="row justify-center">
-              <div class="q-px-sm app-ver">v1.2.3<!-- App Ver --></div>
+              <div class="q-px-sm app-ver">v{{ version }}</div>
             </div>
           </div>
         </div>
@@ -153,9 +149,12 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { useSettingsStore } from 'stores/settings';
 export default {
   data() {
     return {
+      version: '0.0',
       miniState: false,
       isMaximized: false,
       menuList: [
@@ -196,7 +195,7 @@ export default {
           label: 'help',
           url: '',
           separator: false,
-        }
+        },
       ],
       thumbStyle: {
         right: '3px',
@@ -215,6 +214,9 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapStores(useSettingsStore),
+  },
   beforeMount() {
     _electron.run('FocusedWindow:listen', { name: 'main' });
     _electron.on('Window:main:maximize', () => {
@@ -223,6 +225,9 @@ export default {
     _electron.on('Window:main:unmaximize', () => {
       this.isMaximized = false;
     });
+  },
+  async mounted() {
+    this.version = await this.settingsStore.getVersion();
   },
   methods: {
     toggleMaximize() {
@@ -264,7 +269,7 @@ To make the context menu behave correctly on all platforms, you should never use
 
 .app-ver {
   font-size: 10px;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .brand {
