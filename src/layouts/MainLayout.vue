@@ -161,13 +161,7 @@ export default {
         {
           icon: 'add',
           label: 'run_job',
-          url: 'job',
-          separator: false,
-        },
-        {
-          icon: 'psychology',
-          label: 'workloads',
-          url: 'history/core',
+          url: 'job/history',
           separator: false,
         },
         {

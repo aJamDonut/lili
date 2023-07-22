@@ -85,7 +85,16 @@ function mountWorkloads() {
       label: item.workloadDefinition.name,
       value: item.meta.id,
     });
+
+    if (this.$route.params.type !== 'history' && item.meta.id === this.$route.params.id) {
+      this.settingsStore.workload = {
+        label: item.workloadDefinition.name,
+        value: item.meta.id,
+      };
+    }
   }
+
+  this.promptConfig.workload = this.settingsStore.workload;
 }
 
 export default {
@@ -105,10 +114,6 @@ export default {
   },
   mounted() {
     mountWorkloads.call(this);
-  },
-  beforeMount() {
-    console.log('before mount', this.settingsStore.workload);
-    this.promptConfig.workload = this.settingsStore.workload;
   },
   computed: {
     ...mapStores(useWorkloadStore, useSettingsStore),

@@ -8,7 +8,7 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     sliderInputs: true,
     showAdvanced: false,
-    workload: { label: 'Change files', value: 'change_files' },
+    workload: 'change_files',
     darkMode: 'auto',
     chatGPTKey: '',
     splitterWidth: 25,
