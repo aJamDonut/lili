@@ -1,0 +1,24 @@
+{
+  "meta": { "id": "chat_lili", "date": 1689815844593, "isPrimer": true },
+  "workloadDefinition": {
+    "name": "Lili Chat",
+    "codename": "chat_lili",
+    "description": "Lili chat helper",
+    "category": "general",
+    "context": ["extract_files"],
+    "defaults": { "advanced": { "repetitiveness": 1.5, "creativity": 0, "tokenLength": 15000, "solutionCount": 1 } },
+    "messageHistory": []
+  },
+  "workloadOptions": {
+    "prompt": "What is liliflux?",
+    "context": "",
+    "workload": "chat_lili",
+    "outputFormat": "plaintext",
+    "outputTo": "inline",
+    "creativity": 0.1,
+    "repetitiveness": 0.1,
+    "responseLimit": 10,
+    "solutionCount": 1,
+    "onJsonResponse": null
+  }
+}

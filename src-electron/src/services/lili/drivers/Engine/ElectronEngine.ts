@@ -1,9 +1,9 @@
 import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callService } from '../../../event';
 
-import { getWorkloadDefinition, runWorkload } from '../../../aiworkload';
+import { getHistoricWorkload, getFolderMap, getReadCallsMap, getWorkloads, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
-import { DefinitionSource, HistoricWorkload, HistoryFile, MessageHistory, WorkloadDefinition } from 'app/interfaces/Lili';
+import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
 
 const functionList: Array<string> = [];
 
@@ -28,99 +28,7 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   registerEvent(func(name), callback);
 }
 
-async function getWorkloads() {
-  const workloads: Array<WorkloadDefinition> = [];
-
-  const folders = (await callService('Storage:liliGetFolder', {
-    folderName: `workloads`,
-  })) as Array<string>;
-
-  for (const folder of folders) {
-    workloads.push(await getWorkloadDefinition(folder));
-  }
-
-  return workloads;
-}
-
 /* Setup is done... meat here. */
-
-function getFolderMap() {
-  return {
-    history: 'workload_history',
-    user: 'primer/user',
-    thirdparty: 'primer/thirdparty',
-    core: 'primer',
-  };
-}
-
-function getReadCallsMap() {
-  return {
-    history: 'readJson',
-    user: 'readJson',
-    thirdparty: 'readJson',
-    core: 'liliReadJson',
-  };
-}
-
-async function getDefinition(type: DefinitionSource, id: string) {
-  const folders = getFolderMap();
-  const readCalls = getReadCallsMap();
-  const folder = folders[type];
-  const readCall = readCalls[type];
-
-  const definition = (await callService(`Storage:${readCall}`, {
-    folderName: `${folder}/${id}/`,
-    fileName: 'definition.json',
-  })) as HistoryFile;
-
-  return definition ? definition : false;
-}
-
-async function getHistory(type: DefinitionSource, id: string): Promise<Array<MessageHistory>> {
-  const folders = getFolderMap();
-  const readCalls = getReadCallsMap();
-
-  const folder = folders[type];
-  const readCall = readCalls[type];
-
-  const history = (await callService(`Storage:${readCall}`, {
-    folderName: `${folder}/${id}/`,
-    fileName: 'history.json',
-  })) as Array<MessageHistory>;
-
-  return history ? history : [];
-}
-
-async function getHistoricWorkload(id: string) {
-  let type: DefinitionSource = 'history';
-  let definition = await getDefinition(type, id);
-  let history: Array<MessageHistory> = [];
-  if (definition) {
-    history = await getHistory(type, id);
-    return { definition, history };
-  }
-
-  type = 'user';
-  definition = await getDefinition(type, id);
-  if (definition) {
-    history = await getHistory(type, id);
-    return { definition, history };
-  }
-
-  type = 'thirdparty';
-  definition = await getDefinition(type, id);
-  if (definition) {
-    history = await getHistory(type, id);
-    return { definition, history };
-  }
-
-  type = 'core';
-  definition = await getDefinition(type, id);
-  if (definition) {
-    history = await getHistory(type, id);
-    return { definition, history };
-  }
-}
 
 export async function setupElectronEngineHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'getHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData) => {
@@ -152,7 +60,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 
   ipcWrap(justRegister, 'getWorkloads', async () => {
-    return getWorkloads();
+    return await getWorkloads();
   });
 
   ipcWrap(justRegister, 'getHistory', async (_event: MixedEvent, options: ElectronEventData) => {

@@ -1,0 +1,12 @@
+{
+  "meta": { "id": "extract_files", "date": 1689815844593 },
+  "workloadDefinition": {
+    "name": "Extract files",
+    "codename": "extract_files",
+    "description": "Makes changes to files contents",
+    "type": "raw",
+    "defaults": { "advanced": { "repetitiveness": 1.5, "creativity": 0, "tokenLength": 15000, "solutionCount": 1 } },
+    "messageHistory": []
+  },
+  "workloadOptions": {}
+}

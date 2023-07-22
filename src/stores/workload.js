@@ -8,9 +8,10 @@ export const useWorkloadStore = defineStore('workload', {
   actions: {
     async load() {
       this.workloads = await getWorkloads();
+      console.log('WORKLOADS', this.workloads);
     },
     getWorkload(id) {
       return this.workloads.find((workload) => workload.id === id);
-    }
+    },
   },
 });

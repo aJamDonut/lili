@@ -1,0 +1,24 @@
+{
+  "meta": { "id": "save_history", "date": 1689815844593, "isPrimer": true },
+  "workloadDefinition": {
+    "name": "Save something",
+    "codename": "save_history",
+    "description": "Save something from the chat",
+    "category": "general",
+    "context": ["extract_files"],
+    "defaults": { "advanced": { "repetitiveness": 1.5, "creativity": 0, "tokenLength": 15000, "solutionCount": 1 } },
+    "messageHistory": []
+  },
+  "workloadOptions": {
+    "prompt": "Save our chat as chat_history.txt",
+    "context": "",
+    "workload": "save_history",
+    "outputFormat": "plaintext",
+    "outputTo": "inline",
+    "creativity": 0.1,
+    "repetitiveness": 0.1,
+    "responseLimit": 10,
+    "solutionCount": 1,
+    "onJsonResponse": null
+  }
+}

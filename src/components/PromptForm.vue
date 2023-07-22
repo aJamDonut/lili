@@ -12,9 +12,9 @@
       class="q-mb-md"
       @keyup.ctrl.enter="runJob"
     >
-    <template v-slot:append>
-      <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
-    </template>
+      <template v-slot:append>
+        <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
+      </template>
     </q-input>
 
     <div class="row justify-end" key="adv-btn">
@@ -39,12 +39,7 @@
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
             <label>{{ $t('workload') }}</label>
-            <q-select
-              v-model="promptConfig.workload"
-              filled
-              :options="workloadOptions"
-              dense
-            ></q-select>
+            <q-select v-model="promptConfig.workload" filled :options="workloadOptions" dense></q-select>
           </div>
         </div>
         <div class="row q-col-gutter-md q-mb-md">
@@ -86,8 +81,8 @@ function mountWorkloads() {
   this.workloadOptions = [];
   for (const item of this.workloadStore.workloads) {
     this.workloadOptions.push({
-      label: item.name,
-      value: item.codename,
+      label: item.workloadDefinition.name,
+      value: item.meta.id,
     });
   }
 }
@@ -95,7 +90,7 @@ function mountWorkloads() {
 export default {
   data() {
     return {
-      workloadOptions: []
+      workloadOptions: [],
     };
   },
   props: {
@@ -103,16 +98,16 @@ export default {
   },
   methods: {
     runJob() {
-      console.log('run Job')
+      console.log('run Job');
       this.$emit('run');
-    }
+    },
   },
   mounted() {
     mountWorkloads.call(this);
   },
-  beforeMount () {
-    console.log('before mount', this.settingsStore.workload)
-    this.promptConfig.workload = this.settingsStore.workload
+  beforeMount() {
+    console.log('before mount', this.settingsStore.workload);
+    this.promptConfig.workload = this.settingsStore.workload;
   },
   computed: {
     ...mapStores(useWorkloadStore, useSettingsStore),
@@ -128,14 +123,14 @@ export default {
         // this.settingsStore.workload = value.workload;
         // console.log('set workload to', value.workload)
         this.$emit('update:modelValue', value);
-      }
+      },
     },
   },
   watch: {
     'promptConfig.workload': function (val) {
-      this.settingsStore.workload = val
-    }
-  }
+      this.settingsStore.workload = val;
+    },
+  },
 };
 </script>
 

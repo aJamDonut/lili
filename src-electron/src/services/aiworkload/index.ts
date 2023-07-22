@@ -4,7 +4,9 @@ import { ChatRole, CompletionMessage, streamCompletion } from '../openai/ChatGPT
 import {
   ContextFiles,
   ContextFolders,
+  DefinitionSource,
   FileDescriptions,
+  HistoricWorkload,
   HistoryFile,
   InlineMessages,
   JSONFileContext,
@@ -17,12 +19,159 @@ interface ParseableHistory {
   contentFile?: string;
 }
 
-export async function parseHistoryFile(definition: WorkloadDefinition, history: ParseableHistory) {
+export function getFolderMap() {
+  return {
+    history: 'workload_history',
+    user: 'primer/user',
+    thirdparty: 'primer/thirdparty',
+    core: 'primer',
+  };
+}
+
+export function getReadCallsMap() {
+  return {
+    history: 'readJson',
+    user: 'readJson',
+    thirdparty: 'readJson',
+    core: 'liliReadJson',
+  };
+}
+export async function getDefinition(type: DefinitionSource, id: string) {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const definition = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'definition.json',
+  })) as HistoryFile;
+
+  return definition;
+}
+
+export async function getHistory(type: DefinitionSource, id: string): Promise<Array<MessageHistory>> {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const history = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'history.json',
+  })) as Array<MessageHistory>;
+
+  return history ? history : [];
+}
+export async function getHistoricWorkload(id: string): Promise<HistoricWorkload> {
+  let type: DefinitionSource = 'history';
+  let definition = await getDefinition(type, id);
+  let history: Array<MessageHistory> = [];
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'user';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'thirdparty';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'core';
+  definition = await getDefinition(type, id);
+
+  history = await getHistory(type, id);
+  definition.meta.source = type;
+  return { definition, history };
+}
+
+export async function getWorkloads() {
+  const workloads: Array<HistoryFile> = [];
+
+  let folders = (await callService('Storage:getFolder', {
+    folderName: `primer/user`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('user', folder));
+    }
+  }
+  folders = (await callService('Storage:getFolder', {
+    folderName: `primer/thirdparty`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('thirdparty', folder));
+    }
+  }
+
+  folders = (await callService('Storage:liliGetFolder', {
+    folderName: `primer`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('core', folder));
+    }
+  }
+
+  return workloads;
+}
+
+export async function getWorkloadDefinition(type: DefinitionSource, name: string) {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const definition = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${name}`,
+    fileName: 'definition.json',
+  })) as HistoryFile;
+
+  return definition;
+}
+
+export async function getFullWorkloadDefinition(name: string): Promise<HistoricWorkload> {
+  const workloadHistory = await getHistoricWorkload(name);
+
+  await parseDefinitionFiles(workloadHistory);
+
+  return workloadHistory;
+}
+
+export async function parseDefinitionFiles(workloadHistory: HistoricWorkload) {
+  if (!workloadHistory) {
+    return workloadHistory;
+  }
+
+  for (const history of workloadHistory.history) {
+    await parseHistoryLine(workloadHistory.definition, history as ParseableHistory);
+  }
+  return workloadHistory;
+}
+
+export async function parseHistoryLine(definition: HistoryFile, history: ParseableHistory) {
   if (!history.contentFile) {
     return history;
   }
   history.content = (await callService('Storage:liliReadFile', {
-    folderName: `workloads/${definition.codename}`,
+    folderName: `workloads/${definition.meta.id}`,
     fileName: history.contentFile,
   })) as string;
 
@@ -32,7 +181,7 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
     let jsonContent = JSON.parse(history.content) as Array<ParseableHistory>;
     //Singular content files
     for (const file of jsonContent) {
-      const reParse = await parseHistoryFile(definition, file);
+      const reParse = await parseHistoryLine(definition, file);
       file.content = reParse.content;
       delete file.contentFile; //Unset the key since its bad for gpt
     }
@@ -44,34 +193,6 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
   delete history.contentFile;
 
   return history;
-}
-
-export async function parseDefinitionFiles(definition: WorkloadDefinition) {
-  for (const history of definition.messageHistory) {
-    await parseHistoryFile(definition, history as ParseableHistory);
-  }
-  return definition;
-}
-
-export async function getWorkloadDefinition(name: string) {
-  const definition = (await callService('Storage:liliReadJson', {
-    folderName: `workloads/${name}`,
-    fileName: 'definition.json',
-  })) as WorkloadDefinition;
-  return definition;
-}
-
-export async function getFullWorkloadDefinition(name: string) {
-  const definition = await getWorkloadDefinition(name);
-
-  definition.messageHistory = (await callService('Storage:liliReadJson', {
-    folderName: `workloads/${name}`,
-    fileName: 'message_history.json',
-  })) as Array<MessageHistory>;
-
-  await parseDefinitionFiles(definition);
-
-  return definition;
 }
 
 export function newMessage(
@@ -92,11 +213,11 @@ export async function readContextFile(file: string) {
   })) as string;
 }
 
+//merge file1.csv and file2.csv into merged.csv
 export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
   if (!workloadDefinition?.context?.includes('extract_files')) {
     if (typeof workloadOptions.forEachToken === 'function')
       await workloadOptions.forEachToken(jsonResponse('inline', 'Doesnt need context', 'warning'));
-    console.log('Prompt', prompt);
     return { messages: [], fileDescriptions: {} };
   }
   const context = await getContextFiles(prompt);
@@ -352,10 +473,14 @@ export async function saveHistory(workloadOptions: WorkloadOptions, workloadDefi
 export function showLines() {
   return false;
 }
-export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions, workload?: WorkloadDefinition) {
+export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions, workload: HistoricWorkload | false = false) {
   workload = workload || (await getFullWorkloadDefinition(workloadOptions.workload));
 
-  const messages = [...workload.messageHistory, newMessage('user', prompt)];
+  if (!workload) {
+    return '';
+  }
+
+  const messages = [...workload.history, newMessage('user', prompt)];
 
   //Init AI, send the callback function
   //For every token
@@ -402,17 +527,6 @@ function resetHistory() {
   MESSAGE_HISTORY = [];
 }
 
-export async function getHistory(id: string) {
-  try {
-    return (await callService('Storage:readJson', {
-      folderName: `workload_history/${id}/`,
-      fileName: `history.json`,
-    })) as Array<MessageHistory>;
-  } catch (_e) {
-    return [];
-  }
-}
-
 /**
  * Run Workload, the main meat. Runs a workload
  * @param prompt The text to send in the next prompt
@@ -438,7 +552,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   let diskHistory: Array<MessageHistory> = [];
   try {
-    diskHistory = await getHistory(workloadOptions.id);
+    diskHistory = await getHistory('history', workloadOptions.id);
   } catch (e) {
     diskHistory = [];
   }
@@ -449,22 +563,25 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   const workload = await getFullWorkloadDefinition(workloadOptions.workload);
 
-  if (workload.type === 'raw') {
+  if (workload && workload.definition.workloadDefinition.type === 'raw') {
     return runWorkloadRaw(prompt, workloadOptions, workload);
   }
 
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
+  const rawMessages = !workload ? [] : workload.history;
+
   let messages = [
-    ...workload.messageHistory,
+    ...rawMessages,
     ...MESSAGE_HISTORY,
-    newMessage('user', prompt, workloadOptions, workload),
     //...folderContextMessages,
   ];
 
+  messages.push(newMessage('user', prompt, workloadOptions, workload.definition.workloadDefinition));
+
   setHistory(messages); //Because lili will inject after
 
-  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
+  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload.definition.workloadDefinition);
 
   messages = [...MESSAGE_HISTORY, ...fileContextMessages.messages];
 
@@ -497,7 +614,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
     addMessagesHistory('assistant', allTokens);
 
-    await saveNow(workloadOptions, workload);
+    await saveNow(workloadOptions, workload.definition.workloadDefinition);
 
     await callService('Storage:writeFile', {
       folderName: `logs`,
