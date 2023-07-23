@@ -2,8 +2,8 @@
   <q-page>
     <div class="flex flex-center">
       <div class="absolute-full">
-        <div class="row items-start justify-center q-col-gutter-lg full-height">
-          <div class="col-md-3">
+        <div class="row items-start justify-left q-col-gutter-lg full-height">
+          <div class="col-md-4">
             <div class="q-pa-lg q-ma-lg">
               <h1 class="page-title">Getting Started</h1>
               <q-list>
@@ -36,7 +36,7 @@
               </q-list>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-sm-5">
             <div class="q-pa-lg q-ma-lg">
               <h1 class="page-title">How to start</h1>
               <ol>
