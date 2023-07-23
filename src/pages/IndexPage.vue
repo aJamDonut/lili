@@ -37,32 +37,38 @@
             </div>
           </div>
           <div class="col-sm-5">
+              <div class="q-pa-lg q-ma-lg">
+                <lili-cont>
+                  <h1 class="page-title">How to start</h1>
+                  <ol>
+                    <li>Come up with an idea</li>
+                    <li>Create a new workload with the plus icon</li>
+                    <li>Describe how the AI should act using messages (primer)</li>
+                    <li>Save your workload and test it out!</li>
+                  </ol>
+                </lili-cont>
+              </div>
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">How to start</h1>
-              <ol>
-                <li>Come up with an idea</li>
-                <li>Create a new workload with the plus icon</li>
-                <li>Describe how the AI should act using messages (primer)</li>
-                <li>Save your workload and test it out!</li>
-              </ol>
+              <lili-cont>
+                <h1 class="page-title">Terminology</h1>
+                <ul>
+                  <li>Prompt - A message you send to the AI</li>
+                  <li>History - A history of messages, normally sent to the AI</li>
+                  <li>Workload - A repeatable prompt with history already pre-filled in</li>
+                </ul>
+              </lili-cont>
             </div>
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Terminology</h1>
-              <ul>
-                <li>Prompt - A message you send to the AI</li>
-                <li>History - A history of messages, normally sent to the AI</li>
-                <li>Workload - A repeatable prompt with history already pre-filled in</li>
-              </ul>
-            </div>
-            <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Tips</h1>
-              <ul>
-                <li>If the user wants, the AI can read and saves files, simply by asking</li>
-                <li>Files and folders available to the AI are currently stored in:</li>
-                <li>UserData/workspaces/default</li>
-                <br />
-                <li>You can turn a chat history into a workload by simply clicking the "Create workload" button</li>
-              </ul>
+              <lili-cont>
+                <h1 class="page-title">Tips</h1>
+                <ul>
+                  <li>If the user wants, the AI can read and saves files, simply by asking</li>
+                  <li>Files and folders available to the AI are currently stored in:</li>
+                  <li>UserData/workspaces/default</li>
+                  <br />
+                  <li>You can turn a chat history into a workload by simply clicking the "Create workload" button</li>
+                </ul>
+              </lili-cont>
             </div>
           </div>
         </div>
