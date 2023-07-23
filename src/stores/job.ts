@@ -35,7 +35,14 @@ export const useJobStore = defineStore('job', {
       }
     },
     async loadJobDetail(jobId: string) {
-      return await getHistoricWorkload(jobId);
+      if (!jobId) {
+        return false; //Maybe its a new job...
+      }
+      try {
+        return await getHistoricWorkload(jobId);
+      } catch (e) {
+        console.log("Can't find workload with job:" + jobId + ' assuming new record');
+      }
     },
   },
 });

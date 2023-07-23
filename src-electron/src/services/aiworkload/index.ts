@@ -64,6 +64,24 @@ export async function getHistory(type: DefinitionSource, id: string): Promise<Ar
 
   return history ? history : [];
 }
+
+function getBlankJob(): HistoricWorkload {
+  return {
+    definition: {
+      meta: { id: '', date: Date.now() },
+      workloadDefinition: {
+        name: 'no_name',
+        codename: 'blank',
+        description: 'No description',
+        defaults: { advanced: { repetitiveness: 1.5, creativity: 0, tokenLength: 15000, solutionCount: 1 } },
+        messageHistory: [],
+      },
+      workloadOptions: {},
+    },
+    history: [{ role: 'system', content: 'Take on the role of a teacher helping the user to learn...' }],
+  };
+}
+
 export async function getHistoricWorkload(id: string): Promise<HistoricWorkload> {
   let type: DefinitionSource = 'history';
   let definition = await getDefinition(type, id);
@@ -92,10 +110,13 @@ export async function getHistoricWorkload(id: string): Promise<HistoricWorkload>
 
   type = 'core';
   definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
 
-  history = await getHistory(type, id);
-  definition.meta.source = type;
-  return { definition, history };
+  return getBlankJob();
 }
 
 export async function getWorkloads() {

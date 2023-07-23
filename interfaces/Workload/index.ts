@@ -15,10 +15,10 @@ import { LiliJsonResponse } from 'src/services/lili/drivers/Engine/ElectronEngin
  * @property {function(string): void} onComplete - A callback function to process the complete response.
  */
 export interface WorkloadOptions {
-  id: string;
+  id?: string;
   prompt?: string;
   context?: string;
-  workload: string;
+  workload?: string;
   outputFormat?: string;
   outputTo?: string;
   creativity?: number;

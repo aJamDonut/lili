@@ -1,16 +1,30 @@
 <template>
   <q-page padding class="job-detail">
     <div>
-      <q-btn
-        dense
-        flat
-        size="sm"
-        :label="$t('job_history')"
-        text-color="grey-5"
-        icon="arrow_back"
-        @click="$router.back()"
-        class="q-py-sm q-pr-sm q-mb-sm"
-      />
+      <div v-if="type === 'edit'">
+        <q-btn
+          dense
+          flat
+          size="sm"
+          :label="$t('workloads')"
+          text-color="grey-5"
+          icon="arrow_back"
+          :to="{ path: '/history/history' }"
+          class="q-py-sm q-pr-sm q-mb-sm"
+        />
+      </div>
+      <div v-if="type === 'primer' || type === 'new'">
+        <q-btn
+          dense
+          flat
+          size="sm"
+          :label="$t('workloads')"
+          text-color="grey-5"
+          icon="arrow_back"
+          :to="{ path: '/history/user' }"
+          class="q-py-sm q-pr-sm q-mb-sm"
+        />
+      </div>
       <div class="row q-mb-md">
         <div class="col">
           <lili-cont :title="$t('workload')">
@@ -184,6 +198,7 @@ export default {
     },
     async copyHistoricWorkloadAsPrimer() {
       const historyCopy = JSON.parse(JSON.stringify(this.job));
+      console.log('COPY', historyCopy);
       historyCopy.definition.meta.isPrimer = true;
       historyCopy.definition.meta.id = false;
       let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
@@ -193,6 +208,10 @@ export default {
     },
   },
   async beforeMount() {
+    if (this.$route.params.type === 'new' || !this.$route.params.id) {
+      this.job = getBlankJob();
+      return;
+    }
     this.job = await this.jobStore.loadJobDetail(this.$route.params.id);
   },
   watch: {
@@ -200,6 +219,10 @@ export default {
       this.type = this.$route.params.type || 'new';
     },
     async '$route.params.id'() {
+      if (this.$route.params.type === 'new' || !this.$route.params.id) {
+        this.job = getBlankJob();
+        return;
+      }
       this.job = await this.jobStore.loadJobDetail(this.$route.params.id);
     },
   },

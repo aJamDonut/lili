@@ -74,6 +74,7 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
 
     const getFolderCall = options.type === 'core' ? 'liliGetFolder' : 'getFolder';
 
+    console.log('Get folder', type, folder, folders);
     let historyIds = (await callService(`Storage:${getFolderCall}`, {
       folderName: folder,
     })) as Array<string>;

@@ -137,6 +137,7 @@ export const liliGetFolder = async (_event: MixedEvent, { folderName }: Electron
 };
 
 export const getFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
+  console.log('Get folder', ROOT, folderName);
   return await fs.readdir(path.join(ROOT, folderName));
 };
 

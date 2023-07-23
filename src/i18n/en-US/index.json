@@ -39,5 +39,6 @@
   "enter_prompt": "Enter your prompt here",
   "your_workloads": "Your workloads",
   "help": "Help",
-  "purge_history": "Purge history"
+  "purge_history": "Purge history",
+  "new_workload": "New workload"
 }
