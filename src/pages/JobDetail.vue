@@ -13,11 +13,22 @@
       />
       <div class="row q-mb-md">
         <div class="col">
-          <lili-cont title="Workload Id">
-            <div class="text-subtitle1">{{ job.definition.meta.id }}</div>
-            <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
-            <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
-            <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
+          <lili-cont :title="$t('workload')">
+            <div v-if="type === 'primer'">
+              <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
+              <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
+              <q-btn icon="send" :to="{ path: '/job/workload/' + job.definition.meta.id }" />
+            </div>
+            <div v-if="type === 'edit'">
+              <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
+              <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
+              <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
+            </div>
+            <div v-if="type === 'new'">
+              <q-btn flat dense icon="save" title="Create" @click="copyHistoricWorkloadAsPrimer()">Create</q-btn>
+            </div>
+
+            <div class="text-subtitle1" v-if="job.definition.meta.id">{{ job.definition.meta.id }}</div>
           </lili-cont>
         </div>
       </div>
@@ -74,15 +85,35 @@ import 'vue-easy-dnd/dist/dnd.css';
 import { saveHistoricWorkload } from '../services/lili/lili_real';
 import { information } from '../boot/lili';
 
+function getBlankJob() {
+  return {
+    definition: {
+      meta: { id: false, isPrimer: true },
+      workloadDefinition: {
+        name: 'no_name',
+        codename: 'blank',
+        description: 'No description',
+        category: 'general',
+        context: ['extract_files'],
+        defaults: { advanced: { repetitiveness: 1.5, creativity: 0, tokenLength: 15000, solutionCount: 1 } },
+        messageHistory: [],
+      },
+      workloadOptions: {},
+    },
+    history: [{ role: 'system', content: 'Take on the role of a teacher helping the user to learn...' }],
+  };
+}
+
 export default {
   data() {
     return {
-      job: { definition: { meta: {} }, history: [{ role: 'user', content: 'hello world' }] },
+      type: this.$route.params.type || 'new',
+      job: getBlankJob(),
       roleOptions: [
-        { label: 'User', value: 'user' },
-        { label: 'liliFLOW', value: 'lili' },
-        { label: 'Assistant', value: 'assistant' },
-        { label: 'System', value: 'system' },
+        { label: 'user', value: 'user' },
+        { label: 'lili', value: 'lili' },
+        { label: 'assistant', value: 'assistant' },
+        { label: 'system', value: 'system' },
       ],
       count: 0,
       autoGrow: {},
@@ -147,7 +178,7 @@ export default {
       const historyCopy = JSON.parse(JSON.stringify(this.job));
       historyCopy.definition.meta.id = false;
       let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
-      this.$router.push({ path: '/edit/' + newJobId });
+      this.$router.push({ path: '/messages/edit/' + newJobId });
       this.job = await this.jobStore.loadJobDetail(newJobId);
       information('Now working on the copy!');
     },
@@ -156,13 +187,21 @@ export default {
       historyCopy.definition.meta.isPrimer = true;
       historyCopy.definition.meta.id = false;
       let newJobId = await saveHistoricWorkload(historyCopy); //Use save but kill off the ID to make a copy
-      this.$router.push({ path: '/edit/' + newJobId });
+      this.$router.push({ path: '/messages/primer/' + newJobId });
       this.job = await this.jobStore.loadJobDetail(newJobId);
       information('Now working on the copy!');
     },
   },
   async beforeMount() {
     this.job = await this.jobStore.loadJobDetail(this.$route.params.id);
+  },
+  watch: {
+    '$route.params.type'() {
+      this.type = this.$route.params.type || 'new';
+    },
+    async '$route.params.id'() {
+      this.job = await this.jobStore.loadJobDetail(this.$route.params.id);
+    },
   },
 };
 </script>

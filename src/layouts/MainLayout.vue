@@ -166,7 +166,7 @@ export default {
         },
         {
           icon: 'add',
-          label: 'run_job',
+          label: 'new_workload',
           url: 'messages/new',
           separator: false,
         },

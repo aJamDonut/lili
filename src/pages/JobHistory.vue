@@ -17,7 +17,12 @@
                   </div>
                 </div>
                 <div>
-                  <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/messages/edit/' + props.row.meta.id }" />
+                  <div v-if="type === 'history'">
+                    <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/messages/edit/' + props.row.meta.id }" />
+                  </div>
+                  <div v-else>
+                    <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/messages/primer/' + props.row.meta.id }" />
+                  </div>
                 </div>
                 <div>
                   <q-btn outline color="red" size="11px" icon="close" @click="deleteJob(props.row.meta.id)" />
@@ -51,7 +56,7 @@
                     <q-btn outline color="primary" size="11px" icon="send" :to="{ path: '/job/workload/' + props.row.meta.id }" />
                   </div>
                   <div>
-                    <q-btn outline color="orange-8" size="11px" icon="receipt" :to="{ path: '/messages/edit/' + props.row.meta.id }" />
+                    <q-btn outline color="orange-8" size="11px" icon="receipt" :to="{ path: '/messages/primer/' + props.row.meta.id }" />
                   </div>
                   <div>
                     <q-btn outline color="red" disable size="11px" icon="close" @click="deleteJob(props.row.meta.id)" />
