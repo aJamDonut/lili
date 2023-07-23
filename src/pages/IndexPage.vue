@@ -2,7 +2,7 @@
   <q-page>
     <div class="flex flex-center">
       <div class="absolute-full">
-        <div class="row items-start justify-center q-col-gutter-lg full-height" >
+        <div class="row items-start justify-center q-col-gutter-lg full-height">
           <div class="col-md-3">
             <div class="q-pa-lg q-ma-lg">
               <h1 class="page-title">Getting Started</h1>
@@ -36,24 +36,33 @@
               </q-list>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-6">
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Title</h1>
-              <div>
-                Some content
-              </div>
+              <h1 class="page-title">How to start</h1>
+              <ol>
+                <li>Come up with an idea</li>
+                <li>Create a new workload with the plus icon</li>
+                <li>Describe how the AI should act using messages (primer)</li>
+                <li>Save your workload and test it out!</li>
+              </ol>
             </div>
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Title</h1>
-              <div>
-                Some content
-              </div>
+              <h1 class="page-title">Terminology</h1>
+              <ul>
+                <li>Prompt - A message you send to the AI</li>
+                <li>History - A history of messages, normally sent to the AI</li>
+                <li>Workload - A repeatable prompt with history already pre-filled in</li>
+              </ul>
             </div>
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Title</h1>
-              <div>
-                Some content
-              </div>
+              <h1 class="page-title">Tips</h1>
+              <ul>
+                <li>If the user wants, the AI can read and saves files, simply by asking</li>
+                <li>Files and folders available to the AI are currently stored in:</li>
+                <li>UserData/workspaces/default</li>
+                <br />
+                <li>You can turn a chat history into a workload by simply clicking the "Create workload" button</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -75,19 +84,19 @@ export default {
         {
           icon: 'add',
           label: 'run_job',
-          url: 'job',
+          url: 'job/history',
           separator: false,
         },
         {
           icon: 'psychology',
           label: 'workloads',
-          url: 'workloads',
+          url: 'history/user',
           separator: false,
         },
         {
           icon: 'history',
           label: 'job_history',
-          url: 'history',
+          url: 'history/history',
           separator: false,
         },
         {
@@ -96,7 +105,7 @@ export default {
           url: 'settings',
           separator: false,
         },
-      ]
+      ],
     };
   },
   computed: {
@@ -105,7 +114,7 @@ export default {
     recentJobs() {
       if (!this.jobStore.jobHistory) return [];
       if (this.jobStore.jobHistory.length > 5) {
-        return this.jobStore.jobHistory.slice(-5)
+        return this.jobStore.jobHistory.slice(-5);
       } else {
         return this.jobStore.jobHistory;
       }

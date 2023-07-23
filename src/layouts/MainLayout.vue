@@ -178,7 +178,7 @@ export default {
         },
         {
           icon: 'history',
-          label: 'job_history',
+          label: 'history',
           url: 'history/history',
           separator: false,
         },

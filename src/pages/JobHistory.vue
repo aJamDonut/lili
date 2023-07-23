@@ -2,7 +2,8 @@
   <q-page padding>
     <div :class="lockedPageClass">
       <h1 class="page-title">{{ pageTitle }}</h1>
-      <p>Workloads are repeatable conversations which allow you to quickly perform repeatable actions</p>
+      <p class="text-grey-6" v-if="this.$route.params.type === 'history'">Here is a log of all your history</p>
+      <p class="text-grey-6" v-else>Workloads are repeatable conversations which allow you to quickly perform repeatable actions</p>
       <q-table :rows="jobStore.jobHistory" :pagination="pagination" :columns="columns" row-key="id" flat bordered separator="cell">
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -47,6 +48,7 @@
 
       <div v-if="table2 !== false" class="q-mt-lg">
         <h1 class="page-title">Lili Workloads</h1>
+        <p class="text-grey-6">These workloads come with liliFLUX and can be copied or run, but not editted directly.</p>
         <q-table :rows="table2" :pagination="pagination" :columns="columns" row-key="id" flat bordered separator="cell">
           <template v-slot:body="props">
             <q-tr :props="props">
@@ -111,7 +113,7 @@ export default {
     },
     pageTitle() {
       if (this.$route.params.type === 'history') {
-        return this.$t('job_history');
+        return this.$t('history');
       } else {
         return this.$t('your_workloads');
       }
