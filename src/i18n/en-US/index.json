@@ -40,5 +40,9 @@
   "your_workloads": "Your workloads",
   "help": "Help",
   "purge_history": "Purge history",
-  "new_workload": "New workload"
+  "new_workload": "New workload",
+  "history_desc": "Here is a log of all your history",
+  "workload_desc": "Workloads are repeatable conversations which allow you to quickly perform repeatable actions",
+  "lili_workloads": "Lili Workloads",
+  "lili_workloads_desc": "Lili Workloads are pre-built workloads that you can use to quickly get started"
 }

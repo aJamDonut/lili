@@ -7,6 +7,7 @@ import LiliCont from 'components/LiliCont.vue';
 import LiliSlider from 'components/LiliSlider.vue';
 import PromptForm from 'components/PromptForm.vue';
 import LockedOverlay from 'components/LockedOverlay.vue';
+import LiliTitle from 'components/LiliTitle.vue';
 
 export default boot(async ({ app }) => {
   app.component('display-output', DisplayOutput);
@@ -16,4 +17,5 @@ export default boot(async ({ app }) => {
   app.component('lili-slider', LiliSlider);
   app.component('prompt-form', PromptForm);
   app.component('locked-overlay', LockedOverlay);
+  app.component('lili-title', LiliTitle);
 });
