@@ -26,26 +26,40 @@
         />
       </div>
       <div class="row q-mb-md">
-        <div class="col">
-          <lili-cont :title="$t('workload')">
-            <div v-if="type === 'primer'">
-              <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
-              <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
-              <q-btn icon="send" :to="{ path: '/job/workload/' + job.definition.meta.id }" />
-            </div>
-            <div v-if="type === 'edit'">
-              <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
-              <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
-              <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
-            </div>
-            <div v-if="type === 'new'">
-              <q-btn flat dense icon="save" title="Create" @click="copyHistoricWorkloadAsPrimer()">Create</q-btn>
-            </div>
-
-            <div class="text-subtitle1" v-if="job.definition.meta.id">{{ job.definition.meta.id }}</div>
-          </lili-cont>
+        <q-space />
+        <div v-if="type === 'primer'">
+          <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
+          <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
+          <q-btn icon="send" :to="{ path: '/job/workload/' + job.definition.meta.id }" />
+        </div>
+        <div v-if="type === 'edit'">
+          <q-btn flat dense icon="save" title="Save" @click="saveHistoricWorkload()" />
+          <q-btn flat dense icon="content_copy" title="Create copy" @click="copyHistoricWorkload()" />
+          <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
+        </div>
+        <div v-if="type === 'new'">
+          <q-btn flat dense icon="save" title="Create" @click="copyHistoricWorkloadAsPrimer()">Create</q-btn>
         </div>
       </div>
+
+      <lili-cont :title="$t('workload')">
+        <div class="text-subtitle1" v-if="job.definition.meta.id">{{ job.definition.meta.id }}</div>
+        <div class="row q-col-gutter-md q-mb-md">
+          <div class="col-xs-12">
+            <label>{{ $t('name') }}</label>
+            <q-input v-model="job.definition.workloadDefinition.name" filled type="textarea" rows="3" autogrow dense></q-input>
+          </div>
+          <div class="col-xs-12">
+            <label>{{ $t('description') }}</label>
+            <q-input v-model="job.definition.workloadDefinition.description" filled type="textarea" rows="3" autogrow dense></q-input>
+          </div>
+          <div v-if="cli" class="col-xs-12">
+            <label>{{ $t('command') }}</label>
+            <q-input v-model="cli" filled type="textarea" rows="3" autogrow dense></q-input>
+          </div>
+        </div>
+      </lili-cont>
+      <br />
       <lili-cont :title="$t('history')" class="q-mb-sm">
         <drop-list :items="job.history" @reorder="$event.apply(job.history)" mode="cut">
           <template v-slot:item="{ item, index, reorder }">
@@ -148,6 +162,13 @@ export default {
     },
     statusColor() {
       return this.job && this.job.status === 'COMPLETED' ? 'green' : 'orange';
+    },
+    cli() {
+      if (!this.job || !this.job.definition || !this.job.definition.meta || !this.job.definition.meta.id) {
+        return false;
+      }
+      const id = this.job.definition.meta.id;
+      return `liliflux.exe --cli --action=RunWorkload --workload=${id} --prompt="<Your prompt>"`;
     },
   },
   methods: {
