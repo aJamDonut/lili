@@ -171,7 +171,7 @@ export default {
           separator: false,
         },
         {
-          icon: 'receipt',
+          icon: 'psychology',
           label: 'workloads',
           url: 'history/user',
           separator: false,
