@@ -1,10 +1,10 @@
 <template>
   <q-page>
-    <div class="flex flex-center">
-      <div class="absolute-full">
+    <div>
+      <div>
         <div class="row items-start justify-left q-col-gutter-lg full-height">
           <div class="col-md-4">
-            <div class="q-pa-lg q-ma-lg">
+            <div class="q-pa-lg">
               <lili-title title="Getting Started" />
               <q-list>
                 <template v-for="(menuItem, index) in menuList" :key="index">
@@ -20,7 +20,7 @@
                 </template>
               </q-list>
             </div>
-            <div class="q-pa-lg q-ma-lg">
+            <div class="q-pa-lg">
               <lili-title title="Recent" />
               <q-list>
                 <template v-for="(history, index) in recentJobs" :key="index">
@@ -36,8 +36,8 @@
               </q-list>
             </div>
           </div>
-          <div class="col-sm-5">
-              <div class="q-pa-lg q-ma-lg">
+          <div class="col-sm-8">
+              <div class="q-pa-lg">
                 <lili-cont title="How to start">
                   <ol>
                     <li>Come up with an idea</li>
@@ -47,7 +47,7 @@
                   </ol>
                 </lili-cont>
               </div>
-            <div class="q-pa-lg q-ma-lg">
+            <div class="q-pa-lg">
               <lili-cont title="Terminology">
                 <ul>
                   <li>Prompt - A message you send to the AI</li>
@@ -56,7 +56,7 @@
                 </ul>
               </lili-cont>
             </div>
-            <div class="q-pa-lg q-ma-lg">
+            <div class="q-pa-lg">
               <lili-cont title="Tips">
                 <ul>
                   <li>If the user wants, the AI can read and saves files, simply by asking</li>
