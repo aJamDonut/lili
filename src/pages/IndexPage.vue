@@ -5,7 +5,7 @@
         <div class="row items-start justify-left q-col-gutter-lg full-height">
           <div class="col-md-4">
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Getting Started</h1>
+              <lili-title title="Getting Started" />
               <q-list>
                 <template v-for="(menuItem, index) in menuList" :key="index">
                   <q-item clickable :active="false" :to="{ path: '/' + menuItem.url }" v-ripple>
@@ -21,7 +21,7 @@
               </q-list>
             </div>
             <div class="q-pa-lg q-ma-lg">
-              <h1 class="page-title">Recent</h1>
+              <lili-title title="Recent" />
               <q-list>
                 <template v-for="(history, index) in recentJobs" :key="index">
                   <q-item dense clickable :active="false" :to="{ path: '/job/' + history.meta.id }" v-ripple>
@@ -38,8 +38,7 @@
           </div>
           <div class="col-sm-5">
               <div class="q-pa-lg q-ma-lg">
-                <lili-cont>
-                  <h1 class="page-title">How to start</h1>
+                <lili-cont title="How to start">
                   <ol>
                     <li>Come up with an idea</li>
                     <li>Create a new workload with the plus icon</li>
@@ -49,8 +48,7 @@
                 </lili-cont>
               </div>
             <div class="q-pa-lg q-ma-lg">
-              <lili-cont>
-                <h1 class="page-title">Terminology</h1>
+              <lili-cont title="Terminology">
                 <ul>
                   <li>Prompt - A message you send to the AI</li>
                   <li>History - A history of messages, normally sent to the AI</li>
@@ -59,8 +57,7 @@
               </lili-cont>
             </div>
             <div class="q-pa-lg q-ma-lg">
-              <lili-cont>
-                <h1 class="page-title">Tips</h1>
+              <lili-cont title="Tips">
                 <ul>
                   <li>If the user wants, the AI can read and saves files, simply by asking</li>
                   <li>Files and folders available to the AI are currently stored in:</li>
