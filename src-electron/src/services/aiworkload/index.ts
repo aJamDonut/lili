@@ -4,7 +4,9 @@ import { ChatRole, CompletionMessage, streamCompletion } from '../openai/ChatGPT
 import {
   ContextFiles,
   ContextFolders,
+  DefinitionSource,
   FileDescriptions,
+  HistoricWorkload,
   HistoryFile,
   InlineMessages,
   JSONFileContext,
@@ -17,12 +19,180 @@ interface ParseableHistory {
   contentFile?: string;
 }
 
-export async function parseHistoryFile(definition: WorkloadDefinition, history: ParseableHistory) {
+export function getFolderMap() {
+  return {
+    history: 'workload_history',
+    user: 'primer/user',
+    thirdparty: 'primer/thirdparty',
+    core: 'primer',
+  };
+}
+
+export function getReadCallsMap() {
+  return {
+    history: 'readJson',
+    user: 'readJson',
+    thirdparty: 'readJson',
+    core: 'liliReadJson',
+  };
+}
+export async function getDefinition(type: DefinitionSource, id: string) {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const definition = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'definition.json',
+  })) as HistoryFile;
+
+  return definition;
+}
+
+export async function getHistory(type: DefinitionSource, id: string): Promise<Array<MessageHistory>> {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const history = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${id}/`,
+    fileName: 'history.json',
+  })) as Array<MessageHistory>;
+
+  return history ? history : [];
+}
+
+function getBlankJob(): HistoricWorkload {
+  return {
+    definition: {
+      meta: { id: '', date: Date.now() },
+      workloadDefinition: {
+        name: 'no_name',
+        codename: 'blank',
+        description: 'No description',
+        defaults: { advanced: { repetitiveness: 1.5, creativity: 0, tokenLength: 15000, solutionCount: 1 } },
+        messageHistory: [],
+      },
+      workloadOptions: {},
+    },
+    history: [{ role: 'system', content: 'Take on the role of a teacher helping the user to learn...' }],
+  };
+}
+
+export async function getHistoricWorkload(id: string): Promise<HistoricWorkload> {
+  let type: DefinitionSource = 'history';
+  let definition = await getDefinition(type, id);
+  let history: Array<MessageHistory> = [];
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'user';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'thirdparty';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  type = 'core';
+  definition = await getDefinition(type, id);
+  if (definition) {
+    history = await getHistory(type, id);
+    definition.meta.source = type;
+    return { definition, history };
+  }
+
+  return getBlankJob();
+}
+
+export async function getWorkloads() {
+  const workloads: Array<HistoryFile> = [];
+
+  let folders = (await callService('Storage:getFolder', {
+    folderName: `primer/user`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('user', folder));
+    }
+  }
+  folders = (await callService('Storage:getFolder', {
+    folderName: `primer/thirdparty`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('thirdparty', folder));
+    }
+  }
+
+  folders = (await callService('Storage:liliGetFolder', {
+    folderName: `primer`,
+  })) as Array<string>;
+
+  if (folders && folders.length > 0) {
+    for (const folder of folders) {
+      workloads.push(await getWorkloadDefinition('core', folder));
+    }
+  }
+
+  return workloads;
+}
+
+export async function getWorkloadDefinition(type: DefinitionSource, name: string) {
+  const folders = getFolderMap();
+  const readCalls = getReadCallsMap();
+  const folder = folders[type];
+  const readCall = readCalls[type];
+
+  const definition = (await callService(`Storage:${readCall}`, {
+    folderName: `${folder}/${name}`,
+    fileName: 'definition.json',
+  })) as HistoryFile;
+
+  return definition;
+}
+
+export async function getFullWorkloadDefinition(name: string): Promise<HistoricWorkload> {
+  const workloadHistory = await getHistoricWorkload(name);
+
+  await parseDefinitionFiles(workloadHistory);
+
+  return workloadHistory;
+}
+
+export async function parseDefinitionFiles(workloadHistory: HistoricWorkload) {
+  if (!workloadHistory) {
+    return workloadHistory;
+  }
+
+  for (const history of workloadHistory.history) {
+    await parseHistoryLine(workloadHistory.definition, history as ParseableHistory);
+  }
+  return workloadHistory;
+}
+
+export async function parseHistoryLine(definition: HistoryFile, history: ParseableHistory) {
   if (!history.contentFile) {
     return history;
   }
   history.content = (await callService('Storage:liliReadFile', {
-    folderName: `workloads/${definition.codename}`,
+    folderName: `workloads/${definition.meta.id}`,
     fileName: history.contentFile,
   })) as string;
 
@@ -32,7 +202,7 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
     let jsonContent = JSON.parse(history.content) as Array<ParseableHistory>;
     //Singular content files
     for (const file of jsonContent) {
-      const reParse = await parseHistoryFile(definition, file);
+      const reParse = await parseHistoryLine(definition, file);
       file.content = reParse.content;
       delete file.contentFile; //Unset the key since its bad for gpt
     }
@@ -44,34 +214,6 @@ export async function parseHistoryFile(definition: WorkloadDefinition, history: 
   delete history.contentFile;
 
   return history;
-}
-
-export async function parseDefinitionFiles(definition: WorkloadDefinition) {
-  for (const history of definition.messageHistory) {
-    await parseHistoryFile(definition, history as ParseableHistory);
-  }
-  return definition;
-}
-
-export async function getWorkloadDefinition(name: string) {
-  const definition = (await callService('Storage:liliReadJson', {
-    folderName: `workloads/${name}`,
-    fileName: 'definition.json',
-  })) as WorkloadDefinition;
-  return definition;
-}
-
-export async function getFullWorkloadDefinition(name: string) {
-  const definition = await getWorkloadDefinition(name);
-
-  definition.messageHistory = (await callService('Storage:liliReadJson', {
-    folderName: `workloads/${name}`,
-    fileName: 'message_history.json',
-  })) as Array<MessageHistory>;
-
-  await parseDefinitionFiles(definition);
-
-  return definition;
 }
 
 export function newMessage(
@@ -92,8 +234,11 @@ export async function readContextFile(file: string) {
   })) as string;
 }
 
+//merge file1.csv and file2.csv into merged.csv
 export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
   if (!workloadDefinition?.context?.includes('extract_files')) {
+    if (typeof workloadOptions.forEachToken === 'function')
+      await workloadOptions.forEachToken(jsonResponse('inline', 'Doesnt need context', 'warning'));
     return { messages: [], fileDescriptions: {} };
   }
   const context = await getContextFiles(prompt);
@@ -102,6 +247,12 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
 
   const fileDescriptions: FileDescriptions = {};
 
+  if (!context.files) {
+    if (typeof workloadOptions.forEachToken === 'function')
+      await workloadOptions.forEachToken(jsonResponse('inline', 'No files to parse', 'warning'));
+    return { messages, fileDescriptions };
+  }
+
   for (const contextFile of context.files) {
     if (!contextFile.files) {
       continue; //Malformed? Record exists but no files
@@ -109,19 +260,32 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
     const files = [];
 
     for (const file of contextFile.files) {
+      let pushed = false;
       fileDescriptions[file] = contextFile.description;
+      const description = contextFile.description || '';
       try {
-        files.push({ name: file, content: await readContextFile(file) });
+        const content = await readContextFile(file);
+        if (typeof content == 'string' && content.length > 0) {
+          pushed = true;
+          files.push({ name: file, content: content });
+        }
+
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(jsonResponse('inline', contextFile.description + ': ' + file, 'success'));
+          await workloadOptions.forEachToken(jsonResponse('inline', description + ': ' + file, 'success'));
         }
       } catch (e) {
         if (typeof workloadOptions.forEachToken === 'function') {
-          await workloadOptions.forEachToken(jsonResponse('inline', 'This file cannot be found yet: ' + file, 'warning'));
+          await workloadOptions.forEachToken(jsonResponse('inline', description + ' (New file): ' + file, 'warning'));
         }
         //Cannot find file, it must just not exist yet or not be found.
         //Atleast push it back as a blank reference to retain normality.
+        pushed = true;
         files.push({ name: file, content: '' });
+      }
+      if (!pushed) {
+        if (typeof workloadOptions.forEachToken === 'function') {
+          await workloadOptions.forEachToken(jsonResponse('inline', '[Exception] Failure handling files... ' + file, 'error'));
+        }
       }
     }
 
@@ -191,7 +355,14 @@ export async function getContextFiles(prompt: string) {
   console.log('Context files', contextFiles);
 
   try {
-    contextFilesObject = JSON.parse(contextFiles);
+    const parsedContextFilesObject = JSON.parse(contextFiles);
+    //Handle cases where it's good JSON, but not quite our file json.
+    if (
+      parsedContextFilesObject.files && //It has a files property
+      parsedContextFilesObject.files[0]
+    ) {
+      contextFilesObject = parsedContextFilesObject;
+    }
   } catch (e) {
     console.error("Can't parse response");
   }
@@ -236,7 +407,7 @@ function addInlineMessageHistory(type: string, content: string, state = 'success
   //TODO: For now, we'll stringify since that is how it works on the frontend, and it may make sense
   //for parity of how output operations work.
   INLINE_MESSAGE_HISTORY.push({ type, content, state, component });
-  addMessagesHistory('assistant', JSON.stringify({ type, content, state, component }));
+  addMessagesHistory('lili', JSON.stringify({ type, content, state, component }));
 }
 
 export async function parseJSONResult(fileDescriptions: FileDescriptions, files: Array<JSONFileContext>, workloadOptions: WorkloadOptions) {
@@ -323,10 +494,14 @@ export async function saveHistory(workloadOptions: WorkloadOptions, workloadDefi
 export function showLines() {
   return false;
 }
-export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions, workload?: WorkloadDefinition) {
+export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOptions, workload: HistoricWorkload | false = false) {
   workload = workload || (await getFullWorkloadDefinition(workloadOptions.workload));
 
-  const messages = [...workload.messageHistory, newMessage('user', prompt)];
+  if (!workload) {
+    return '';
+  }
+
+  const messages = [...workload.history, newMessage('user', prompt)];
 
   //Init AI, send the callback function
   //For every token
@@ -362,7 +537,7 @@ function addMessagesHistory(role: ChatRole, content: string) {
   console.log('PUSH History', MESSAGE_HISTORY);
   console.log('-----------------');
 
-  MESSAGE_HISTORY.push(createMessageHistory('assistant', content));
+  MESSAGE_HISTORY.push(createMessageHistory(role, content));
 }
 
 function setHistory(history: Array<MessageHistory>) {
@@ -371,17 +546,6 @@ function setHistory(history: Array<MessageHistory>) {
 
 function resetHistory() {
   MESSAGE_HISTORY = [];
-}
-
-export async function getHistory(id: string) {
-  try {
-    return (await callService('Storage:readJson', {
-      folderName: `workload_history/${id}/`,
-      fileName: `history.json`,
-    })) as Array<MessageHistory>;
-  } catch (_e) {
-    return [];
-  }
 }
 
 /**
@@ -409,7 +573,7 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   let diskHistory: Array<MessageHistory> = [];
   try {
-    diskHistory = await getHistory(workloadOptions.id);
+    diskHistory = await getHistory('history', workloadOptions.id);
   } catch (e) {
     diskHistory = [];
   }
@@ -420,23 +584,29 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
 
   const workload = await getFullWorkloadDefinition(workloadOptions.workload);
 
-  if (workload.type === 'raw') {
+  if (workload && workload.definition.workloadDefinition.type === 'raw') {
     return runWorkloadRaw(prompt, workloadOptions, workload);
   }
 
-  let fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload);
   //const folderContextMessages = await getFoldersContextMessages(prompt);
 
-  const messages = [
-    ...workload.messageHistory,
-    ...fileContextMessages.messages,
-    ...MESSAGE_HISTORY,
-    newMessage('user', prompt, workloadOptions, workload),
+  const rawMessages = !workload ? [] : workload.history;
 
+  let messages = [
+    ...rawMessages,
+    ...MESSAGE_HISTORY,
     //...folderContextMessages,
   ];
 
-  setHistory(messages);
+  messages.push(newMessage('user', prompt, workloadOptions, workload.definition.workloadDefinition));
+
+  setHistory(messages); //Because lili will inject after
+
+  const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload.definition.workloadDefinition);
+
+  messages = [...MESSAGE_HISTORY, ...fileContextMessages.messages];
+
+  setHistory(messages); //Now set history
 
   const forEachToken = async (token: string) => {
     if (showLines()) {
@@ -463,9 +633,9 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
       await workloadOptions.onComplete(allTokens);
     }
 
-    addMessagesHistory('system', allTokens);
+    addMessagesHistory('assistant', allTokens);
 
-    await saveNow(workloadOptions, workload);
+    await saveNow(workloadOptions, workload.definition.workloadDefinition);
 
     await callService('Storage:writeFile', {
       folderName: `logs`,

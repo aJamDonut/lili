@@ -13,6 +13,7 @@
           <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
             <div class="q-pa-md" style="min-height: 100%">
               <prompt-form v-model="promptConfig" @run="runJob" />
+              <!-- {{ workloadStore.workloads }} -->
             </div>
           </q-scroll-area>
         </template>
@@ -39,6 +40,9 @@
             <div class="q-pa-md" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
+                <div v-if="row.workloadDefinition">
+                  {{ workloadDefinition }}
+                </div>
                 <display-prompt class="q-mb-xs" v-model="row.promptConfig" />
                 <div v-if="row.outputJson.length > 0" class="q-mb-xs">
                   <!-- <TransitionGroup tag="div" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave"> -->
@@ -64,11 +68,13 @@
 </template>
 
 <script>
-import { startWorkload, reset } from 'services/lili/lili_real';
+import { startWorkload, reset, recallWorkload } from '../services/lili/lili_real';
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 // import gsap from 'gsap';
 import { scroll } from 'quasar';
+import { useJobStore } from 'stores/job';
+import { useWorkloadStore } from 'src/stores/workload';
 const { getScrollPosition, setScrollPosition } = scroll;
 /**
  Please update fred.json to make sure that it contains all the references that exist in freds_record.csv under the appropriate headers 
@@ -78,7 +84,7 @@ export default {
   data() {
     return {
       promptConfig: {
-        prompt: 'Please take file1.csv and merge it with file2.csv into file3.csv',
+        prompt: '',
         context: '',
         workload: { label: 'Change files', value: 'change_files' },
         outputFormat: 'Plaintext',
@@ -109,7 +115,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(useSettingsStore),
+    ...mapStores(useSettingsStore, useJobStore, useWorkloadStore),
     lockedPageClass() {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },
@@ -126,13 +132,46 @@ export default {
       return this.transactions[this.transactions.length - 1];
     },
   },
-  beforeMount() {
+  async mounted() {
     reset();
+    if (this.$route.params.id) {
+      this.loadHistory();
+    }
   },
   methods: {
+    async loadHistory() {
+      const jobDetail = await this.jobStore.loadJobDetail(this.$route.params.id);
+
+      this.transactionRunning = true;
+
+      await recallWorkload({
+        workloadHistory: jobDetail,
+        forEachToken: this.processToken,
+        onComplete: async () => {
+          console.log('ONCOMPLETE!!!');
+          this.transactionRunning = false;
+        },
+        onJsonResponse: async (json) => {
+          console.log('JSON', json);
+          this.parseJson(json);
+        },
+        forEachUserPrompt: async (promptConfig) => {
+          console.log('Prompto', promptConfig);
+          this.transactions.push({
+            promptConfig: { ...promptConfig },
+            outputText: '',
+            outputJson: [],
+          });
+          this.transactionRunning = true;
+        },
+      });
+
+      this.transactionRunning = false;
+    },
     async processToken(token) {
+      console.log('TOKEN', token);
       if (!this.activeTransaction) {
-        console.error('processToken - recieved after onComplete')
+        console.error('processToken - recieved after onComplete');
         return;
       }
       this.activeTransaction.outputText = this.activeTransaction.outputText + token;
@@ -140,7 +179,7 @@ export default {
     },
     parseJson(json) {
       if (!this.activeTransaction) {
-        console.error('parseJson - recieved after onComplete')
+        console.error('parseJson - recieved after onComplete');
         return;
       }
       this.activeTransaction.outputJson.push(json);
@@ -158,8 +197,13 @@ export default {
       this.transactionRunning = true;
       this.startTransaction();
 
+      const prompt = this.promptConfig.prompt;
+
+      this.promptConfig.prompt = ''
+
       startWorkload({
-        prompt: this.promptConfig.prompt,
+        id: this.$route.params.id || false,
+        prompt: prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
         onComplete: async () => {

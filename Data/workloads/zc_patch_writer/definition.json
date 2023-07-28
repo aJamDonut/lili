@@ -1,7 +1,7 @@
 {
-  "name": "Lili Chat",
-  "codename": "chat_lili",
-  "description": "Helps with liliFLUX",
+  "name": "ZC Patch Notes Writer",
+  "codename": "zc_patch_writer",
+  "description": "Pretends to be good at writing ZC patch notes",
   "category": "general",
   "defaults": {
     "advanced": {

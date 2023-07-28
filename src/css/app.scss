@@ -47,6 +47,17 @@
         text-transform: uppercase;
         font-size: 12px;
     }
+    .inline_default {
+        background: $dark;
+    }
+    thead {
+        th {
+            color: $grey-6;
+        }
+    }
+    .workload-btn {
+        color: $grey-5;
+    }
 }
 
 .body--light {
@@ -79,6 +90,18 @@
         &.has-title .grid-cont {
             border-color: darken(#fff, 12%) !important;
         }
+    }
+
+    .inline_default {
+        background: darken(#fff, 12%);
+    }
+    thead {
+        th {
+            color: $grey-7;
+        }
+    }
+    .workload-btn {
+        color: $grey-8;
     }
 }
 
@@ -115,4 +138,40 @@
     font-size: 12px;
     opacity: .7;
   }
+}
+.page-title {
+    margin: 0 0 20px 0;
+    h1 {
+        font-size: 20px;
+        line-height: 20px;
+        text-transform: uppercase;
+        opacity: .7;
+        margin: 0;
+    }
+    p {
+        font-size: 13px;
+        margin: 0;
+        margin-top: 6px;
+        opacity: .7;
+    }
+}
+
+a:not(.q-link, .q-btn) {
+    color: $primary;
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+thead {
+    th {
+        font-weight: 500;
+        font-size: 12px;
+        text-transform: uppercase;
+        padding: 10px 0;
+    }
+}
+.outcome {
+    color: white;
 }

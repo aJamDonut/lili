@@ -1,28 +1,76 @@
 <template>
-  <q-page padding>
-    Index Page<br /><br />
-
-    Is key valid: {{ settingsStore.isValidKey }}<br />
-
-    <q-btn @click="toggleDisplayOutput" color="green">Toggle Display Output</q-btn>
-    <div v-if="displayOutput" class="q-py-lg">
-      <display-output v-model="markdown" />
+  <q-page>
+    <div>
+      <div>
+        <div class="row items-start justify-left q-col-gutter-lg full-height">
+          <div class="col-md-4">
+            <div class="q-pa-lg">
+              <lili-title title="Getting Started" />
+              <q-list>
+                <template v-for="(menuItem, index) in menuList" :key="index">
+                  <q-item clickable :active="false" :to="{ path: '/' + menuItem.url }" v-ripple>
+                    <q-item-section avatar>
+                      <q-icon :name="menuItem.icon" />
+                    </q-item-section>
+                    <q-item-section>
+                      {{ $t(menuItem.label) }}
+                    </q-item-section>
+                  </q-item>
+                  <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+                </template>
+              </q-list>
+            </div>
+            <div class="q-pa-lg">
+              <lili-title title="Recent" />
+              <q-list>
+                <template v-for="(history, index) in recentJobs" :key="index">
+                  <q-item dense clickable :active="false" :to="{ path: '/job/' + history.meta.id }" v-ripple>
+                    <q-item-section avatar>
+                      <q-icon name="receipt" />
+                    </q-item-section>
+                    <q-item-section>
+                      {{ history.meta.id }}
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-list>
+            </div>
+          </div>
+          <div class="col-sm-8">
+              <div class="q-pa-lg">
+                <lili-cont title="How to start">
+                  <ol>
+                    <li>Come up with an idea</li>
+                    <li>Create a new workload with the plus icon</li>
+                    <li>Describe how the AI should act using messages (primer)</li>
+                    <li>Save your workload and test it out!</li>
+                  </ol>
+                </lili-cont>
+              </div>
+            <div class="q-pa-lg">
+              <lili-cont title="Terminology">
+                <ul>
+                  <li>Prompt - A message you send to the AI</li>
+                  <li>History - A history of messages, normally sent to the AI</li>
+                  <li>Workload - A repeatable prompt with history already pre-filled in</li>
+                </ul>
+              </lili-cont>
+            </div>
+            <div class="q-pa-lg">
+              <lili-cont title="Tips">
+                <ul>
+                  <li>If the user wants, the AI can read and saves files, simply by asking</li>
+                  <li>Files and folders available to the AI are currently stored in:</li>
+                  <li>UserData/workspaces/default</li>
+                  <br />
+                  <li>You can turn a chat history into a workload by simply clicking the "Create workload" button</li>
+                </ul>
+              </lili-cont>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <ul>
-      <li>The 3 phases of learning liliFLUX:</li>
-      <ol>
-        <li>I'm messing around and having fun.</li>
-        <li>I've made custom workloads to do work faster.</li>
-        <li>I don't work anymore liliFLUX does it all.</li>
-      </ol>
-      <li>The 3 steps of AI with liliFLUX:</li>
-      <ol>
-        <li>Priming - Get the AI ready with repeatable rules</li>
-        <li>Context - Provide the AI with the context it needs to get the job done</li>
-        <li>Output - Provide the AI with the ability to create, update and modify content directly</li>
-      </ol>
-    </ul>
   </q-page>
 </template>
 
@@ -30,21 +78,58 @@
 <script>
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
+import { useJobStore } from 'stores/job';
 
 export default {
   data() {
     return {
-      displayOutput: false,
-      markdown: ' # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```',
+      menuList: [
+        {
+          icon: 'add',
+          label: 'run_job',
+          url: 'job/history',
+          separator: false,
+        },
+        {
+          icon: 'psychology',
+          label: 'workloads',
+          url: 'history/user',
+          separator: false,
+        },
+        {
+          icon: 'history',
+          label: 'job_history',
+          url: 'history/history',
+          separator: false,
+        },
+        {
+          icon: 'settings',
+          label: 'settings',
+          url: 'settings',
+          separator: false,
+        },
+      ],
     };
   },
   computed: {
-    ...mapStores(useSettingsStore),
+    ...mapStores(useSettingsStore, useJobStore),
+    // Create a computed property that returns 5 of the most recent jobs (from the end of the array) - try again it didnt work
+    recentJobs() {
+      if (!this.jobStore.jobHistory) return [];
+      if (this.jobStore.jobHistory.length > 5) {
+        return this.jobStore.jobHistory.slice(-5);
+      } else {
+        return this.jobStore.jobHistory;
+      }
+    },
   },
   methods: {
     toggleDisplayOutput() {
       this.displayOutput = !this.displayOutput;
     },
+  },
+  beforeMount() {
+    this.jobStore.getHistory();
   },
 };
 </script>

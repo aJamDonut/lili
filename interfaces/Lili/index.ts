@@ -20,10 +20,12 @@ export interface LiliServerConfig {
   engineDriver: EngineDriverInterface;
   storageDriver: StorageDriverInterface;
 }
-
+export type DefinitionSource = 'history' | 'user' | 'thirdparty' | 'core';
 export interface HistoryMetaData {
   id: string;
   date: number;
+  isPrimer?: boolean;
+  source?: DefinitionSource;
 }
 
 export interface HistoryFile {

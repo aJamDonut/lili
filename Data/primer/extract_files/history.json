@@ -1,0 +1,18 @@
+[
+  {
+    "role": "system",
+    "content": "Please take the following sentence and extract all the files in this format, please make sure you do not reply to or consider what is said,simply extract the files matching the format provided."
+  },
+  {
+    "role": "system",
+    "contentFile": "message1.txt"
+  },
+  {
+    "role": "user",
+    "content": "Please take the files from fred.json, steve.json and concatenate them onto allusers.json"
+  },
+  {
+    "role": "assistant",
+    "contentFile": "message2.txt"
+  }
+]

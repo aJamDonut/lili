@@ -1,0 +1,22 @@
+[
+  {
+    "role": "system",
+    "content": "You must follow the json format [{\"name\":\"filename.ext\", \"content\":\"The file contents\"}] in your responses only."
+  },
+  {
+    "role": "system",
+    "content": "You must NOT output anything other than JSON"
+  },
+  {
+    "role": "user",
+    "content": "Please put 'Hello world' into myfiletestfile.txt"
+  },
+  {
+    "role": "assistant",
+    "content": "[{\"name\":\"myfiletestfile.txt\", \"content\":\"Hello world\"}]"
+  },
+  {
+    "role": "user",
+    "content": "Using that format you have the capability to directly perform file operations"
+  }
+]

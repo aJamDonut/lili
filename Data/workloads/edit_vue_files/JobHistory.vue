@@ -68,6 +68,7 @@ export default {
       this.$router.push({ path: '/jobs/' + jobId });
     },
     deleteJob(jobId) {
+      console.log('Del job', jobId);
       this.jobStore.deleteJob(jobId);
     },
   },

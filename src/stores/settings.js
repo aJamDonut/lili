@@ -2,11 +2,13 @@ import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from 'services/storage';
 import { getLicense, unsetLicense } from 'src/services/lili/lili_real';
 
+const APP_VERSION = '0.1'; //Move to package.json when used properly (app.getVersion() in electron)
+
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     sliderInputs: true,
     showAdvanced: false,
-    workload: { label: 'Change files', value: 'change_files' },
+    workload: 'change_files',
     darkMode: 'auto',
     chatGPTKey: '',
     splitterWidth: 25,
@@ -14,6 +16,7 @@ export const useSettingsStore = defineStore('settings', {
     isValidKey: false,
     language: 'none',
     session: '',
+    hadTrial: false,
   }),
   actions: {
     async checkKey() {
@@ -27,6 +30,10 @@ export const useSettingsStore = defineStore('settings', {
 
       this.isValidKey = response.valid;
       return this.isValidKey;
+    },
+    //Move to backend later
+    async getVersion() {
+      return APP_VERSION;
     },
     async load() {
       const storage = new Storage();

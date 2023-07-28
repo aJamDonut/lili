@@ -1,61 +1,51 @@
 <template>
   <div>
-    <label>{{ $t('prompt') }}</label>
+    <!-- <label>{{ $t('prompt') }}</label> -->
     <q-input
       v-model="promptConfig.prompt"
       filled
+      :placeholder="$t('enter_prompt')"
       type="textarea"
       rows="3"
       autogrow
       dense
       class="q-mb-md"
-    ></q-input>
+      @keyup.ctrl.enter="runJob"
+    >
+      <template v-slot:append>
+        <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
+      </template>
+    </q-input>
 
-    <label>{{ $t('workload') }}</label>
-    <q-select
-      v-model="promptConfig.workload"
-      filled
-      :options="workloadOptions"
-      dense
-      class="q-mb-md"
-    ></q-select>
-
-    <div class="row justify-center" key="adv-btn">
+    <div class="row justify-end" key="adv-btn">
       <div>
-        <q-btn
-          flat
-          dense
-          @click="settingsStore.showAdvanced = !settingsStore.showAdvanced"
-          :icon="showAdvancedIcon"
-          :icon-right="showAdvancedIcon"
-          color="grey"
-          :label="$t('advanced')"
-          size="10px"
-        />
+        <q-btn dense unelevated class="workload-btn" size="12px" @click="settingsStore.showAdvanced = !settingsStore.showAdvanced">
+          <div class="row items-end">
+            <div class="col-shrink">
+              <q-icon name="psychology" />
+            </div>
+            <div class="col q-ml-sm q-mr-xs">
+              {{ promptConfig.workload.label }}
+            </div>
+            <div class="col-shrink">
+              <q-icon :name="showAdvancedIcon" />
+            </div>
+          </div>
+        </q-btn>
       </div>
     </div>
     <transition name="slidedown">
       <div v-if="settingsStore.showAdvanced">
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-xs-12">
-            <label>{{ $t('context') }}</label>
-            <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
+            <label>{{ $t('workload') }}</label>
+            <q-select v-model="promptConfig.workload" filled :options="workloadOptions" dense></q-select>
           </div>
         </div>
         <div class="row q-col-gutter-md q-mb-md">
-          <!-- Output -->
-          <div class="col" style="min-width: 120px">
-            <label>{{ $t('output_format') }}</label>
-            <q-select
-              v-model="promptConfig.outputFormat"
-              filled
-              :options="outputFormatOptions"
-              dense
-            ></q-select>
-          </div>
-          <div class="col" style="min-width: 120px">
-            <label>{{ $t('output_to') }}</label>
-            <q-select v-model="promptConfig.outputTo" filled :options="outputToOptions" dense></q-select>
+          <div class="col-xs-12">
+            <label>{{ $t('context') }}</label>
+            <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
           </div>
         </div>
         <div class="row q-col-gutter-md">
@@ -79,35 +69,38 @@
         </div>
       </div>
     </transition>
-    <div class="row justify-end q-mt-lg">
-      <div>
-        <q-btn @click="runJob" size="14px" color="green" icon="arrow_forward_ios" :label="$t('run')" />
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
-import { useWorkloadsStore } from 'stores/workloads';
+import { useWorkloadStore } from 'stores/workload';
 
 function mountWorkloads() {
   this.workloadOptions = [];
-  for (const item of this.workloadsStore.workloads) {
+  this.workloadStore.refresh();
+  for (const item of this.workloadStore.workloads) {
     this.workloadOptions.push({
-      label: item.name,
-      value: item.codename,
+      label: item.workloadDefinition.name,
+      value: item.meta.id,
     });
+
+    if (this.$route.params.type !== 'history' && item.meta.id === this.$route.params.id) {
+      this.settingsStore.workload = {
+        label: item.workloadDefinition.name,
+        value: item.meta.id,
+      };
+    }
   }
+
+  this.promptConfig.workload = this.settingsStore.workload;
 }
 
 export default {
   data() {
     return {
       workloadOptions: [],
-      outputFormatOptions: ['Plaintext', 'Chat', 'HTML'],
-      outputToOptions: ['Inline', 'Cursor', 'Folder'],
     };
   },
   props: {
@@ -115,18 +108,15 @@ export default {
   },
   methods: {
     runJob() {
+      console.log('run Job');
       this.$emit('run');
     },
   },
   mounted() {
     mountWorkloads.call(this);
   },
-  beforeMount () {
-    console.log('before mount', this.settingsStore.workload)
-    this.promptConfig.workload = this.settingsStore.workload
-  },
   computed: {
-    ...mapStores(useWorkloadsStore, useSettingsStore),
+    ...mapStores(useWorkloadStore, useSettingsStore),
     showAdvancedIcon() {
       return this.settingsStore.showAdvanced ? 'expand_less' : 'expand_more';
     },
@@ -139,14 +129,14 @@ export default {
         // this.settingsStore.workload = value.workload;
         // console.log('set workload to', value.workload)
         this.$emit('update:modelValue', value);
-      }
+      },
     },
   },
   watch: {
     'promptConfig.workload': function (val) {
-      this.settingsStore.workload = val
-    }
-  }
+      this.settingsStore.workload = val;
+    },
+  },
 };
 </script>
 

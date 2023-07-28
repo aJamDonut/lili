@@ -1,5 +1,5 @@
-import { EngineDriverInterface } from 'app/interfaces/Engine';
-import { HistoryFile } from 'app/interfaces/Lili';
+import { EngineDriverInterface, RecallHistoryOptions } from 'app/interfaces/Engine';
+import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
 import { HistoryEntry, WorkloadHistory, WorkloadOptions } from 'app/interfaces/Workload';
 
 import { ValidLicenseResponse } from 'app/src-electron/src/services/shopify';
@@ -24,12 +24,83 @@ function getCurrentDateTime(): string {
 
   return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
 }
+
 let lastId = 'none';
 export class ElectronEngine implements EngineDriverInterface {
   name = 'Electron';
 
   reset() {
     lastId = 'none';
+  }
+
+  /**
+   *
+   * @param options
+   * @returns string, The id of the workload
+   */
+  async recallWorkload(options: RecallHistoryOptions): Promise<string> {
+    console.log('RUN', options);
+    if (!options.workloadHistory.definition.meta.id) {
+      throw 'No definition meta id options';
+    }
+
+    let userHasPrompted = false;
+    let eventQueue: Array<LiliJsonResponse> = [];
+
+    for (const message of options.workloadHistory.history) {
+      console.log('Message', message);
+      const token = message.content || '';
+
+      if (message.role === 'system') {
+        continue;
+      }
+
+      if (message.role === 'user' && !message.workloadOptions) {
+        //Hidden from user usually
+        continue;
+      }
+
+      if (message.role === 'user' && message.workloadOptions) {
+        if (userHasPrompted && typeof options.onComplete === 'function') await options.onComplete(token);
+        await options.forEachUserPrompt(message.workloadOptions);
+
+        if (!userHasPrompted && typeof options.onJsonResponse === 'function') {
+          //Will have to clear down json queue
+          for (const json of eventQueue) {
+            console.log('Deque', json);
+            await options.onJsonResponse(json);
+          }
+          eventQueue = [];
+        }
+
+        userHasPrompted = true; //Allow tokens to flow
+
+        continue;
+      }
+
+      if (message.role === 'lili') {
+        if (typeof options.onJsonResponse !== 'function') {
+          continue; //Can never process if this function isnt available
+        }
+        //It's long enough to potentially be a json update. lets parse it
+        try {
+          let json = JSON.parse(token) as LiliJsonResponse;
+          if (!json) continue;
+          if (userHasPrompted) await options.onJsonResponse(json);
+          eventQueue.push(json);
+          continue;
+        } catch (e) {
+          console.log('Not a normal JSON response');
+        }
+        continue;
+      }
+
+      console.log('SEND TOKEN', token);
+
+      if (userHasPrompted && typeof options.forEachToken === 'function') await options.forEachToken(token);
+    }
+
+    return options.workloadHistory.definition.meta.id;
   }
 
   /**
@@ -81,15 +152,27 @@ export class ElectronEngine implements EngineDriverInterface {
     return options.id;
   }
 
+  async saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string> {
+    if (!workloadHistory.definition.meta.id) {
+      workloadHistory.definition.meta.id = getCurrentDateTime();
+    }
+    await run('Engine:saveHistoricWorkload', { workloadHistory });
+    return workloadHistory.definition.meta.id;
+  }
+
   async getWorkloads() {
     return await run('Engine:getWorkloads');
   }
 
-  async getHistory(start: number, end: number): Promise<Array<HistoryFile>> {
-    return await run('Engine:getHistory', { start, end });
+  async getHistory(start: number, end: number, type: DefinitionSource): Promise<Array<HistoryFile>> {
+    return await run('Engine:getHistory', { start, end, type });
   }
 
-  async getHistoricWorkload(id: string): Promise<WorkloadHistory> {
+  async purgeHistory(): Promise<void> {
+    return await run('Engine:purgeHistory');
+  }
+
+  async getHistoricWorkload(id: string): Promise<HistoricWorkload> {
     return await run('Engine:getHistoricWorkload', { id });
   }
 
@@ -102,5 +185,8 @@ export class ElectronEngine implements EngineDriverInterface {
   }
   async getLicense(key: string): Promise<ValidLicenseResponse> {
     return await run('Engine:getLicense', { key });
+  }
+  async deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean> {
+    return await run('Engine:deleteHistoricWorkload', { id, type });
   }
 }

@@ -7,15 +7,14 @@ export type ForEachTokenCallback = (token: string) => Promise<void>;
 
 export type OnCompleteCallback = (token: string) => Promise<void>;
 
-export type ChatRole = 'function' | 'system' | 'user' | 'assistant';
+export type ChatRole = 'function' | 'system' | 'user' | 'assistant' | 'lili';
 
 export interface ChatMessage {
   role: ChatRole;
   content: string;
 }
 
-export type CompletionMessage =
-  OpenAI.Chat.CompletionCreateParams.CreateChatCompletionRequestStreaming.Message;
+export type CompletionMessage = OpenAI.Chat.CompletionCreateParams.CreateChatCompletionRequestStreaming.Message;
 
 /**
  * Takes in messages and reduces them down to the desired token count, removing oldest histories
@@ -41,17 +40,16 @@ function backoffMessages(messages: Array<CompletionMessage>) {
 function cleanMessages(messages: Array<MessageHistory>): Array<CompletionMessage> {
   const messageCopy: Array<CompletionMessage> = [];
   for (let message of messages) {
+    if (message.role === 'lili') {
+      continue;
+    }
     messageCopy.push({ role: message.role, content: message.content });
   }
   return messageCopy;
 }
 
 //TODO: I want to expose this on the event service but it would mean internal events need to handle replies etc.
-export async function streamCompletion(
-  messages: Array<MessageHistory>,
-  forEachToken: ForEachTokenCallback,
-  onComplete: OnCompleteCallback
-) {
+export async function streamCompletion(messages: Array<MessageHistory>, forEachToken: ForEachTokenCallback, onComplete: OnCompleteCallback) {
   let tokens = '';
 
   //Remove any custom lili history data
@@ -81,8 +79,17 @@ export async function streamCompletion(
     if (typeof onComplete === 'function') {
       await onComplete.call(gpt, tokens); //Needs to await for command line
     }
-  } catch (e) {
-    showError(e as string);
+  } catch (e: any) {
+    let error = e.message || e;
+    if (typeof error !== 'string') {
+      try {
+        error = e.toString();
+      } catch (e) {
+        error = 'Undefined error... This is likely.... REEEEALLY BAD';
+      }
+    }
+
+    showError(e.message || e);
     if (typeof onComplete === 'function') {
       await onComplete.call({}, 'Error: ' + e); //Needs to await for command line
     }

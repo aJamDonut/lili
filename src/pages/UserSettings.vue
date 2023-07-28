@@ -1,48 +1,24 @@
 <template>
   <q-page padding>
-    <lili-cont title="settings">
+    <lili-title :title="$t('settings')" />
+    <lili-cont title="Settings">
       <label>{{ $t('slider_inputs') }}</label>
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
       <label>{{ $t('language') }}</label>
-      <q-select
-        v-model="locale"
-        :options="localeOptions"
-        filled
-        class="q-mb-md"
-        borderless
-        emit-value
-        map-options
-        options-dense
-      />
+      <q-select v-model="locale" :options="localeOptions" filled class="q-mb-md" borderless emit-value map-options options-dense />
 
       <label>{{ $t('chatgpt_key') }}</label>
-      <q-input
-        :type="chatGPTKeyHide ? 'password' : 'text'"
-        v-model="settingsStore.chatGPTKey"
-        filled
-        class="q-mb-md"
-        dense
-      />
+      <q-input :type="chatGPTKeyHide ? 'password' : 'text'" v-model="settingsStore.chatGPTKey" filled class="q-mb-md" dense />
     </lili-cont>
     <br />
     <lili-cont title="license">
       <label>{{ $t('lili_license_key') }}</label>
-      <q-input
-        :type="liliKeyHide ? 'password' : 'text'"
-        v-model="settingsStore.liliKey"
-        filled
-        class="q-mb-md"
-        dense
-      >
+      <q-input :type="liliKeyHide ? 'password' : 'text'" v-model="settingsStore.liliKey" filled class="q-mb-md" dense>
         <template v-slot:append>
-          <q-icon
-            :name="liliKeyHide ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="liliKeyHide = !liliKeyHide"
-          />
+          <q-icon :name="liliKeyHide ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="liliKeyHide = !liliKeyHide" />
         </template>
       </q-input>
       <div class="outcome q-mb-xs">
@@ -60,6 +36,12 @@
         </div>
       </div>
     </lili-cont>
+    <br />
+
+    <lili-cont title="Manage Data">
+      <label>{{ $t('purge_history') }}</label>
+      <q-btn label="Delete All History" color="red" @click="purgeHistory" />
+    </lili-cont>
   </q-page>
 </template>
 
@@ -71,6 +53,7 @@ import { hasValidLicense } from '../services/lili/lili_real';
 import { information, error } from '../boot/lili';
 import { useI18n } from 'vue-i18n';
 import { langCodesList } from '../i18n/index';
+import { useJobStore } from 'stores/job';
 
 export default {
   data() {
@@ -105,6 +88,18 @@ export default {
     };
   },
   methods: {
+    purgeHistory() {
+      this.$q
+        .dialog({
+          title: 'Delete All History',
+          message: 'Are you sure you want to delete all history?',
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          this.jobStore.purgeHistory();
+        });
+    },
     async validateLicense() {
       console.log('validatingLicense');
       const isValid = await this.settingsStore.checkKey();
@@ -116,7 +111,7 @@ export default {
     },
   },
   computed: {
-    ...mapStores(useSettingsStore),
+    ...mapStores(useSettingsStore, useJobStore),
     theme: {
       get() {
         return {

@@ -1,0 +1,24 @@
+{
+  "meta": { "id": "change_files", "date": 1689815844593, "isPrimer": true },
+  "workloadDefinition": {
+    "name": "Changes files",
+    "codename": "change_files",
+    "description": "Makes changes to files contents",
+    "category": "general",
+    "context": ["extract_files"],
+    "defaults": { "advanced": { "repetitiveness": 1.5, "creativity": 0, "tokenLength": 15000, "solutionCount": 1 } },
+    "messageHistory": []
+  },
+  "workloadOptions": {
+    "prompt": "Please take file1.csv and merge it with file2.csv into file3.csv",
+    "context": "",
+    "workload": "change_files",
+    "outputFormat": "plaintext",
+    "outputTo": "inline",
+    "creativity": 0.1,
+    "repetitiveness": 0.1,
+    "responseLimit": 10,
+    "solutionCount": 1,
+    "onJsonResponse": null
+  }
+}
