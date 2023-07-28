@@ -7,7 +7,7 @@
             <q-td :props="props" v-for="row in props.cols" :key="row.name">
               <div class="row items-center justify-center q-col-gutter-sm" v-if="row.name === 'actions'">
                 <div>
-                  <q-btn color="primary" label="View" outline size="sm" :to="{ path: '/job/' + props.row.meta.id }" />
+                  <q-btn color="primary" :label="$t('view')" outline size="sm" :to="{ path: '/job/' + props.row.meta.id }" />
                 </div>
                 <div>
                   <q-btn color="red" outline size="11px" icon="edit" dense :to="{ path: '/edit/' + props.row.meta.id }" />
@@ -20,7 +20,7 @@
                 {{ row.value }}
               </div>
               <div v-else-if="row.name === 'status'">
-                <q-chip size="10px" color="green" text-color="white"> COMPLETED </q-chip>
+                <q-chip size="10px" color="green" text-color="white"> {{ $t('completed') }} </q-chip>
               </div>
               <div class="truncate" v-else>{{ row.value }}</div>
             </q-td>

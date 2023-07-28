@@ -1,12 +1,11 @@
 <template>
   <q-page padding>
-    <lili-cont title="Settings">
+    <lili-cont title="settings">
       <label>{{ $t('slider_inputs') }}</label>
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
-
       <label>{{ $t('language') }}</label>
       <q-select
         v-model="locale"
@@ -29,7 +28,7 @@
       />
     </lili-cont>
     <br />
-    <lili-cont title="License">
+    <lili-cont title="license">
       <label>{{ $t('lili_license_key') }}</label>
       <q-input
         :type="liliKeyHide ? 'password' : 'text'"
@@ -50,13 +49,13 @@
         <div v-if="settingsStore.isValidKey === true" class="output-positive">
           <div class="row justify-start">
             <div><q-icon name="check" /></div>
-            <div>License is valid</div>
+            <div>{{ $t('license_valid') }}</div>
           </div>
         </div>
         <div v-else class="output-negative">
           <div class="row items-center q-col-gutter-xs">
             <div><q-icon name="close" size="20px" /></div>
-            <div>License is invalid</div>
+            <div>{{ $t('license_invalid') }}</div>
           </div>
         </div>
       </div>
@@ -91,15 +90,15 @@ export default {
       licenseMessage: 'test',
       themeOptions: [
         {
-          label: 'Light',
+          label: 'light',
           value: false,
         },
         {
-          label: 'Dark',
+          label: 'dark',
           value: true,
         },
         {
-          label: 'Auto Detect',
+          label: 'auto_detect',
           value: 'auto',
         },
       ],

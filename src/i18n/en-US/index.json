@@ -30,5 +30,18 @@
   "job_history": "Job History",
   "settings": "Settings",
   "failed": "Action failed",
-  "success": "Action was successful"
+  "success": "Action was successful",
+  "license": "License",
+  "license_invalid": "License is invalid",
+  "license_valid": "License is valid",
+  "validate_license" : "Validate your license key to unlock all features",
+  "completed":  "COMPLETED",
+  "view" : "VIEW",
+  "dark" : "Dark",
+  "light": "Light",
+  "auto_detect": "Auto Detect",
+  "delete": "Delete",
+  "download":"Donwload",
+  "workload_id": "Workload ID:",
+  "category": "Category"
 }
