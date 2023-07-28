@@ -13,7 +13,7 @@
               </div>
               <div class="row items-center justify-center q-col-gutter-sm" v-else-if="row.name === 'actions'">
                 <div>
-                  <q-btn color="primary" label="View" outline size="sm" @click="viewJob(props.row.id)" />
+                  <q-btn color="primary" :label="$t('view')" outline size="sm" @click="viewJob(props.row.id)" />
                 </div>
                 <div>
                   <q-btn color="red" outline size="11px" icon="close" dense @click="deleteJob(props.row.id)" />

@@ -1,7 +1,7 @@
 <template>
   <div @click="$emit('click')" :class="gridClasses">
     <div v-if="title" class='title'>
-      <span v-if="title !== true">{{ title }}</span>
+      <span v-if="title !== true">{{ $t(title) }}</span>
       <slot name="title" />
     </div>
     <div v-if="hasContent" :class="gridContClasses">

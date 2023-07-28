@@ -9,10 +9,24 @@
               <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
                   <div v-if="type === 'history'">
-                    <q-btn outline color="primary" size="11px" icon="replay" :to="{ path: '/job/history/' + props.row.meta.id }" />
+                    <q-btn
+                      outline
+                      :label="$t('replay')"
+                      color="primary"
+                      size="11px"
+                      icon="replay"
+                      :to="{ path: '/job/history/' + props.row.meta.id }"
+                    />
                   </div>
                   <div v-else>
-                    <q-btn outline color="primary" size="11px" icon="send" :to="{ path: '/job/workload/' + props.row.meta.id }" />
+                    <q-btn
+                      outline
+                      :label="$t('start')"
+                      color="primary"
+                      size="11px"
+                      icon="send"
+                      :to="{ path: '/job/workload/' + props.row.meta.id }"
+                    />
                   </div>
                 </div>
                 <div>
@@ -31,7 +45,7 @@
                 {{ row.value }}
               </div>
               <div v-else-if="row.name === 'status'">
-                <q-chip size="10px" color="green" text-color="white"> COMPLETED </q-chip>
+                <q-chip size="10px" color="green" text-color="white"> {{ $t('completed') }} </q-chip>
               </div>
               <div class="truncate" v-else>{{ row.value }}</div>
             </q-td>
@@ -45,7 +59,7 @@
       </q-table>
 
       <div v-if="table2 !== false" class="q-mt-lg">
-      <lili-title :title="$t('lili_workloads')" :desc="$t('lili_workloads_desc')" />
+        <lili-title :title="$t('lili_workloads')" :desc="$t('lili_workloads_desc')" />
         <q-table :rows="table2" :pagination="pagination" :columns="columns" row-key="id" flat bordered separator="cell">
           <template v-slot:body="props">
             <q-tr :props="props">

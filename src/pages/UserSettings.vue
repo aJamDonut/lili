@@ -1,69 +1,43 @@
 <template>
   <q-page padding>
-      <lili-title :title="$t('settings')" />
+    <lili-title :title="$t('settings')" />
     <lili-cont title="Settings">
       <label>{{ $t('slider_inputs') }}</label>
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
-
       <label>{{ $t('language') }}</label>
-      <q-select
-        v-model="locale"
-        :options="localeOptions"
-        filled
-        class="q-mb-md"
-        borderless
-        emit-value
-        map-options
-        options-dense
-      />
+      <q-select v-model="locale" :options="localeOptions" filled class="q-mb-md" borderless emit-value map-options options-dense />
 
       <label>{{ $t('chatgpt_key') }}</label>
-      <q-input
-        :type="chatGPTKeyHide ? 'password' : 'text'"
-        v-model="settingsStore.chatGPTKey"
-        filled
-        class="q-mb-md"
-        dense
-      />
+      <q-input :type="chatGPTKeyHide ? 'password' : 'text'" v-model="settingsStore.chatGPTKey" filled class="q-mb-md" dense />
     </lili-cont>
     <br />
-    <lili-cont title="License">
+    <lili-cont title="license">
       <label>{{ $t('lili_license_key') }}</label>
-      <q-input
-        :type="liliKeyHide ? 'password' : 'text'"
-        v-model="settingsStore.liliKey"
-        filled
-        class="q-mb-md"
-        dense
-      >
+      <q-input :type="liliKeyHide ? 'password' : 'text'" v-model="settingsStore.liliKey" filled class="q-mb-md" dense>
         <template v-slot:append>
-          <q-icon
-            :name="liliKeyHide ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="liliKeyHide = !liliKeyHide"
-          />
+          <q-icon :name="liliKeyHide ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="liliKeyHide = !liliKeyHide" />
         </template>
       </q-input>
       <div class="outcome q-mb-xs">
         <div v-if="settingsStore.isValidKey === true" class="output-positive">
           <div class="row justify-start">
             <div><q-icon name="check" /></div>
-            <div>License is valid</div>
+            <div>{{ $t('license_valid') }}</div>
           </div>
         </div>
         <div v-else class="output-negative">
           <div class="row items-center q-col-gutter-xs">
             <div><q-icon name="close" size="20px" /></div>
-            <div>License is invalid</div>
+            <div>{{ $t('license_invalid') }}</div>
           </div>
         </div>
       </div>
     </lili-cont>
     <br />
-    
+
     <lili-cont title="Manage Data">
       <label>{{ $t('purge_history') }}</label>
       <q-btn label="Delete All History" color="red" @click="purgeHistory" />
@@ -99,15 +73,15 @@ export default {
       licenseMessage: 'test',
       themeOptions: [
         {
-          label: 'Light',
+          label: 'light',
           value: false,
         },
         {
-          label: 'Dark',
+          label: 'dark',
           value: true,
         },
         {
-          label: 'Auto Detect',
+          label: 'auto_detect',
           value: 'auto',
         },
       ],
@@ -115,14 +89,16 @@ export default {
   },
   methods: {
     purgeHistory() {
-      this.$q.dialog({
-        title: 'Delete All History',
-        message: 'Are you sure you want to delete all history?',
-        cancel: true,
-        persistent: true,
-      }).onOk(() => {
-        this.jobStore.purgeHistory();
-      });
+      this.$q
+        .dialog({
+          title: 'Delete All History',
+          message: 'Are you sure you want to delete all history?',
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          this.jobStore.purgeHistory();
+        });
     },
     async validateLicense() {
       console.log('validatingLicense');

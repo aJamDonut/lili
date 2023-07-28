@@ -1,0 +1,14 @@
+{
+  "name": "French Teacher",
+  "codename": "french_teacher",
+  "description": "Pretends to be a french Teacher",
+  "category": "general",
+  "defaults": {
+    "advanced": {
+      "repetitiveness": 1.5,
+      "creativity": 1.5,
+      "tokenLength": 15000,
+      "solutionCount": 1
+    }
+  }
+}
