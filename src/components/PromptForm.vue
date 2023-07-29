@@ -27,6 +27,8 @@ this is fucking shit. vue is fucking shit.<template>
   FUCK THIS. fucking shit.
   absolute trash wank
 </template>
+
+fucking wank.
   
   <script>
 export default {};
