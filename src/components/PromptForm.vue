@@ -70,7 +70,11 @@
         <br />
         <label>{{ $t('workspace_folder') }}</label>
         <div>
-          <q-input filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md" />
+          <q-input readonly filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md">
+            <template v-slot:append>
+              <q-btn @click="openWorkspace" round dense flat icon="folder" />
+            </template>
+          </q-input>
         </div>
       </div>
     </transition>
@@ -81,6 +85,7 @@
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { useWorkloadStore } from 'stores/workload';
+import { getUserRoot, showFolder } from '../services/lili/lili_real';
 
 function mountWorkloads() {
   this.workloadOptions = [];
@@ -113,12 +118,18 @@ export default {
     modelValue: null,
   },
   methods: {
+    openWorkspace() {
+      console.log('Show', this.workspaceFolder);
+      showFolder(this.workspaceFolder);
+    },
     runJob() {
       console.log('run Job');
       this.$emit('run');
     },
   },
-  mounted() {
+  async mounted() {
+    this.workspaceFolder = await getUserRoot();
+    console.log('Space', await getUserRoot());
     mountWorkloads.call(this);
   },
   computed: {

@@ -98,3 +98,14 @@ export async function getLicense(key: string) {
 export async function recallWorkload(options: RecallHistoryOptions): Promise<string> {
   return await LILIAI.engineDriver.recallWorkload(options);
 }
+
+export async function getUserRoot(): Promise<string> {
+  return await LILIAI.engineDriver.getUserRoot();
+}
+
+export async function setUserRoot(root: string): Promise<boolean> {
+  return await LILIAI.engineDriver.setUserRoot(root);
+}
+export async function showFolder(folder: string): Promise<boolean> {
+  return await LILIAI.engineDriver.showFolder(folder);
+}

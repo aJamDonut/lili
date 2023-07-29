@@ -4,6 +4,7 @@ import { getHistoricWorkload, getFolderMap, getReadCallsMap, getWorkloads, runWo
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
 import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
+import { shell } from 'electron';
 
 const functionList: Array<string> = [];
 
@@ -119,6 +120,10 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     });
   });
 
+  ipcWrap(justRegister, 'getUserRoot', async (_event: MixedEvent) => {
+    return await callService('Storage:getUserRoot', {});
+  });
+
   ipcWrap(justRegister, 'deleteHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {
     const id = options.id;
 
@@ -144,8 +149,13 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     return true;
   });
 
+  ipcWrap(justRegister, 'showFolder', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {
+    //shell.showItemInFolder(options.folder); // Show the given file in a file manager. If possible, select the file.
+    shell.openPath(options.folder as string); // Open the given file in the desktop's default manner
+    return true;
+  });
+
   ipcWrap(justRegister, 'saveHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<string> => {
-    console.log('Save', options);
     const historicWorkload = options.workloadHistory as unknown as HistoricWorkload;
     if (
       !historicWorkload.definition ||
