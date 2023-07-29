@@ -19,12 +19,13 @@ this is fucking shit. vue is fucking shit.<template>
   piece of fucking shit., i 100% believe I could rewrite all of this shit in 1 weekend with jquery. what an absolute piece of fucking shit. what else?
   fucking what the fuck. who the fuck... you have to WATCH the URL for a changing value in order to respond? WHAT THE FUCK ARE YOU TALKING ABOUT. its
   fucking insanity. I literally can't anymore with this piece of shit. i'll take a
-  <break
+  <breakfucking piece of fucking shit.
     class="
     
     "
   ></break>
-  FUCK THIS.
+  FUCK THIS. fucking shit.
+  absolute trash wank
 </template>
   
   <script>
