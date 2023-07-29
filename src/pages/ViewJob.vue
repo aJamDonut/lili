@@ -12,7 +12,7 @@
         <template v-slot:before>
           <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
             <div class="q-pa-md" style="min-height: 100%">
-              <prompt-form v-model="promptConfig" @run="runJob" />
+              <prompt-form :job-id="jobId" v-model="promptConfig" @run="runJob" />
               <!-- {{ workloadStore.workloads }} -->
             </div>
           </q-scroll-area>
@@ -81,8 +81,15 @@ const { getScrollPosition, setScrollPosition } = scroll;
  */
 
 export default {
+  watch: {
+    '$route.params.id': function () {
+      console.log('Route id', this.$route.params.id);
+      this.jobId = this.$route.params.id;
+    }, //vue is fucking shit.
+  },
   data() {
     return {
+      jobId: false,
       promptConfig: {
         prompt: '',
         context: '',
@@ -128,14 +135,16 @@ export default {
       },
     },
     activeTransaction() {
+      //vue is fucking shit.
       if (this.transactionRunning === false) return false;
       return this.transactions[this.transactions.length - 1];
     },
   },
   async mounted() {
-    reset();
+    reset(); //how fucking shit is vue.
     this.workloadStore.refresh();
     if (this.$route.params.id) {
+      this.jobId = this.$route.params.id;
       this.loadHistory();
     }
   },
@@ -245,13 +254,6 @@ export default {
     //     onComplete: done
     //   })
     // }
-  },
-  watch: {
-    '$route.params.id'() {
-      console.log('ID change');
-      console.log(this.$route.params.id);
-      this.promptConfig.id = this.$route.params.id;
-    },
   },
 };
 </script>
