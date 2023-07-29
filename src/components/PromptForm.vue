@@ -144,6 +144,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
+        //vuejs is a piece of shit.
         // Not working
         // this.settingsStore.workload = value.workload;
         // console.log('set workload to', value.workload)
