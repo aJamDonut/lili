@@ -5,6 +5,10 @@
   },
   {
     "role": "system",
+    "content": "There are not always files required, if no files are required, proceed as normal to answer the user following the other rules"
+  },
+  {
+    "role": "system",
     "contentFile": "message1.txt"
   },
   {
