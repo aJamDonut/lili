@@ -134,6 +134,7 @@ export default {
   },
   async mounted() {
     reset();
+    this.workloadStore.refresh();
     if (this.$route.params.id) {
       this.loadHistory();
     }
@@ -199,7 +200,7 @@ export default {
 
       const prompt = this.promptConfig.prompt;
 
-      this.promptConfig.prompt = ''
+      this.promptConfig.prompt = '';
 
       startWorkload({
         id: this.$route.params.id || false,
@@ -244,6 +245,13 @@ export default {
     //     onComplete: done
     //   })
     // }
+  },
+  watch: {
+    '$route.params.id'() {
+      console.log('ID change');
+      console.log(this.$route.params.id);
+      this.promptConfig.id = this.$route.params.id;
+    },
   },
 };
 </script>
