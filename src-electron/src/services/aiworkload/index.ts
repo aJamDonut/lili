@@ -192,7 +192,7 @@ export async function parseHistoryLine(definition: HistoryFile, history: Parseab
     return history;
   }
   history.content = (await callService('Storage:liliReadFile', {
-    folderName: `workloads/${definition.meta.id}`,
+    folderName: `primer/${definition.meta.id}`,
     fileName: history.contentFile,
   })) as string;
 
