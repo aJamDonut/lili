@@ -139,7 +139,7 @@
           <q-scroll-area class="absolute-full" style="min-height: inherit" :visible="true" :thumb-style="thumbStyle" :bar-style="barStyle">
             <div style="min-height: inherit">
               {{ $route.name }}
-              <router-view />
+              <router-view :key="$route.fullPath" />
             </div>
           </q-scroll-area>
         </div>
