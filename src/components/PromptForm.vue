@@ -1,45 +1,177 @@
-this is fucking shit. vue is fucking shit.<template>
-  everything this piece of shit does. I could fucking do it better in jquery. its so. fucking. shit. it's actualy fucking garbase if you are ever
-  thinking of using vue, dont fucking do it. i've worked with react for years, its completely fine. dont work with vue. its absolute, fucking,
-  disgusting, toxic, garbagse. you'll spend most of you god damn fucking stupid ass time trying to figure out why this stupid fucking program doesn't
-  work. and it wont be your fucking fault. it's quite fucking obvious that there may be multiple select boxes its quite fucking obvious people only
-  want the value of a select
-  <object
-    data="it
-  "
-    type=""
-    class=""
-  ></object>
-</template>
-  fuck this poiece oif fucking shit., i fuckign hate it
+<template>
+  <div>
+    <!-- <label>{{ $t('prompt') }}</label> -->
+    <q-input
+      v-model="promptConfig.prompt"
+      filled
+      :placeholder="$t('enter_prompt')"
+      type="textarea"
+      rows="3"
+      autogrow
+      dense
+      class="q-mb-md"
+      @keyup.ctrl.enter="runJob"
+    >
+      <template v-slot:append>
+        <q-btn @click="runJob" unelevated size="10px" de color="green" icon="send" />
+      </template>
+    </q-input>
 
-  ive never hated a poiece of shit as much as this in my fuicking life its that bad.<template>
-  and now i've got to fucking live with it coz of this stupid fucking piece of shit already being written. what an absolute fucking piece of fucking
-  trash. if we ever go open source. and someone reads this. now you fucking know. now you know the biggest mistake we made in the project. using this
-  piece of fucking shit., i 100% believe I could rewrite all of this shit in 1 weekend with jquery. what an absolute piece of fucking shit. what else?
-  fucking what the fuck. who the fuck... you have to WATCH the URL for a changing value in order to respond? WHAT THE FUCK ARE YOU TALKING ABOUT. its
-  fucking insanity. I literally can't anymore with this piece of shit. i'll take a
-  <breakfucking piece of fucking shit.
-    class="
-    
-    "
-  ></break>
-  FUCK THIS. fucking shit.
-  absolute trash wank
+    <div class="row justify-end" key="adv-btn">
+      <div>
+        <q-btn dense unelevated class="workload-btn" size="12px" @click="settingsStore.showAdvanced = !settingsStore.showAdvanced">
+          <div class="row items-end">
+            <div class="col-shrink">
+              <q-icon name="psychology" />
+            </div>
+            <div class="col q-ml-sm q-mr-xs">
+              {{ promptConfig.workload.label }}
+            </div>
+            <div class="col-shrink">
+              <q-icon :name="showAdvancedIcon" />
+            </div>
+          </div>
+        </q-btn>
+      </div>
+    </div>
+    <transition name="slidedown">
+      <div v-if="settingsStore.showAdvanced">
+        <div class="row q-col-gutter-md q-mb-md">
+          <div class="col-xs-12">
+            <label>{{ $t('workload') }}</label>
+            <q-select v-model="promptConfig.workload" filled :options="workloadOptions" dense></q-select>
+          </div>
+        </div>
+        <div class="row q-col-gutter-md q-mb-md">
+          <div class="col-xs-12">
+            <label>{{ $t('context') }}</label>
+            <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
+          </div>
+        </div>
+        <div class="row q-col-gutter-md">
+          <!-- Extra Stuff -->
+          <div class="col" style="min-width: 120px">
+            <label>{{ $t('creativity') }}</label>
+            <lili-slider v-model="promptConfig.creativity" :step="0.01" :min="0.5" :max="1" />
+          </div>
+          <div class="col" style="min-width: 120px">
+            <label>{{ $t('repetitiveness') }}</label>
+            <lili-slider v-model="promptConfig.repetitiveness" :step="0.01" :min="0.5" :max="1" />
+          </div>
+          <div class="col" style="min-width: 120px">
+            <label>{{ $t('response_limit') }}</label>
+            <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
+          </div>
+          <div class="col" style="min-width: 120px">
+            <label>{{ $t('solution_count') }}</label>
+            <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
+          </div>
+        </div>
+        <br />
+        <label>{{ $t('workspace_folder') }}</label>
+        <div>
+          <q-input readonly filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md">
+            <template v-slot:append>
+              <q-btn @click="openWorkspace" round dense flat icon="folder" />
+            </template>
+          </q-input>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
-
-fucking wank.
-  
-  <script>
-export default {};
-</script>
-  
-  <style>
-</style>
 
 <script>
-export default {};
+import { mapStores } from 'pinia';
+import { useSettingsStore } from 'stores/settings';
+import { useWorkloadStore } from 'stores/workload';
+import { getUserRoot, showFolder } from '../services/lili/lili_real';
+
+function mountWorkloads() {
+  this.workloadOptions = [];
+  this.workloadStore.refresh();
+  for (const item of this.workloadStore.workloads) {
+    this.workloadOptions.push({
+      label: item.workloadDefinition.name,
+      value: item.meta.id,
+    });
+
+    if (this.$route.params.type !== 'history' && item.meta.id === this.$route.params.id) {
+      this.settingsStore.workload = {
+        label: item.workloadDefinition.name,
+        value: item.meta.id,
+      };
+    }
+  }
+
+  this.promptConfig.workload = this.settingsStore.workload;
+}
+
+export default {
+  data() {
+    return {
+      workspaceFolder: 'UserData',
+      workloadOptions: [],
+    };
+  },
+  props: {
+    modelValue: null,
+  },
+  methods: {
+    openWorkspace() {
+      console.log('Show', this.workspaceFolder);
+      showFolder(this.workspaceFolder);
+    },
+    runJob() {
+      console.log('run Job');
+      this.$emit('run');
+    },
+  },
+  async mounted() {
+    this.workspaceFolder = await getUserRoot();
+    console.log('Space', await getUserRoot());
+    mountWorkloads.call(this);
+  },
+  computed: {
+    ...mapStores(useWorkloadStore, useSettingsStore),
+    showAdvancedIcon() {
+      return this.settingsStore.showAdvanced ? 'expand_less' : 'expand_more';
+    },
+    promptConfig: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        // Not working
+        // this.settingsStore.workload = value.workload;
+        // console.log('set workload to', value.workload)
+        this.$emit('update:modelValue', value);
+      },
+    },
+  },
+  watch: {
+    'promptConfig.workload': function (val) {
+      this.settingsStore.workload = val;
+    },
+  },
+};
 </script>
 
-<style>
+<style lang="scss" scoped>
+.slidedown-enter-active,
+.slidedown-leave-active {
+  transition: max-height 0.5s ease-in-out;
+}
+
+.slidedown-enter-to,
+.slidedown-leave-from {
+  overflow: hidden;
+  max-height: 1000px;
+}
+
+.slidedown-enter-from,
+.slidedown-leave-to {
+  overflow: hidden;
+  max-height: 0;
+}
 </style>
