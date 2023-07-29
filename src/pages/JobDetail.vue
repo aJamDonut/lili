@@ -69,7 +69,7 @@
                   <q-icon color="grey-6" size="20px" name="drag_indicator" class="drag-handle q-mt-sm" />
                 </div>
                 <div class="col-2">
-                  <q-select v-model="item.role" filled :options="roleOptions" dense></q-select>
+                  <q-select emit-value v-model="item.role" filled :options="roleOptions" dense></q-select>
                 </div>
                 <div class="col">
                   <q-input
