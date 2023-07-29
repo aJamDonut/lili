@@ -86,6 +86,7 @@ import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { useWorkloadStore } from 'stores/workload';
 import { getUserRoot, showFolder } from '../services/lili/lili_real';
+import { reactiveProps } from '../utils/reactiveProps';
 
 async function mountWorkloads() {
   this.workloadOptions = [];
@@ -153,10 +154,9 @@ export default {
     },
   },
   watch: {
-    jobId: function () {
-      console.log('id changed', this.jobId);
+    $props: reactiveProps(() => {
       mountWorkloads.call(this);
-    },
+    }),
     'promptConfig.workload': function (val) {
       this.settingsStore.workload = val;
     },
