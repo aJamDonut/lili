@@ -67,6 +67,11 @@
             <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
           </div>
         </div>
+        <br />
+        <label>{{ $t('workspace_folder') }}</label>
+        <div>
+          <q-input filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md" />
+        </div>
       </div>
     </transition>
   </div>
@@ -100,6 +105,7 @@ function mountWorkloads() {
 export default {
   data() {
     return {
+      workspaceFolder: 'UserData',
       workloadOptions: [],
     };
   },
