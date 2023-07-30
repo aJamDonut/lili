@@ -2,6 +2,7 @@
   <q-page>
     <div :class="lockedPageClass">
       <q-splitter
+        emit-immediately
         v-model="splitterWidth"
         :limits="[25, 60]"
         style="min-height: inherit"
@@ -37,7 +38,7 @@
             ref="outputWindow"
             @scroll="scrollHandler"
           >
-            <div class="q-pa-md" style="min-height: 100%">
+            <div class="q-pa-md" ref="chatArea" :style="chatStyles" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
                 <div v-if="row.workloadDefinition">
@@ -89,6 +90,7 @@ export default {
   },
   data() {
     return {
+      chatStyles: 'width: 100%',
       jobId: false,
       promptConfig: {
         prompt: '',
@@ -132,6 +134,7 @@ export default {
       },
       set(value) {
         this.settingsStore.splitterWidth = value;
+        this.updateChatWidth();
       },
     },
     activeTransaction() {
@@ -141,14 +144,25 @@ export default {
     },
   },
   async mounted() {
-    reset(); //how fucking shit is vue.
+    reset();
+    this.updateChatWidth();
     this.workloadStore.refresh();
+    window.addEventListener('resize', this.updateChatWidth);
     if (this.$route.params.id) {
       this.jobId = this.$route.params.id;
       this.loadHistory();
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateChatWidth);
+  },
   methods: {
+    updateChatWidth() {
+      const buffer = 50; //Increase buffer if left nav size changes.
+      const splitterWidthReal = (window.innerWidth / 100) * this.splitterWidth;
+      const newWidth = window.innerWidth - splitterWidthReal - buffer;
+      this.chatStyles = `width: ${newWidth}px`;
+    },
     async loadHistory() {
       const jobDetail = await this.jobStore.loadJobDetail(this.$route.params.id);
 
