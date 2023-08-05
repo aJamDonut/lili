@@ -116,6 +116,10 @@ export class ElectronEngine implements EngineDriverInterface {
     if (!options.id && lastId !== 'none') {
       options.id = lastId;
     }
+    if (!options.id) {
+      options.id = getCurrentDateTime();
+      lastId = options.id;
+    }
     const forEachToken = async (token: string) => {
       if (typeof options.onJsonResponse === 'function' && token.length > 20) {
         //It's long enough to potentially be a json update. lets parse it
@@ -188,5 +192,17 @@ export class ElectronEngine implements EngineDriverInterface {
   }
   async deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean> {
     return await run('Engine:deleteHistoricWorkload', { id, type });
+  }
+
+  async getUserRoot(): Promise<string> {
+    return await run('Engine:getUserRoot');
+  }
+
+  async setUserRoot(root: string): Promise<boolean> {
+    return await run('Engine:setUserRoot', { root });
+  }
+
+  async showFolder(folder: string): Promise<boolean> {
+    return await run('Engine:showFolder', { folder });
   }
 }

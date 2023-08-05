@@ -59,6 +59,18 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = undefined;
   });
+
+  const handleRedirect = (e: Event, url: string) => {
+    if (!mainWindow) {
+      return;
+    }
+    if (url != mainWindow.webContents.getURL()) {
+      e.preventDefault();
+      require('electron').shell.openExternal(url);
+    }
+  };
+  mainWindow.webContents.on('will-navigate', handleRedirect);
+  mainWindow.webContents.on('new-window', handleRedirect);
 }
 
 import { injectCLIApp } from './src/services/cli';

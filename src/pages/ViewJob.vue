@@ -2,6 +2,7 @@
   <q-page>
     <div :class="lockedPageClass">
       <q-splitter
+        emit-immediately
         v-model="splitterWidth"
         :limits="[25, 60]"
         style="min-height: inherit"
@@ -12,7 +13,7 @@
         <template v-slot:before>
           <q-scroll-area class="fit" :thumb-style="thumbStyle" :bar-style="barStyle" style="min-height: 100%">
             <div class="q-pa-md" style="min-height: 100%">
-              <prompt-form v-model="promptConfig" @run="runJob" />
+              <prompt-form :job-id="jobId" v-model="promptConfig" @run="runJob" />
               <!-- {{ workloadStore.workloads }} -->
             </div>
           </q-scroll-area>
@@ -37,7 +38,7 @@
             ref="outputWindow"
             @scroll="scrollHandler"
           >
-            <div class="q-pa-md" style="min-height: 100%">
+            <div class="q-pa-md" ref="chatArea" :style="chatStyles" style="min-height: 100%">
               <!-- Historic Transactions -->
               <div v-for="(row, index) in transactions" :key="index" class="ai_transaction q-mb-sm">
                 <div v-if="row.workloadDefinition">
@@ -81,8 +82,16 @@ const { getScrollPosition, setScrollPosition } = scroll;
  */
 
 export default {
+  watch: {
+    '$route.params.id': function () {
+      console.log('Route id', this.$route.params.id);
+      this.jobId = this.$route.params.id;
+    }, //vue is fucking shit.
+  },
   data() {
     return {
+      chatStyles: 'width: 100%',
+      jobId: false,
       promptConfig: {
         prompt: '',
         context: '',
@@ -125,20 +134,35 @@ export default {
       },
       set(value) {
         this.settingsStore.splitterWidth = value;
+        this.updateChatWidth();
       },
     },
     activeTransaction() {
+      //vue is fucking shit.
       if (this.transactionRunning === false) return false;
       return this.transactions[this.transactions.length - 1];
     },
   },
   async mounted() {
     reset();
+    this.updateChatWidth();
+    this.workloadStore.refresh();
+    window.addEventListener('resize', this.updateChatWidth);
     if (this.$route.params.id) {
+      this.jobId = this.$route.params.id;
       this.loadHistory();
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateChatWidth);
+  },
   methods: {
+    updateChatWidth() {
+      const buffer = 50; //Increase buffer if left nav size changes.
+      const splitterWidthReal = (window.innerWidth / 100) * this.splitterWidth;
+      const newWidth = window.innerWidth - splitterWidthReal - buffer;
+      this.chatStyles = `width: ${newWidth}px`;
+    },
     async loadHistory() {
       const jobDetail = await this.jobStore.loadJobDetail(this.$route.params.id);
 
@@ -199,7 +223,7 @@ export default {
 
       const prompt = this.promptConfig.prompt;
 
-      this.promptConfig.prompt = ''
+      this.promptConfig.prompt = '';
 
       startWorkload({
         id: this.$route.params.id || false,

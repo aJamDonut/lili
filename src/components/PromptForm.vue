@@ -67,6 +67,15 @@
             <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
           </div>
         </div>
+        <br />
+        <label>{{ $t('workspace_folder') }}</label>
+        <div>
+          <q-input readonly filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md">
+            <template v-slot:append>
+              <q-btn @click="openWorkspace" round dense flat icon="folder" />
+            </template>
+          </q-input>
+        </div>
       </div>
     </transition>
   </div>
@@ -76,43 +85,54 @@
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { useWorkloadStore } from 'stores/workload';
+import { getUserRoot, showFolder } from '../services/lili/lili_real';
+import { reactiveProps } from '../utils/reactiveProps';
 
-function mountWorkloads() {
+async function mountWorkloads() {
   this.workloadOptions = [];
-  this.workloadStore.refresh();
+  await this.workloadStore.refresh();
+  console.log('REFRESH', this.jobId);
   for (const item of this.workloadStore.workloads) {
     this.workloadOptions.push({
       label: item.workloadDefinition.name,
       value: item.meta.id,
     });
 
-    if (this.$route.params.type !== 'history' && item.meta.id === this.$route.params.id) {
+    if (item.meta.id === this.jobId) {
       this.settingsStore.workload = {
         label: item.workloadDefinition.name,
         value: item.meta.id,
       };
     }
   }
-
+  console.log('set workload', this.settingsStore.workload);
   this.promptConfig.workload = this.settingsStore.workload;
 }
 
 export default {
   data() {
     return {
+      workspaceFolder: 'UserData',
       workloadOptions: [],
     };
   },
   props: {
+    jobId: String,
     modelValue: null,
   },
   methods: {
+    openWorkspace() {
+      console.log('Show', this.workspaceFolder);
+      showFolder(this.workspaceFolder);
+    },
     runJob() {
       console.log('run Job');
       this.$emit('run');
     },
   },
-  mounted() {
+  async mounted() {
+    this.workspaceFolder = await getUserRoot();
+    console.log('Space', await getUserRoot());
     mountWorkloads.call(this);
   },
   computed: {
@@ -125,6 +145,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
+        //vuejs is a piece of shit.
         // Not working
         // this.settingsStore.workload = value.workload;
         // console.log('set workload to', value.workload)
@@ -133,6 +154,9 @@ export default {
     },
   },
   watch: {
+    $props: reactiveProps(() => {
+      mountWorkloads.call(this);
+    }),
     'promptConfig.workload': function (val) {
       this.settingsStore.workload = val;
     },

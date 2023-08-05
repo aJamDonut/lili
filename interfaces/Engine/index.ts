@@ -22,21 +22,18 @@ export interface EngineDriverInterface {
    * @param {WorkloadOptions} options - The options for the workload.
    */
   startWorkload(options: WorkloadOptions): void;
-
   getHistory(start: number, end: number, type: DefinitionSource): Promise<Array<HistoryFile>>;
-
   purgeHistory(): Promise<void>;
-
   getHistoricWorkload(id: string): Promise<HistoricWorkload>;
-
   getWorkloads(): Promise<Array<string>>;
-
   hasValidLicense(): Promise<boolean>;
-
   unsetLicense(): Promise<boolean>;
   getLicense(key: string): Promise<ValidLicenseResponse>;
   reset(): void;
   recallWorkload(options: RecallHistoryOptions): Promise<string>;
   saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string>;
   deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean>;
+  getUserRoot(): Promise<string>;
+  setUserRoot(root: string): Promise<boolean>;
+  showFolder(folder: string): Promise<boolean>;
 }

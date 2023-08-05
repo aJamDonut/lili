@@ -1,6 +1,7 @@
 /* Mostly just setup ignore this. */
 import path from 'path';
 import { promises as fs } from 'fs';
+import { app } from 'electron';
 import { EventCallback, MixedEvent, registerEvent, registerInternalEvent } from '../../event';
 
 /* Setup is done... meat here. */
@@ -50,12 +51,29 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
   registerEvent(func(name), callback);
 }
 
+interface SetRoot {
+  root: string;
+}
+
 let LILI_ROOT = '';
 let ROOT = '';
 
 export const getFolders = async () => {
   const folders = ['folder1', 'folder2'];
   return folders;
+};
+
+export const getUserRoot = async (_event: MixedEvent) => {
+  return getExePath() + '\\' + ROOT + '\\workspaces\\default';
+};
+
+export const setUserRoot = async (_event: MixedEvent, options: SetRoot) => {
+  ROOT = options.root;
+  return true;
+};
+
+export const getLiliRoot = async (_event: MixedEvent) => {
+  return LILI_ROOT;
 };
 
 export const writeFile = async (_event: MixedEvent, { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite) => {
@@ -148,6 +166,17 @@ export const deleteFile = async (_event: MixedEvent, { folderName, fileName }: E
 export const deleteFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   return await fs.rmdir(path.join(ROOT, folderName));
 };
+function getSeperator() {
+  return '\\'; //Windows only
+}
+export const getExePath = () => {
+  const seperator = getSeperator();
+  const path = app.getAppPath();
+  const parts = path.split(seperator);
+  parts.pop(); //Remove last two parts they're incorrect.
+  parts.pop();
+  return parts.join(seperator);
+};
 
 export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {
   const justRegister = !rootDir ? true : false;
@@ -206,6 +235,10 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   ipcWrap(justRegister, 'deleteFile', deleteFile);
 
   ipcWrap(justRegister, 'deleteFolder', deleteFolder);
+
+  ipcWrap(justRegister, 'getUserRoot', getUserRoot);
+  ipcWrap(justRegister, 'setUserRoot', setUserRoot);
+  ipcWrap(justRegister, 'getLiliRoot', getLiliRoot);
 
   //Add function to register just internally (private functions)
   registerInternalEvent(serviceName('liliReadJson'), liliReadJson);
