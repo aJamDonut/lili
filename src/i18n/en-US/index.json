@@ -56,5 +56,14 @@
   "history_desc": "Here is a log of all your history",
   "workload_desc": "Workloads are repeatable conversations which allow you to quickly perform repeatable actions",
   "lili_workloads": "Lili Workloads",
-  "lili_workloads_desc": "Lili Workloads are pre-built workloads that you can use to quickly get started"
+  "lili_workloads_desc": "Lili Workloads are pre-built workloads that you can use to quickly get started",
+  "getting_started": "Getting Started",
+  "history": "History",
+  "delete_all_history": "Delete All History",
+  "recent": "Recent",
+  "how_to_start": "How to start",
+  "terminology": "Terminology",
+  "tips": "Tips",
+  "create": "Create",
+  "start" : "Start"
 }

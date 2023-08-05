@@ -40,7 +40,7 @@
 
     <lili-cont title="Manage Data">
       <label>{{ $t('purge_history') }}</label>
-      <q-btn label="Delete All History" color="red" @click="purgeHistory" />
+      <q-btn :label="$t('delete_all_history')" color="red" @click="purgeHistory" />
     </lili-cont>
   </q-page>
 </template>
@@ -73,15 +73,15 @@ export default {
       licenseMessage: 'test',
       themeOptions: [
         {
-          label: 'light',
+          label: this.$t('light'),
           value: false,
         },
         {
-          label: 'dark',
+          label: this.$t('dark'),
           value: true,
         },
         {
-          label: 'auto_detect',
+          label: this.$t('auto_detect'),
           value: 'auto',
         },
       ],
