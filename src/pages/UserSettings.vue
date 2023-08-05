@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <lili-title :title="$t('settings')" />
-    <lili-cont title="Settings">
+    <lili-cont :title="$t('settings')">
       <label>{{ $t('slider_inputs') }}</label>
       <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
       <br />
