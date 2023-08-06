@@ -503,7 +503,7 @@ export async function runWorkloadRaw(prompt: string, workloadOptions: WorkloadOp
     return '';
   }
 
-  const messages = [...workload.history, newMessage('user', prompt)];
+  const messages = [...getLatestTreeChat(), ...workload.history, newMessage('user', prompt)];
 
   //Init AI, send the callback function
   //For every token
@@ -572,6 +572,17 @@ function historyContainsDefinition(workload: string, history: Array<MessageHisto
   return false;
 }
 
+let LATEST_TREE = '';
+let LATEST_TREE_CHAT: Array<MessageHistory> = [];
+
+export function getLatestTree() {
+  return LATEST_TREE;
+}
+
+export function getLatestTreeChat() {
+  return LATEST_TREE_CHAT;
+}
+
 async function addWorkspaceFiles(history: Array<MessageHistory>) {
   if (history.length > 0) {
     console.log('History too long', history);
@@ -580,10 +591,12 @@ async function addWorkspaceFiles(history: Array<MessageHistory>) {
 
   const treeDiagram = (await callService('Storage:getTree', {})) as string;
 
+  LATEST_TREE = treeDiagram;
+
   console.log('TREEEEEEE DIAGRAAAAAM');
   console.log('TREEEEEEE DIAGRAAAAAM');
   console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log(treeDiagram);
+  console.log(LATEST_TREE);
   console.log('TREEEEEEE DIAGRAAAAAM');
   console.log('TREEEEEEE DIAGRAAAAAM');
   console.log('TREEEEEEE DIAGRAAAAAM');
@@ -594,7 +607,9 @@ async function addWorkspaceFiles(history: Array<MessageHistory>) {
 
   const message = `The user may ask you to interact with files. If you need to display a file name or find a file name you can use the tree diagram. Whenever using a file you use provide the full path to the file.`;
 
-  return [newMessage('system', message), newMessage('system', `Tree Diagram:\n${treeDiagram}`)];
+  LATEST_TREE_CHAT = [newMessage('system', message), newMessage('system', `Tree Diagram:\n${treeDiagram}`)];
+
+  return LATEST_TREE_CHAT;
 }
 
 /**
