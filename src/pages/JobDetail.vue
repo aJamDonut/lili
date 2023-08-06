@@ -38,7 +38,7 @@
           <q-btn flat dense icon="psychology" title="Create primer" @click="copyHistoricWorkloadAsPrimer()" />
         </div>
         <div v-if="type === 'new'">
-          <q-btn flat dense icon="save" title="Create" @click="copyHistoricWorkloadAsPrimer()">Create</q-btn>
+          <q-btn flat dense icon="save" title="Create" @click="copyHistoricWorkloadAsPrimer()">{{ $t('create') }}</q-btn>
         </div>
       </div>
 
