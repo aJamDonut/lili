@@ -65,7 +65,7 @@ export async function streamCompletion(messages: Array<MessageHistory>, forEachT
 
     console.log('Create completion', messages);
     const chatCompletionStream = await gpt.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-3.5-turbo-16k',
       messages: messages,
       stream: true,
     });
