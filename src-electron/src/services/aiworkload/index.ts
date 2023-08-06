@@ -76,7 +76,9 @@ function getBlankJob(): HistoricWorkload {
         defaults: { advanced: { repetitiveness: 1.5, creativity: 0, tokenLength: 15000, solutionCount: 1 } },
         messageHistory: [],
       },
-      workloadOptions: {},
+      workloadOptions: {
+        workload: 'blank',
+      },
     },
     history: [{ role: 'system', content: 'Take on the role of a teacher helping the user to learn...' }],
   };
@@ -549,6 +551,28 @@ function resetHistory() {
 }
 
 /**
+ * Searches the whole history to see if this context was already injected
+ * TODO: Should maybe be refactored for performance in future? It's not that heavy...
+ * @param workload
+ * @param history
+ * @returns
+ */
+function historyContainsDefinition(workload: string, history: Array<MessageHistory>) {
+  for (let message of history) {
+    if (message.role !== 'user') {
+      continue;
+    }
+    if (!message.workloadOptions) {
+      continue;
+    }
+    if (message.workloadOptions.workload === workload) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Run Workload, the main meat. Runs a workload
  * @param prompt The text to send in the next prompt
  * @param workloadOptions
@@ -582,21 +606,17 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     MESSAGE_HISTORY = diskHistory;
   }
 
-  const workload = await getFullWorkloadDefinition(workloadOptions.workload);
+  let workload = await getFullWorkloadDefinition(workloadOptions.workload);
 
-  if (workload && workload.definition.workloadDefinition.type === 'raw') {
-    return runWorkloadRaw(prompt, workloadOptions, workload);
+  let messages = [...MESSAGE_HISTORY];
+
+  if (workload && workloadOptions.workload && !historyContainsDefinition(workloadOptions.workload, MESSAGE_HISTORY)) {
+    if (workload.definition.workloadDefinition.type === 'raw') {
+      return runWorkloadRaw(prompt, workloadOptions, workload);
+    }
+
+    messages = [...workload.history, ...MESSAGE_HISTORY];
   }
-
-  //const folderContextMessages = await getFoldersContextMessages(prompt);
-
-  const rawMessages = !workload ? [] : workload.history;
-
-  let messages = [
-    ...rawMessages,
-    ...MESSAGE_HISTORY,
-    //...folderContextMessages,
-  ];
 
   messages.push(newMessage('user', prompt, workloadOptions, workload.definition.workloadDefinition));
 

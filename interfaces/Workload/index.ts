@@ -18,7 +18,7 @@ export interface WorkloadOptions {
   id?: string;
   prompt?: string;
   context?: string;
-  workload?: string;
+  workload: string;
   outputFormat?: string;
   outputTo?: string;
   creativity?: number;

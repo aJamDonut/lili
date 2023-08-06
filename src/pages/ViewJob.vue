@@ -225,8 +225,10 @@ export default {
 
       this.promptConfig.prompt = '';
 
+      const id = this.$route.params.type === 'history' ? this.$route.params.id : false;
+
       startWorkload({
-        id: this.$route.params.id || false,
+        id: id || false,
         prompt: prompt,
         workload: this.promptConfig.workload.value,
         forEachToken: this.processToken,
