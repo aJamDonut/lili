@@ -32,7 +32,7 @@ export type CliCommands = {
 const finalOutput = console.log;
 
 const commands: CliCommands = {
-  help: function () {
+  help: async function () {
     finalOutput(' ');
     finalOutput(' Lili CLI Help');
     finalOutput(' ------');
@@ -53,9 +53,7 @@ const commands: CliCommands = {
     finalOutput(' ');
     finalOutput(' Example command');
     finalOutput(' ------');
-    finalOutput(
-      ' liliflux.exe --cli=true --action=RunWorkload --prompt="Delete file.csv" --workload=extract_files'
-    );
+    finalOutput(' liliflux.exe --cli=true --action=RunWorkload --prompt="Delete file.csv" --workload=extract_files');
   },
   RunWorkload: async function (settings: CliSettings) {
     if (!settings.workload) {
@@ -82,6 +80,7 @@ const settings = { ...defaults };
 export function cliOut(message: string) {
   if (settings.verbose) console.log(message);
 }
+
 //quasar dev -m electron -- --cli=true --action=RunWorkload --prompt="Take file.csv and join the names to people.csv" --workload=extract_files
 export async function injectCLIApp() {
   for (const key in defaults) {

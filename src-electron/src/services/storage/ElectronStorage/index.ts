@@ -63,7 +63,7 @@ export const getFolders = async () => {
   return folders;
 };
 
-export const getUserRoot = async (_event: MixedEvent) => {
+export const getUserRoot = async (_event: MixedEvent | false) => {
   return getExePath() + '\\' + ROOT + '\\workspaces\\default';
 };
 
@@ -177,6 +177,18 @@ export const getExePath = () => {
   parts.pop();
   return parts.join(seperator);
 };
+import tree from 'tree-node-cli';
+
+const TREE_OPS = {
+  exclude: [/node_modules/],
+  lineAscii: true,
+  maxDepth: 5,
+  dirsFirst: true,
+};
+
+export const getTree = async () => {
+  return tree(await getUserRoot(false), TREE_OPS);
+};
 
 export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {
   const justRegister = !rootDir ? true : false;
@@ -233,6 +245,8 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
   ipcWrap(justRegister, 'readJson', readJson);
 
   ipcWrap(justRegister, 'deleteFile', deleteFile);
+
+  ipcWrap(justRegister, 'getTree', getTree);
 
   ipcWrap(justRegister, 'deleteFolder', deleteFolder);
 

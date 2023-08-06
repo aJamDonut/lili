@@ -572,6 +572,31 @@ function historyContainsDefinition(workload: string, history: Array<MessageHisto
   return false;
 }
 
+async function addWorkspaceFiles(history: Array<MessageHistory>) {
+  if (history.length > 0) {
+    console.log('History too long', history);
+    return history; //Only add the workspace if its the first message ever.
+  }
+
+  const treeDiagram = (await callService('Storage:getTree', {})) as string;
+
+  console.log('TREEEEEEE DIAGRAAAAAM');
+  console.log('TREEEEEEE DIAGRAAAAAM');
+  console.log('TREEEEEEE DIAGRAAAAAM');
+  console.log(treeDiagram);
+  console.log('TREEEEEEE DIAGRAAAAAM');
+  console.log('TREEEEEEE DIAGRAAAAAM');
+  console.log('TREEEEEEE DIAGRAAAAAM');
+
+  if (!treeDiagram || treeDiagram.length < 10) {
+    return history;
+  }
+
+  const message = `The user may ask you to interact with files. If you need to display a file name or find a file name you can use the tree diagram. Whenever using a file you use provide the full path to the file.`;
+
+  return [newMessage('system', message), newMessage('system', `Tree Diagram:\n${treeDiagram}`)];
+}
+
 /**
  * Run Workload, the main meat. Runs a workload
  * @param prompt The text to send in the next prompt
@@ -607,6 +632,8 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
   }
 
   let workload = await getFullWorkloadDefinition(workloadOptions.workload);
+
+  MESSAGE_HISTORY = await addWorkspaceFiles(MESSAGE_HISTORY);
 
   let messages = [...MESSAGE_HISTORY];
 

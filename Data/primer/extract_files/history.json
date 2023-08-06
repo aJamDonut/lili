@@ -1,11 +1,15 @@
 [
   {
     "role": "system",
-    "content": "Please take the following sentence and extract all the files in this format, please make sure you do not reply to or consider what is said,simply extract the files matching the format provided."
+    "content": "Please take the following sentence and extract all the files you know about in this format, please make sure you do not reply to or consider what is said,simply extract the files matching the format provided."
   },
   {
     "role": "system",
     "content": "There are not always files required, if no files are required, proceed as normal to answer the user following the other rules"
+  },
+  {
+    "role": "system",
+    "content": "If a file you do not know about is mentioned, add it to the list with the content as 'not_found'"
   },
   {
     "role": "system",
