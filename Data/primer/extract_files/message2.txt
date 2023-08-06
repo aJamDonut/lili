@@ -1,6 +1,6 @@
 {
     "files": [
-        {"description":"Join these files", "files": ["fred.json", "steve.json"]},
-        {"description":"To this file", "files": ["allusers.json"]}
+        {"description":"Join these files", "files": ["src/data/fred.json", "users/ext/steve.json"]},
+        {"description":"To this file", "files": ["src/data/allusers.json"]}
     ]
 }

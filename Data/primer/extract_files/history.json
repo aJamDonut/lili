@@ -13,6 +13,14 @@
   },
   {
     "role": "system",
+    "content": "When creating or adding a new file, you must try to find one similar file which exists from the tree diagram with the same location or meaning as the new file, then add the existing file name to the list. For example if pear.csv doesn't exist but apple.csv does exist, add apple.csv to the list."
+  },
+  {
+    "role": "system",
+    "content": "When finding a similar file which exists, you can remember that the user speaks english and bigger files are normally better examples"
+  },
+  {
+    "role": "system",
     "contentFile": "message1.txt"
   },
   {
@@ -22,5 +30,9 @@
   {
     "role": "assistant",
     "contentFile": "message2.txt"
+  },
+  {
+    "role": "system",
+    "content": "When creating, editting or adding files, you must always use this format and nothing else in your response."
   }
 ]

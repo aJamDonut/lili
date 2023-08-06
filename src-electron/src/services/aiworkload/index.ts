@@ -291,7 +291,7 @@ export async function getFilesContextMessages(prompt: string, workloadOptions: W
       }
     }
 
-    messages.push(newMessage('system', JSON.stringify(files)));
+    messages.push(newMessage('user', JSON.stringify(files)));
   }
   return { messages, fileDescriptions };
 }

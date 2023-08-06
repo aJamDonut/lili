@@ -1,6 +1,6 @@
 Here is an example of the format being used:
 {
     "files": [
-        {"description":"Description of the files", "files": ["filename.ext", "anotherfilename.ext"]},
+        {"description":"Description of the files", "files": ["full/path/to/file/filename.ext", "full/path/to/file/anotherfilename.ext"]},
     ]
 }

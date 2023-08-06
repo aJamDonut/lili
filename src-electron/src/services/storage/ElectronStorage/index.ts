@@ -77,6 +77,23 @@ export const getLiliRoot = async (_event: MixedEvent) => {
 };
 
 export const writeFile = async (_event: MixedEvent, { folderName, fileName, contents }: ElectronStorageHandlerRequestWrite) => {
+  if (!fileName || typeof fileName !== 'string') {
+    fileName = '';
+  }
+
+  //Check if filename was passed with subdirs (we'll create the subdirs)
+  let split = fileName.split('\\');
+
+  if (!split || !Array.isArray(split) || split.length === 1) {
+    split = fileName.split('/');
+  }
+
+  if (Array.isArray(split) && split.length > 0) {
+    fileName = split.pop() || '';
+    const splitFolders = folderName.split(getSeperator());
+    folderName = splitFolders.join(getSeperator()) + getSeperator() + split.join(getSeperator());
+  }
+
   try {
     await fs.access(path.join(ROOT, folderName));
     console.log(path.join(ROOT, folderName) + ' Folder Exists ...');
@@ -184,6 +201,7 @@ const TREE_OPS = {
   lineAscii: true,
   maxDepth: 5,
   dirsFirst: true,
+  sizes: true,
 };
 
 export const getTree = async () => {
