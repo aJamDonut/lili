@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from 'services/storage';
 import { getLicense, unsetLicense } from 'src/services/lili/lili_real';
 
-const APP_VERSION = '0.1'; //Move to package.json when used properly (app.getVersion() in electron)
+const APP_VERSION = '0.3.1'; //Move to package.json when used properly (app.getVersion() in electron)
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -16,7 +16,7 @@ export const useSettingsStore = defineStore('settings', {
     isValidKey: false,
     language: 'none',
     session: '',
-    hadTrial: false,
+    ranOnce: false, //Required for auto-update (there is a known bug)
   }),
   actions: {
     async checkKey() {

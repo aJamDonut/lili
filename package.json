@@ -1,9 +1,13 @@
 {
   "name": "lili",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Quasar Project",
   "productName": "Quasar App",
   "author": "liliFLOW",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aJamDonut/lilireleases.git"
+  },
   "contributors": [
     {
       "name": "Adam Dougherty"
@@ -22,11 +26,13 @@
     "dev-cli": "quasar dev -m electron -- --cli=true",
     "dev-elec": "quasar dev -m electron -- test --test2=2 test3=2 --testo4",
     "dev-elect": "quasar dev -m electron --devtools",
-    "build-elec": "quasar build --mode electron --publish always"
+    "build-elec": "quasar build --mode electron",
+    "publish": "quasar build --mode electron --publish always"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "electron-updater": "^6.1.1",
     "gsap": "^3.12.2",
     "highlight.js": "^11.8.0",
     "marked": "^5.1.1",
@@ -50,6 +56,7 @@
     "@vue/devtools": "^6.5.0",
     "autoprefixer": "^10.4.2",
     "electron": "^25.2.0",
+    "electron-builder": "^24.6.3",
     "electron-packager": "^17.1.1",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",

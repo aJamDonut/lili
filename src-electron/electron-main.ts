@@ -3,9 +3,9 @@ import path from 'path';
 import os from 'os';
 import { setupElectronStorageHandlers } from './src/services/storage/ElectronStorage';
 import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
-import { registerEvent } from './src/services/event';
 import { setupElectronWindowHandlers } from './src/services/window';
-import { getLicense } from './src/services/shopify';
+
+import { autoUpdater } from 'electron-updater';
 
 //IMPORTANT: DO NOT USE 'electron/remote' that is for people who don't understand Web Security!!!!!
 //I don't even care that it's in the official documentation. It's wrong! Just add to the context bridge correctly.
@@ -69,11 +69,29 @@ function createWindow() {
       require('electron').shell.openExternal(url);
     }
   };
+
+  //They think will-navigate doesn't exist.
   mainWindow.webContents.on('will-navigate', handleRedirect);
+  //They think new-window doesn't exist.
   mainWindow.webContents.on('new-window', handleRedirect);
+
+  console.log('feed url', autoUpdater.getFeedURL());
+
+  mainWindow.once('ready-to-show', () => {
+    console.log('feed url', autoUpdater.getFeedURL());
+    autoUpdater.checkForUpdatesAndNotify();
+  });
+
+  autoUpdater.on('update-available', () => {
+    showInfo('New version available! Downloading now...');
+  });
+  autoUpdater.on('update-downloaded', () => {
+    showInfo('Restart to use latest version');
+  });
 }
 
 import { injectCLIApp } from './src/services/cli';
+import { showInfo } from './src/services/event';
 
 async function setup() {
   //Production?
@@ -104,4 +122,5 @@ async function setup() {
     }
   });
 }
+
 setup();
