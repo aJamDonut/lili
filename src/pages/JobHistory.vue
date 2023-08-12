@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div :class="lockedPageClass">
+    <div>
       <lili-title :title="pageTitle" :desc="pageDesc" />
       <q-table :rows="jobStore.jobHistory" :pagination="pagination" :columns="columns" row-key="id" flat bordered separator="cell">
         <template v-slot:body="props">
@@ -79,7 +79,6 @@
         </q-table>
       </div>
     </div>
-    <locked-overlay />
   </q-page>
 </template>
 

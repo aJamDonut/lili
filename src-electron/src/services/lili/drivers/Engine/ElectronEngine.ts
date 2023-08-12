@@ -1,8 +1,8 @@
-import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callService } from '../../../event';
+import { type EventCallback, registerEvent, ElectronEventData, MixedEvent, callService, showError } from '../../../event';
 
 import { getHistoricWorkload, getFolderMap, getReadCallsMap, getWorkloads, runWorkload } from '../../../aiworkload';
 import { WorkloadOptions } from 'app/interfaces/Workload';
-import { hasValidLicense, unsetLicense, getLicense } from '../../../shopify';
+import { hasValidLicense, unsetLicense, getLicense, ValidLicenseResponse } from '../../../shopify';
 import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
 import { shell } from 'electron';
 
@@ -156,7 +156,10 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
   });
 
   ipcWrap(justRegister, 'saveHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<string> => {
+    const TRIAL_WORKLOADS_CUTOFF = 5;
+
     const historicWorkload = options.workloadHistory as unknown as HistoricWorkload;
+
     if (
       !historicWorkload.definition ||
       !historicWorkload.definition.meta ||
@@ -167,6 +170,21 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     }
 
     const folder = historicWorkload.definition.meta.isPrimer ? 'primer/user' : 'workload_history';
+
+    //If the license is invalid, we'll limit the user to 5 workloads.
+
+    if (folder == 'primer/user') {
+      const license = (await callService('Engine:hasValidLicense', {})) as ValidLicenseResponse;
+      if (!license.valid) {
+        const currentWorkloads = (await callService('Storage:getFolder', {
+          folderName: `${folder}/`,
+        })) as Array<string>;
+        if (currentWorkloads && currentWorkloads.length >= TRIAL_WORKLOADS_CUTOFF) {
+          showError('You have used up 5 workloads from your license. Please purchase Pro to continue.');
+          return historicWorkload.definition.meta.id; //Over the limit
+        }
+      }
+    }
 
     await callService('Storage:writeFile', {
       folderName: `${folder}/${historicWorkload.definition.meta.id}/`,

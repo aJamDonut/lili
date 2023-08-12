@@ -30,7 +30,6 @@
         </template>
       </q-table>
     </div>
-    <locked-overlay />
   </q-page>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div :class="lockedPageClass">
+    <div>
       <q-splitter
         emit-immediately
         v-model="splitterWidth"
@@ -64,7 +64,6 @@
         </template>
       </q-splitter>
     </div>
-    <locked-overlay />
   </q-page>
 </template>
 
