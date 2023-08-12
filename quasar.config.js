@@ -10,6 +10,7 @@
 
 const { configure } = require('quasar/wrappers');
 const path = require('path');
+const fs = require('fs-extra');
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -94,6 +95,26 @@ module.exports = configure(function (/* ctx */) {
           },
         ],
       ],
+      afterBuild: () => {
+        console.log('------');
+        console.log('------');
+        console.log('------');
+        console.log('------');
+
+        const SyncFolders = ['Packaged/win-unpacked', 'Packaged/win-ia32-unpacked'];
+
+        for (let folder of SyncFolders) {
+          //Copy default workloads
+          fs.copySync('./Data', `./dist/electron/${folder}/Data`);
+        }
+
+        console.log('Run custom build steps');
+
+        console.log('------');
+        console.log('------');
+        console.log('------');
+        console.log('------');
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer

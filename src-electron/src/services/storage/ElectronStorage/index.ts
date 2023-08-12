@@ -3,6 +3,7 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import { app } from 'electron';
 import { EventCallback, MixedEvent, registerEvent, registerInternalEvent } from '../../event';
+import { default as fsextra } from 'fs-extra';
 
 /* Setup is done... meat here. */
 
@@ -64,7 +65,7 @@ export const getFolders = async () => {
 };
 
 export const getUserRoot = async (_event: MixedEvent | false) => {
-  return getExePath() + '\\' + ROOT + '\\workspaces\\default';
+  return ROOT + '\\workspaces\\default';
 };
 
 export const setUserRoot = async (_event: MixedEvent, options: SetRoot) => {
@@ -213,6 +214,9 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
 
   ROOT = !rootDir ? 'UserData' : (rootDir as string);
   LILI_ROOT = !liliDataDir ? 'Data' : (liliDataDir as string);
+
+  fsextra.ensureDir(`${ROOT}/workspaces/default`);
+  fsextra.ensureDir(`${ROOT}/workload_history`);
 
   if (!justRegister) {
     try {

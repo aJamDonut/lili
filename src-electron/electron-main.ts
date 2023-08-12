@@ -95,10 +95,10 @@ import { showInfo } from './src/services/event';
 
 async function setup() {
   //Production?
-  //setupElectronStorageHandlers(path.join(app.getPath('UserData')), 'Data');
+  await setupElectronStorageHandlers(path.join(app.getPath('userData'), 'UserData'), 'Data');
 
   //Dev:
-  await setupElectronStorageHandlers('UserData', 'Data');
+  //await setupElectronStorageHandlers('UserData', 'Data');
   await setupElectronEngineHandlers(false);
 
   //Used CLI, end early

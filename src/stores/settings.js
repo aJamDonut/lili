@@ -2,19 +2,19 @@ import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from 'services/storage';
 import { getLicense, unsetLicense } from 'src/services/lili/lili_real';
 
-const APP_VERSION = '0.3.1'; //Move to package.json when used properly (app.getVersion() in electron)
+const APP_VERSION = '0.3.3'; //Move to package.json when used properly (app.getVersion() in electron)
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     sliderInputs: true,
     showAdvanced: false,
-    workload: 'change_files',
+    workload: { label: 'Normal GPT', value: 'just_gpt' },
     darkMode: 'auto',
     chatGPTKey: '',
     splitterWidth: 25,
     liliKey: '',
     isValidKey: false,
-    language: 'none',
+    language: 'en-US',
     session: '',
     ranOnce: false, //Required for auto-update (there is a known bug)
   }),
