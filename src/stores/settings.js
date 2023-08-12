@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { ElectronStorage as Storage } from 'services/storage';
-import { getLicense, unsetLicense } from 'src/services/lili/lili_real';
+import { getLicense, getVersion, unsetLicense } from 'src/services/lili/lili_real';
 
-const APP_VERSION = '0.3.3'; //Move to package.json when used properly (app.getVersion() in electron)
+const APP_VERSION = getVersion();
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({

@@ -36,4 +36,5 @@ export interface EngineDriverInterface {
   getUserRoot(): Promise<string>;
   setUserRoot(root: string): Promise<boolean>;
   showFolder(folder: string): Promise<boolean>;
+  getVersion(): Promise<string>;
 }

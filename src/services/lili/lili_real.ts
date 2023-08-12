@@ -95,6 +95,10 @@ export async function getLicense(key: string) {
   return await LILIAI.engineDriver.getLicense(key);
 }
 
+export async function getVersion() {
+  return await LILIAI.engineDriver.getVersion();
+}
+
 export async function recallWorkload(options: RecallHistoryOptions): Promise<string> {
   return await LILIAI.engineDriver.recallWorkload(options);
 }

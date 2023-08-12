@@ -32,8 +32,6 @@ export type CliCommands = {
 //Incase verbose removes console.log
 const finalOutput = console.log;
 
-const watermark = '\n---Output reduced to 250 characters. Upgrade to pro version to remove the limit and this watermark.---';
-
 let hasValidLicense = false;
 
 async function validateLicense() {
@@ -42,6 +40,10 @@ async function validateLicense() {
 }
 
 async function injectWatermark() {
+  let version = (await callService('Engine:getVersion', {})) as string;
+
+  const watermark = `\n---liliflux ${version} Output reduced to 250 characters. Upgrade to pro version to remove the limit and this watermark.---`;
+
   if (!hasValidLicense) {
     finalOutput(watermark);
   }

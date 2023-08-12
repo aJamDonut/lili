@@ -4,7 +4,7 @@ import { getHistoricWorkload, getFolderMap, getReadCallsMap, getWorkloads, runWo
 import { WorkloadOptions } from 'app/interfaces/Workload';
 import { hasValidLicense, unsetLicense, getLicense, ValidLicenseResponse } from '../../../shopify';
 import { DefinitionSource, HistoricWorkload, HistoryFile } from 'app/interfaces/Lili';
-import { shell } from 'electron';
+import { app, shell } from 'electron';
 
 const functionList: Array<string> = [];
 
@@ -147,6 +147,15 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     });
 
     return true;
+  });
+
+  ipcWrap(justRegister, 'getVersion', async (_event: MixedEvent, options: ElectronEventData): Promise<string> => {
+    //If dev read directly from package.json
+    if (process.env.NODE_ENV === 'development') {
+      return require('package.json').version;
+    }
+
+    return app.getVersion();
   });
 
   ipcWrap(justRegister, 'showFolder', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {

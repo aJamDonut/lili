@@ -190,6 +190,9 @@ export class ElectronEngine implements EngineDriverInterface {
   async getLicense(key: string): Promise<ValidLicenseResponse> {
     return await run('Engine:getLicense', { key });
   }
+  async getVersion(): Promise<string> {
+    return await run('Engine:getVersion');
+  }
   async deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean> {
     return await run('Engine:deleteHistoricWorkload', { id, type });
   }
