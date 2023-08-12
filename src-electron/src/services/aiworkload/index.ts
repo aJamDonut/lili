@@ -584,6 +584,7 @@ export function getLatestTreeChat() {
 }
 
 async function addWorkspaceFiles(history: Array<MessageHistory>) {
+  return history; //TODO: readd when fixo
   if (history.length > 0) {
     console.log('History too long', history);
     return history; //Only add the workspace if its the first message ever.

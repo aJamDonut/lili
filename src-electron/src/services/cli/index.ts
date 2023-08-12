@@ -1,6 +1,7 @@
 import { app } from 'electron';
 import { getHistory, runWorkload } from '../aiworkload';
 import { callService } from '../event';
+import { ValidLicenseResponse } from '../shopify';
 
 //Create aliases
 const hasParam = app?.commandLine.hasSwitch;
@@ -30,6 +31,33 @@ export type CliCommands = {
 
 //Incase verbose removes console.log
 const finalOutput = console.log;
+
+const watermark = '\n---Output reduced to 250 characters. Upgrade to pro version to remove the limit and this watermark.---';
+
+let hasValidLicense = false;
+
+async function validateLicense() {
+  const license = (await callService('Engine:hasValidLicense', {})) as ValidLicenseResponse;
+  return license.valid || false;
+}
+
+async function injectWatermark() {
+  if (!hasValidLicense) {
+    finalOutput(watermark);
+  }
+}
+
+/**
+ * Reduce the given string to 100 in length if the user has no valid license.
+ * @param tokens Tokens to reduce
+ * @returns tokens
+ */
+function reduceIfTrial(tokens: string) {
+  if (hasValidLicense) {
+    return tokens;
+  }
+  return tokens.substring(0, 100);
+}
 
 const commands: CliCommands = {
   help: async function () {
@@ -63,7 +91,9 @@ const commands: CliCommands = {
     await runWorkload(settings.prompt, {
       ...settings,
       onComplete: async (tokens) => {
-        finalOutput(tokens);
+        hasValidLicense = await validateLicense();
+        finalOutput(reduceIfTrial(tokens));
+        injectWatermark();
       },
     });
   },
