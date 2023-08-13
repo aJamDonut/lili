@@ -24,7 +24,7 @@
     "contentFile": "message1.txt"
   },
   {
-    "role": "user",
+    "role": "system",
     "content": "Please take the files from fred.json, steve.json and concatenate them onto allusers.json"
   },
   {
