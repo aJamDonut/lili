@@ -43,10 +43,10 @@
           </div>
         </div>
         <div class="row q-col-gutter-md q-mb-md">
-          <div class="col-xs-12">
+          <!-- <div class="col-xs-12">
             <label>{{ $t('context') }}</label>
             <q-input v-model="promptConfig.context" filled type="textarea" rows="3" autogrow dense></q-input>
-          </div>
+          </div> -->
         </div>
         <div class="row q-col-gutter-md">
           <!-- Extra Stuff -->
@@ -62,10 +62,10 @@
             <label>{{ $t('response_limit') }}</label>
             <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
           </div>
-          <div class="col" style="min-width: 120px">
+          <!--<div class="col" style="min-width: 120px">
             <label>{{ $t('solution_count') }}</label>
             <lili-slider v-model="promptConfig.solutionCount" :step="1" :min="1" :max="10" />
-          </div>
+          </div>-->
         </div>
         <br />
         <label>{{ $t('workspace_folder') }}</label>
