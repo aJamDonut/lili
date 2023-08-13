@@ -26,6 +26,7 @@
     "dev-elec": "quasar dev -m electron -- test --test2=2 test3=2 --testo4",
     "dev-elect": "quasar dev -m electron --devtools",
     "build": "quasar build --mode electron --publish never",
+    "build-debug": "quasar build --mode electron --debug --publish never",
     "publish": "quasar build --mode electron --publish always"
   },
   "dependencies": {

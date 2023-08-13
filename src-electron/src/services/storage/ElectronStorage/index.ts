@@ -240,6 +240,8 @@ export const getExePath = () => {
   parts.pop();
   return parts.join(seperator);
 };
+
+//TODO: this package is okay but can't do sizes because depends on du.exe (sysinternals)
 import tree from 'tree-node-cli';
 
 const TREE_OPS = {
@@ -247,7 +249,7 @@ const TREE_OPS = {
   lineAscii: true,
   maxDepth: 5,
   dirsFirst: true,
-  sizes: true,
+  sizes: false, //Can't be enabled because depends on du.exe
 };
 
 export const getTree = async () => {
