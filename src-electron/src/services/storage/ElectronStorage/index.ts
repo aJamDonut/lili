@@ -2,7 +2,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { app } from 'electron';
-import { EventCallback, MixedEvent, registerEvent, registerInternalEvent } from '../../event';
+import { EventCallback, MixedEvent, callService, registerEvent, registerInternalEvent } from '../../event';
 import { default as fsextra } from 'fs-extra';
 
 /* Setup is done... meat here. */
@@ -58,14 +58,28 @@ interface SetRoot {
 
 let LILI_ROOT = '';
 let ROOT = '';
+let WORKSPACE: string | false = false;
+
+export const changeWorkspace = async () => {
+  const folderName = (await callService('electron:chooseFolderDialog')) as string;
+  console.log('Change workspace to', folderName);
+  return setWorkspaceDir(false, { folderName });
+};
 
 export const getFolders = async () => {
   const folders = ['folder1', 'folder2'];
   return folders;
 };
+export const getWorkspaceDir = async () => {
+  if (!WORKSPACE) {
+    WORKSPACE = `${ROOT}${getSeperator()}workspaces${getSeperator()}default`;
+  }
+  return path.normalize(WORKSPACE);
+};
 
-export const getUserRoot = async (_event: MixedEvent | false) => {
-  return ROOT + '\\workspaces\\default';
+export const setWorkspaceDir = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
+  WORKSPACE = folderName;
+  return true;
 };
 
 export const setUserRoot = async (_event: MixedEvent, options: SetRoot) => {
@@ -91,6 +105,7 @@ export const writeFile = async (_event: MixedEvent, { folderName, fileName, cont
 
   if (Array.isArray(split) && split.length > 0) {
     fileName = split.pop() || '';
+
     const splitFolders = folderName.split(getSeperator());
     folderName = splitFolders.join(getSeperator()) + getSeperator() + split.join(getSeperator());
   }
@@ -168,6 +183,25 @@ export const liliWriteFile = async (_event: MixedEvent, { folderName, fileName, 
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
+export const workspaceWriteFile = async (_event: MixedEvent, { fileName, contents }: ElectronStorageHandlerRequestWrite) => {
+  const APPEND = '_dd_mm_yyyy';
+  const workspaceDir = (await getWorkspaceDir()) as string;
+  const writeFile = path.join(workspaceDir, fileName);
+  const copyFile = path.join(workspaceDir, fileName + APPEND);
+
+  fsextra.ensureDir(path.dirname(writeFile));
+
+  try {
+    await fs.access(writeFile);
+    await fs.copyFile(writeFile, copyFile);
+  } catch (e) {}
+  return await fs.writeFile(writeFile, contents);
+};
+
+export const workspaceReadFile = async (_event: MixedEvent, { fileName, contents }: ElectronStorageHandlerRequestWrite) => {
+  return await fs.readFile(path.join((await getWorkspaceDir()) as string, fileName), { encoding: 'utf8' });
+};
+
 export const liliGetFolder = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   return await fs.readdir(path.join(LILI_ROOT, folderName));
 };
@@ -206,7 +240,7 @@ const TREE_OPS = {
 };
 
 export const getTree = async () => {
-  return tree(await getUserRoot(false), TREE_OPS);
+  return tree((await getWorkspaceDir()) as string, TREE_OPS);
 };
 
 export async function setupElectronStorageHandlers(rootDir: string | boolean, liliDataDir: string | boolean) {
@@ -217,6 +251,8 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
 
   fsextra.ensureDir(`${ROOT}/workspaces/default`);
   fsextra.ensureDir(`${ROOT}/workload_history`);
+
+  //set workspace to one from settings
 
   if (!justRegister) {
     try {
@@ -256,13 +292,17 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
 
   ipcWrap(justRegister, 'getFolder', getFolder);
 
+  ipcWrap(justRegister, 'readFile', readFile);
   ipcWrap(justRegister, 'writeFile', writeFile);
+
+  ipcWrap(justRegister, 'changeWorkspace', changeWorkspace);
+  ipcWrap(justRegister, 'workspaceReadFile', workspaceReadFile);
+  ipcWrap(justRegister, 'workspaceWriteFile', workspaceWriteFile);
+  ipcWrap(justRegister, 'getWorkspaceDir', getWorkspaceDir);
 
   ipcWrap(justRegister, 'fileExists', fileExists);
 
   ipcWrap(justRegister, 'folderExists', folderExists);
-
-  ipcWrap(justRegister, 'readFile', readFile);
 
   ipcWrap(justRegister, 'readJson', readJson);
 
@@ -272,7 +312,6 @@ export async function setupElectronStorageHandlers(rootDir: string | boolean, li
 
   ipcWrap(justRegister, 'deleteFolder', deleteFolder);
 
-  ipcWrap(justRegister, 'getUserRoot', getUserRoot);
   ipcWrap(justRegister, 'setUserRoot', setUserRoot);
   ipcWrap(justRegister, 'getLiliRoot', getLiliRoot);
 

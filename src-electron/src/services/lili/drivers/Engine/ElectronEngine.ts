@@ -120,8 +120,12 @@ export async function setupElectronEngineHandlers(justRegister: boolean) {
     });
   });
 
-  ipcWrap(justRegister, 'getUserRoot', async (_event: MixedEvent) => {
-    return await callService('Storage:getUserRoot', {});
+  ipcWrap(justRegister, 'getWorkspaceDir', async (_event: MixedEvent) => {
+    return await callService('Storage:getWorkspaceDir', {});
+  });
+
+  ipcWrap(justRegister, 'changeWorkspace', async (_event: MixedEvent) => {
+    return await callService('Storage:changeWorkspace', {});
   });
 
   ipcWrap(justRegister, 'deleteHistoricWorkload', async (_event: MixedEvent, options: ElectronEventData): Promise<boolean> => {

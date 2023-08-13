@@ -12,7 +12,7 @@ export interface InternalMainInvokeEvent {
   sender: InternalMainInvokeEventSender;
 }
 
-export type MixedEvent = IpcMainInvokeEvent | InternalMainInvokeEvent;
+export type MixedEvent = IpcMainInvokeEvent | InternalMainInvokeEvent | false;
 
 export type EventCallback = (_event: MixedEvent, data: ElectronEventData) => unknown;
 
@@ -74,8 +74,7 @@ export function showInfo(content: string, linkLabel?: string, linkUrl?: string) 
   } else {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     try {
-      if (focusedWindow)
-        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+      if (focusedWindow) focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
     } catch (e) {
       if (showErrors()) {
         console.log(e);
@@ -118,8 +117,7 @@ export function showWarning(content: string, linkLabel?: string, linkUrl?: strin
   } else {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     try {
-      if (focusedWindow)
-        focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
+      if (focusedWindow) focusedWindow.webContents.send(`LiliEngine:notify`, { status, content, linkLabel, linkUrl });
     } catch (e) {
       if (showErrors()) {
         console.log(e);
@@ -132,7 +130,7 @@ export function showErrors() {
   return false;
 }
 
-export async function callService(event: string, data: ElectronEventData) {
+export async function callService(event: string, data?: ElectronEventData) {
   console.log(event);
   /*
   TODO: add commnd line switcherooney
@@ -145,5 +143,5 @@ export async function callService(event: string, data: ElectronEventData) {
     throw new Error('[LILI-ALERT] Cannot find event: ' + event);
   }
 
-  return await events[event](createMockInternalEvent(), data);
+  return await events[event](createMockInternalEvent(), data || {});
 }

@@ -197,8 +197,8 @@ export class ElectronEngine implements EngineDriverInterface {
     return await run('Engine:deleteHistoricWorkload', { id, type });
   }
 
-  async getUserRoot(): Promise<string> {
-    return await run('Engine:getUserRoot');
+  async getWorkspaceDir(): Promise<string> {
+    return await run('Engine:getWorkspaceDir');
   }
 
   async setUserRoot(root: string): Promise<boolean> {
@@ -207,5 +207,9 @@ export class ElectronEngine implements EngineDriverInterface {
 
   async showFolder(folder: string): Promise<boolean> {
     return await run('Engine:showFolder', { folder });
+  }
+
+  async changeWorkspace(): Promise<true> {
+    return await run('Engine:changeWorkspace');
   }
 }

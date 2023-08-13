@@ -230,8 +230,7 @@ export function newMessage(
 export type CompletionMessages = Array<CompletionMessage>;
 
 export async function readContextFile(file: string) {
-  return (await callService('Storage:readFile', {
-    folderName: 'workspaces/default',
+  return (await callService('Storage:workspaceReadFile', {
     fileName: file,
   })) as string;
 }
@@ -417,14 +416,16 @@ export async function parseJSONResult(fileDescriptions: FileDescriptions, files:
     let state = 'success';
     file.name = file.name || file.file;
     file.name = file.name || 'NONE';
-    try {
-      (await callService('Storage:writeFile', {
-        folderName: 'workspaces/default',
-        fileName: file.name,
-        contents: file.content,
-      })) as WorkloadDefinition;
-    } catch (e) {
-      state = 'failed';
+
+    if (file.content) {
+      try {
+        (await callService('Storage:workspaceWriteFile', {
+          fileName: file.name,
+          contents: file.content,
+        })) as WorkloadDefinition;
+      } catch (e) {
+        state = 'failed';
+      }
     }
 
     if (fileDescriptions[file.name] && typeof workloadOptions.forEachToken === 'function') {

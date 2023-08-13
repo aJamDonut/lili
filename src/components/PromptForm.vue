@@ -85,7 +85,7 @@
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { useWorkloadStore } from 'stores/workload';
-import { getUserRoot, showFolder } from '../services/lili/lili_real';
+import { getWorkspaceDir, showFolder } from '../services/lili/lili_real';
 import { reactiveProps } from '../utils/reactiveProps';
 
 async function mountWorkloads() {
@@ -131,8 +131,8 @@ export default {
     },
   },
   async mounted() {
-    this.workspaceFolder = await getUserRoot();
-    console.log('Space', await getUserRoot());
+    this.workspaceFolder = await getWorkspaceDir();
+
     mountWorkloads.call(this);
   },
   computed: {

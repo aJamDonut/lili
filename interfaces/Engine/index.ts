@@ -33,8 +33,9 @@ export interface EngineDriverInterface {
   recallWorkload(options: RecallHistoryOptions): Promise<string>;
   saveHistoricWorkload(workloadHistory: HistoricWorkload): Promise<string>;
   deleteHistoricWorkload(id: string, type: DefinitionSource): Promise<boolean>;
-  getUserRoot(): Promise<string>;
+  getWorkspaceDir(): Promise<string>;
   setUserRoot(root: string): Promise<boolean>;
   showFolder(folder: string): Promise<boolean>;
   getVersion(): Promise<string>;
+  changeWorkspace(): Promise<true>;
 }
