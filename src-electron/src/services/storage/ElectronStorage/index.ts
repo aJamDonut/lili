@@ -183,8 +183,19 @@ export const liliWriteFile = async (_event: MixedEvent, { folderName, fileName, 
   return await fs.writeFile(path.join(LILI_ROOT, folderName, fileName), contents);
 };
 
+export function getCurrentDateTime(): string {
+  const now = new Date();
+  const year = now.getFullYear().toString().padStart(4, '0');
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+
+  return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+}
 export const workspaceWriteFile = async (_event: MixedEvent, { fileName, contents }: ElectronStorageHandlerRequestWrite) => {
-  const APPEND = '_dd_mm_yyyy';
+  const APPEND = '_' + getCurrentDateTime();
   const workspaceDir = (await getWorkspaceDir()) as string;
   const writeFile = path.join(workspaceDir, fileName);
   const copyFile = path.join(workspaceDir, fileName + APPEND);

@@ -662,13 +662,13 @@ export async function runWorkload(prompt: string, workloadOptions: WorkloadOptio
     messages = [...workload.history, ...MESSAGE_HISTORY];
   }
 
-  messages.push(newMessage('user', prompt, workloadOptions, workload.definition.workloadDefinition));
-
   setHistory(messages); //Because lili will inject after
 
   const fileContextMessages = await getFilesContextMessages(prompt, workloadOptions, workload.definition.workloadDefinition);
 
   messages = [...MESSAGE_HISTORY, ...fileContextMessages.messages];
+
+  messages.push(newMessage('user', prompt, workloadOptions, workload.definition.workloadDefinition));
 
   setHistory(messages); //Now set history
 
