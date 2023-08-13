@@ -6,17 +6,23 @@ const APP_VERSION = getVersion();
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    sliderInputs: true,
+    /* Persistent Variables */
     showAdvanced: false,
     workload: { label: 'Normal GPT', value: 'just_gpt' },
-    darkMode: 'auto',
-    chatGPTKey: '',
     splitterWidth: 25,
-    liliKey: '',
     isValidKey: false,
-    language: 'en-US',
     session: '',
-    ranOnce: false, //Required for auto-update (there is a known bug)
+
+    /* User Preferences */
+    darkMode: 'auto',
+    language: 'en-US',
+    sliderInputs: true,
+    workspace_context_files: true,
+    workspace_context_tree: true,
+
+    /* Keys */
+    liliKey: '',
+    chatGPTKey: '',
   }),
   actions: {
     async checkKey() {

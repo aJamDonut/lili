@@ -25,7 +25,7 @@
           </p>
         </div>
         <div class="col-1 toggle">
-          <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
+          <q-toggle v-model="settingsStore.workspace_context_files" class="q-mb-md" />
         </div>
       </div>
       <div class="row q-col-gutter-md explainer">
@@ -36,7 +36,7 @@
           </p>
         </div>
         <div class="col-1 toggle">
-          <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
+          <q-toggle v-model="settingsStore.workspace_context_tree" class="q-mb-md" />
         </div>
       </div>
     </lili-cont>
