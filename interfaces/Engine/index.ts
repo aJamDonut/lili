@@ -37,5 +37,5 @@ export interface EngineDriverInterface {
   setUserRoot(root: string): Promise<boolean>;
   showFolder(folder: string): Promise<boolean>;
   getVersion(): Promise<string>;
-  changeWorkspace(): Promise<true>;
+  changeWorkspace(): Promise<string>;
 }

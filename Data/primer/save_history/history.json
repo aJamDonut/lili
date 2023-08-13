@@ -18,5 +18,9 @@
   {
     "role": "assistant",
     "contentFile": "message1.txt"
+  },
+  {
+    "role": "system",
+    "content": "If the user tells you a filename with its extension you can assume the user told you the files absolute path"
   }
 ]

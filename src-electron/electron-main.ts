@@ -4,7 +4,6 @@ import os from 'os';
 import { setupElectronStorageHandlers } from './src/services/storage/ElectronStorage';
 import { setupElectronEngineHandlers } from './src/services/lili/drivers/Engine/ElectronEngine';
 import { setupElectronWindowHandlers } from './src/services/window';
-import { dialog, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 //IMPORTANT: DO NOT USE 'electron/remote' that is for people who don't understand Web Security!!!!!
@@ -87,19 +86,6 @@ function createWindow() {
   });
   autoUpdater.on('update-downloaded', () => {
     showInfo('Restart to use latest version');
-  });
-
-  ipcMain.handle('electron:chooseFolderDialog', async () => {
-    if (!mainWindow) return;
-    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory'],
-    });
-    if (canceled) {
-      return;
-    } else {
-      console.log('File dialog', filePaths);
-      return filePaths[0];
-    }
   });
 }
 

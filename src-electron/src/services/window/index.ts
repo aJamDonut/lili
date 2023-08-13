@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcRenderer } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { registerEvent, type EventCallback, MixedEvent } from '../event';
 
 const functionList: Array<string> = [];
@@ -29,9 +29,9 @@ function ipcWrap(justRegister: boolean, name: string, callback: EventCallback) {
     func(name);
     return;
   }
-  registerEvent(func(name), (_event, ...args) => {
-    callback(_event, ...args);
-    _event.sender.send(func(name), {});
+  registerEvent(func(name), async (_event, ...args) => {
+    if (_event && _event.sender && typeof _event.sender.send === 'function') _event.sender.send(func(name), {});
+    return await callback(_event, ...args);
   });
 }
 
@@ -71,6 +71,20 @@ export async function setupElectronWindowHandlers(justRegister: boolean) {
   ipcWrap(justRegister, 'isMaximized', () => {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     if (focusedWindow) focusedWindow.isMaximized();
+  });
+
+  ipcWrap(justRegister, 'chooseFolderDialog', async () => {
+    const mainWindow = BrowserWindow.getFocusedWindow();
+    if (!mainWindow) return;
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    });
+    if (canceled) {
+      return;
+    } else {
+      console.log('File dialog', filePaths);
+      return filePaths[0];
+    }
   });
 }
 

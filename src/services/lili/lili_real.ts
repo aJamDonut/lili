@@ -106,7 +106,7 @@ export async function recallWorkload(options: RecallHistoryOptions): Promise<str
 export async function getWorkspaceDir(): Promise<string> {
   return await LILIAI.engineDriver.getWorkspaceDir();
 }
-export async function changeWorkspace(): Promise<true> {
+export async function changeWorkspace(): Promise<string> {
   return await LILIAI.engineDriver.changeWorkspace();
 }
 export async function setUserRoot(root: string): Promise<boolean> {

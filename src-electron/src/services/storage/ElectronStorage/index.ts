@@ -61,7 +61,7 @@ let ROOT = '';
 let WORKSPACE: string | false = false;
 
 export const changeWorkspace = async () => {
-  const folderName = (await callService('electron:chooseFolderDialog')) as string;
+  const folderName = (await callService('FocusedWindow:chooseFolderDialog')) as string;
   console.log('Change workspace to', folderName);
   return setWorkspaceDir(false, { folderName });
 };
@@ -79,7 +79,7 @@ export const getWorkspaceDir = async () => {
 
 export const setWorkspaceDir = async (_event: MixedEvent, { folderName }: ElectronStorageHandlerRequestFolder) => {
   WORKSPACE = folderName;
-  return true;
+  return WORKSPACE;
 };
 
 export const setUserRoot = async (_event: MixedEvent, options: SetRoot) => {

@@ -72,7 +72,8 @@
         <div>
           <q-input readonly filled v-model="workspaceFolder" rows="3" type="text" class="q-mb-md">
             <template v-slot:append>
-              <q-btn @click="openWorkspace" round dense flat icon="folder" />
+              <q-btn @click="changeWorkspace" round dense flat icon="drive_file_move" />
+              <q-btn @click="openWorkspace" round dense flat icon="visibility" />
             </template>
           </q-input>
         </div>
@@ -85,7 +86,7 @@
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
 import { useWorkloadStore } from 'stores/workload';
-import { getWorkspaceDir, showFolder } from '../services/lili/lili_real';
+import { getWorkspaceDir, changeWorkspace, showFolder } from '../services/lili/lili_real';
 import { reactiveProps } from '../utils/reactiveProps';
 
 async function mountWorkloads() {
@@ -121,6 +122,9 @@ export default {
     modelValue: null,
   },
   methods: {
+    async changeWorkspace() {
+      this.workspaceFolder = await changeWorkspace();
+    },
     openWorkspace() {
       console.log('Show', this.workspaceFolder);
       showFolder(this.workspaceFolder);

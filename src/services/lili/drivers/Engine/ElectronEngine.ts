@@ -209,7 +209,7 @@ export class ElectronEngine implements EngineDriverInterface {
     return await run('Engine:showFolder', { folder });
   }
 
-  async changeWorkspace(): Promise<true> {
+  async changeWorkspace(): Promise<string> {
     return await run('Engine:changeWorkspace');
   }
 }
