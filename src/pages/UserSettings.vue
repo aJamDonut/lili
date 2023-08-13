@@ -1,20 +1,57 @@
 <template>
   <q-page padding>
     <lili-title :title="$t('settings')" />
-    <lili-cont :title="$t('settings')">
-      <label>{{ $t('slider_inputs') }}</label>
-      <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
-      <br />
+    <lili-cont :title="$t('chat_preferences')">
+      <div class="row q-col-gutter-md explainer">
+        <div class="col-11 explain">
+          <p>
+            <b>{{ $t('enable_slider_inputs') }}</b>
+            <br />{{ $t('enable_slider_inputs_describe') }}
+          </p>
+        </div>
+        <div class="col-1 toggle">
+          <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
+        </div>
+      </div>
+    </lili-cont>
+
+    <br />
+    <lili-cont :title="$t('workspace_preferences')">
+      <div class="row q-col-gutter-md explainer">
+        <div class="col-11 explain">
+          <p>
+            <b>{{ $t('enable_file_context') }}</b>
+            <br />{{ $t('enable_file_context_describe') }}
+          </p>
+        </div>
+        <div class="col-1 toggle">
+          <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
+        </div>
+      </div>
+      <div class="row q-col-gutter-md explainer">
+        <div class="col-11 explain">
+          <p>
+            <b>{{ $t('enable_tree_context') }}</b>
+            <br />{{ $t('enable_tree_context_describe') }}
+          </p>
+        </div>
+        <div class="col-1 toggle">
+          <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
+        </div>
+      </div>
+    </lili-cont>
+    <br />
+
+    <lili-cont :title="$t('user_preferences')">
       <label>{{ $t('theme') }}</label>
       <q-select v-model="theme" filled :options="themeOptions" class="q-mb-md" dense />
       <label>{{ $t('language') }}</label>
-      <q-select v-model="locale" :options="localeOptions" filled class="q-mb-md" borderless emit-value map-options options-dense />
-
-      <label>{{ $t('chatgpt_key') }}</label>
-      <q-input :type="chatGPTKeyHide ? 'password' : 'text'" v-model="settingsStore.chatGPTKey" filled class="q-mb-md" dense />
+      <q-select v-model="locale" :options="localeOptions" filled class="q-mb-md" borderless emit-value map-options options-dense dense />
     </lili-cont>
     <br />
-    <lili-cont title="license">
+    <lili-cont :title="$t('keys')">
+      <label>{{ $t('chatgpt_key') }}</label>
+      <q-input :type="chatGPTKeyHide ? 'password' : 'text'" v-model="settingsStore.chatGPTKey" filled class="q-mb-md" dense />
       <label>{{ $t('lili_license_key') }}</label>
       <q-input :type="liliKeyHide ? 'password' : 'text'" v-model="settingsStore.liliKey" filled class="q-mb-md" dense>
         <template v-slot:append>
@@ -39,8 +76,12 @@
     <br />
 
     <lili-cont title="Manage Data">
-      <label>{{ $t('purge_history') }}</label>
       <q-btn :label="$t('delete_all_history')" color="red" @click="purgeHistory" />
+      <br />
+      <br />
+      <p>
+        <i>{{ $t('purge_history') }}</i>
+      </p>
     </lili-cont>
   </q-page>
 </template>
@@ -49,8 +90,6 @@
 <script>
 import { mapStores } from 'pinia';
 import { useSettingsStore } from 'stores/settings';
-import { hasValidLicense } from '../services/lili/lili_real';
-import { information, error } from '../boot/lili';
 import { useI18n } from 'vue-i18n';
 import { langCodesList } from '../i18n/index';
 import { useJobStore } from 'stores/job';
@@ -135,3 +174,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.explainer {
+  /*max-width: 1240px;*/
+}
+</style>

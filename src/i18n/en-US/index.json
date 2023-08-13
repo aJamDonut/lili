@@ -51,7 +51,7 @@
   "enter_prompt": "Enter your prompt here",
   "your_workloads": "Your workloads",
   "help": "Help",
-  "purge_history": "Purge history",
+  "purge_history": "Note: This will delete all of your conversation history and cannot be undone.",
   "new_workload": "New workload",
   "history_desc": "Here is a log of all your history",
   "workload_desc": "Workloads are repeatable conversations which allow you to quickly perform repeatable actions",
@@ -65,6 +65,16 @@
   "terminology": "Terminology",
   "tips": "Tips",
   "create": "Create",
-  "start" : "Start",
-  "workspace_folder": "Workspace folder"
+  "start": "Start",
+  "workspace_folder": "Workspace folder",
+  "keys": "Keys",
+  "user_preferences": "User preferences",
+  "chat_preferences": "Chat preferences",
+  "workspace_preferences": "Workspace preferences",
+  "enable_slider_inputs": "Enable sliders",
+  "enable_slider_inputs_describe": "Disable this if you want more precision when setting values like top_p",
+  "enable_file_context": "Enable file context",
+  "enable_file_context_describe": "Provides AI with the ability to read and write files.",
+  "enable_tree_context": "Enable tree context",
+  "enable_tree_context_describe": "Provides AI with the ability to read the workspace structure."
 }
