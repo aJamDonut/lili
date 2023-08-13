@@ -62,7 +62,7 @@ let WORKSPACE: string | false = false;
 
 export const changeWorkspace = async () => {
   const folderName = (await callService('FocusedWindow:chooseFolderDialog')) as string;
-  console.log('Change workspace to', folderName);
+  if (!folderName) return; //Pressed cancel
   return setWorkspaceDir(false, { folderName });
 };
 
