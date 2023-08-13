@@ -8,7 +8,7 @@
             <q-td :props="props" v-for="row in props.cols" :key="row.name">
               <div class="row items-center justify-center q-col-gutter-sm" style="min-width: 180px" v-if="row.name === 'actions'">
                 <div>
-                  <div v-if="type === 'history'">
+                  <div v-if="historyType === 'history'">
                     <q-btn outline color="primary" size="11px" icon="replay" :to="{ path: '/job/history/' + props.row.meta.id }" />
                   </div>
                   <div v-else>
@@ -16,7 +16,7 @@
                   </div>
                 </div>
                 <div>
-                  <div v-if="type === 'history'">
+                  <div v-if="historyType === 'history'">
                     <q-btn outline color="orange-8" size="11px" icon="tune" :to="{ path: '/messages/edit/' + props.row.meta.id }" />
                   </div>
                   <div v-else>
@@ -91,7 +91,7 @@ import { useSettingsStore } from 'stores/settings';
 export default {
   data() {
     return {
-      type: this.$route.params.type || 'history',
+      historyType: this.$route.params.historyType || 'history',
       displayOutput: false,
       markdown: ' # hello world \n ```js\n function hello(){ console.log(Hello World) } \n```',
       table2: false,
@@ -108,14 +108,14 @@ export default {
       return this.settingsStore.isValidKey ? '' : 'locked-page';
     },
     pageTitle() {
-      if (this.$route.params.type === 'history') {
+      if (this.$route.params.historyType === 'history') {
         return this.$t('history');
       } else {
         return this.$t('your_workloads');
       }
     },
     pageDesc() {
-      if (this.$route.params.type === 'history') {
+      if (this.$route.params.historyType === 'history') {
         return this.$t('history_desc');
       } else {
         return this.$t('workload_desc');
@@ -126,7 +126,7 @@ export default {
         { name: 'actions', label: this.$t('actions'), field: 'actions', align: 'center', sortable: false, headerClasses: 'q-table--col-auto-width' },
       ];
 
-      if (this.$route.params.type === 'history') {
+      if (this.$route.params.historyType === 'history') {
         cols.push({
           name: 'id',
           label: this.$t('id'),
@@ -185,22 +185,23 @@ export default {
     async load() {
       this.table2 = false;
       this.jobStore.empty();
-      if (this.$route.params.type === 'user') this.table2 = await this.jobStore.getHistory(0, 100, 'core');
-      this.jobStore.getHistory(0, 100, this.$route.params.type);
+
+      if (this.$route.params.historyType === 'user') this.table2 = await this.jobStore.getHistory(0, 100, 'core');
+      this.jobStore.getHistory(0, 100, this.$route.params.historyType);
     },
     viewJob(jobId) {
       this.$router.push({ path: '/jobs/' + jobId });
     },
     deleteJob(jobId) {
       console.log('Del jobo', jobId);
-      this.jobStore.deleteJob(jobId, this.$route.params.type);
+      this.jobStore.deleteJob(jobId, this.$route.params.historyType);
     },
   },
   beforeMount() {
     this.load();
   },
   watch: {
-    '$route.params.type'() {
+    '$route.params.historyType'() {
       this.load();
     },
   },
