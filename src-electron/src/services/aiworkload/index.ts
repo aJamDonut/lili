@@ -13,6 +13,7 @@ import {
   MessageHistory,
   WorkloadDefinition,
 } from 'app/interfaces/Lili';
+import { getUserSetting } from '../settings';
 
 interface ParseableHistory {
   content: string;
@@ -237,9 +238,7 @@ export async function readContextFile(file: string) {
 
 //merge file1.csv and file2.csv into merged.csv
 export async function getFilesContextMessages(prompt: string, workloadOptions: WorkloadOptions, workloadDefinition: WorkloadDefinition) {
-  if (!workloadDefinition?.context?.includes('extract_files')) {
-    if (typeof workloadOptions.forEachToken === 'function')
-      await workloadOptions.forEachToken(jsonResponse('inline', 'Doesnt need context', 'warning'));
+  if (!(await getUserSetting('workspace_context_files')) || !workloadDefinition?.context?.includes('extract_files')) {
     return { messages: [], fileDescriptions: {} };
   }
   const context = await getContextFiles(prompt);
@@ -586,21 +585,14 @@ export function getLatestTreeChat() {
 
 async function addWorkspaceFiles(history: Array<MessageHistory>) {
   if (history.length > 0) {
-    console.log('History too long', history);
     return history; //Only add the workspace if its the first message ever.
   }
+
+  if (!(await getUserSetting('workspace_context_tree'))) return history; //Feature disabled
 
   const treeDiagram = (await callService('Storage:getTree', {})) as string;
 
   LATEST_TREE = treeDiagram;
-
-  console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log(LATEST_TREE);
-  console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log('TREEEEEEE DIAGRAAAAAM');
-  console.log('TREEEEEEE DIAGRAAAAAM');
 
   if (!treeDiagram || treeDiagram.length < 10) {
     return history;
