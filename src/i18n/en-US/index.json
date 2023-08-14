@@ -76,5 +76,8 @@
   "enable_file_context": "Enable file context",
   "enable_file_context_describe": "Provides AI with the ability to read and write files.",
   "enable_tree_context": "Enable tree context",
-  "enable_tree_context_describe": "Provides AI with the ability to read the workspace structure."
+  "enable_tree_context_describe": "Provides AI with the ability to read the workspace structure.",
+  "randomness": "Randomness",
+  "show_nice_params": "Replace parameter names",
+  "show_nice_params_describe": "Replace the ChatGPT parameters within liliFLUX names, for example temperature becomes creativity."
 }

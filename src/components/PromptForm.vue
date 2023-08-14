@@ -51,16 +51,20 @@
         <div class="row q-col-gutter-md">
           <!-- Extra Stuff -->
           <div class="col" style="min-width: 120px">
-            <label>{{ $t('creativity') }}</label>
-            <lili-slider v-model="promptConfig.creativity" :step="0.01" :min="0.5" :max="1" />
+            <label>{{ !settingsStore.show_nice_params ? 'temperature' : $t('randomness') }}</label>
+            <lili-slider v-model="promptConfig.temperature" :step="0.05" :min="0" :max="2" />
           </div>
           <div class="col" style="min-width: 120px">
-            <label>{{ $t('repetitiveness') }}</label>
-            <lili-slider v-model="promptConfig.repetitiveness" :step="0.01" :min="0.5" :max="1" />
+            <label>{{ !settingsStore.show_nice_params ? 'top_p' : $t('creativity') }}</label>
+            <lili-slider v-model="promptConfig.top_p" :step="0.05" :min="0" :max="1" />
           </div>
           <div class="col" style="min-width: 120px">
-            <label>{{ $t('response_limit') }}</label>
-            <lili-slider v-model="promptConfig.responseLimit" :step="2000" :min="0" :max="32000" />
+            <label>{{ !settingsStore.show_nice_params ? 'frequency_penalty' : $t('repetitiveness') }}</label>
+            <lili-slider v-model="promptConfig.frequency_penalty" :step="0.05" :min="-2" :max="2" />
+          </div>
+          <div class="col" style="min-width: 120px">
+            <label>{{ !settingsStore.show_nice_params ? 'max_tokens' : $t('response_limit') }}</label>
+            <lili-slider v-model="promptConfig.max_tokens" :step="2000" :min="0" :max="32000" />
           </div>
           <!--<div class="col" style="min-width: 120px">
             <label>{{ $t('solution_count') }}</label>

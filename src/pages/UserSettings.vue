@@ -13,6 +13,18 @@
           <q-toggle v-model="settingsStore.sliderInputs" class="q-mb-md" />
         </div>
       </div>
+
+      <div class="row q-col-gutter-md explainer">
+        <div class="col-11 explain">
+          <p>
+            <b>{{ $t('show_nice_params') }}</b>
+            <br />{{ $t('show_nice_params_describe') }}
+          </p>
+        </div>
+        <div class="col-1 toggle">
+          <q-toggle v-model="settingsStore.show_nice_params" class="q-mb-md" />
+        </div>
+      </div>
     </lili-cont>
 
     <br />

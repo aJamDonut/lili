@@ -17,6 +17,7 @@ export const useSettingsStore = defineStore('settings', {
     darkMode: 'auto',
     language: 'en-US',
     sliderInputs: true,
+    show_nice_params: true,
     workspace_context_files: true,
     workspace_context_tree: true,
 
