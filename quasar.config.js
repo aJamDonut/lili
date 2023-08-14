@@ -227,8 +227,8 @@ module.exports = configure(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'lili',
-        productName: 'liliFLUX',
+        appId: 'liliflux',
+        productName: 'liliflux',
         publish: [
           {
             provider: 'github',
