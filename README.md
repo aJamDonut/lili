@@ -9,9 +9,18 @@ yarn
 npm install
 ```
 
+### Install required CLI Tools
+```bash
+# Node.js >=10 is required.
+
+$ yarn global add @quasar/cli
+# or
+$ npm install -g @quasar/cli
+```
+
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+npm run dev-elec
 ```
 
 
